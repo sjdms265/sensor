@@ -1,0 +1,44 @@
+package com.sensor.temperaturesensor.service.impl;
+
+import com.sensor.temperaturesensor.repository.SensorEndpointRepository;
+import com.sensor.temperaturesensor.model.SensorEndpoint;
+import com.sensor.temperaturesensor.service.SensorEndpointService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class SensorEndpointServiceImpl implements SensorEndpointService {
+
+    private final SensorEndpointRepository sensorEndpointRepository;
+
+    @Override
+    public SensorEndpoint save(SensorEndpoint sensorEndpoint) {
+        return sensorEndpointRepository.save(sensorEndpoint);
+    }
+
+    @Override
+    @Async("threadPoolTaskExecutor")
+    public SensorEndpoint recordSensorEndpoint(SensorEndpoint sensorEndpoint) {
+
+        Date lastSensorEndpoint = sensorEndpointRepository.
+                getLastSavedSensorEndpoint(sensorEndpoint.getUserId(), sensorEndpoint.getSensorId());
+
+        if(lastSensorEndpoint != null && lastSensorEndpoint.compareTo(sensorEndpoint.getDate()) < 1) {
+            SensorEndpoint currentSensorEndpoint = sensorEndpointRepository.
+                    getSensorEndpointByUserIdAndSensorIdAndDate(sensorEndpoint.getUserId(), sensorEndpoint.getSensorId(),
+                            lastSensorEndpoint);
+            if(!currentSensorEndpoint.getValue().equals(sensorEndpoint.getValue())) {
+                log.info("New SensorEndpointDTO {}", sensorEndpoint);
+                save(sensorEndpoint);
+                return currentSensorEndpoint;
+            }
+        }
+        return null;
+    }
+}

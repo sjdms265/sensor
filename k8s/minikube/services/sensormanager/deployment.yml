@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensormanager
+  labels:
+    app: sensormanager
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: sensormanager
+      labels:
+        app: sensormanager
+    spec:
+      containers:
+        - name: sensormanager
+          image: sensormanager
+          imagePullPolicy: IfNotPresent
+#          image: 192.168.50.158:5000/sensormanager
+#          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+#          env:
+#            - name: SPRING_PROFILES_ACTIVE
+#              value: kube
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: sensormanager

@@ -1,0 +1,34 @@
+server:
+    port: 8081
+spring:
+    application:
+        name: sensormanager
+    datasource:
+        password: password
+        url: jdbc:postgresql://localhost:5432/sensormanager
+        username: amigoscode
+    jpa:
+        hibernate:
+            ddl-auto: create
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+                format_sql: true
+        show-sql: false
+#    mvc:
+#        converters:
+#            preferred-json-mapper: jsonb
+    kafka:
+        bootstrap-servers: poecilia:9092
+sensormanager:
+    token:
+        secret: secret
+        access-expires: 600000
+        refresh-expires: 1800000
+    homeassistant:
+        uri: 'tcp://192.168.50.158:1883'
+        userName: mosquito
+        password: mosquito123
+        channel: '#'
+    topic:
+        temperature: temperature
