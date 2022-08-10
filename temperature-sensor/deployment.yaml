@@ -6,8 +6,8 @@ spec:
   selector:
     app: temperature-sensor
   ports:
-    - port: 80
-      targetPort: 8080
+    - port: 8082
+      targetPort: 8082
   #      nodePort: 30000
   type: LoadBalancer
 ---

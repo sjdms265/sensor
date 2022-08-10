@@ -3,11 +3,6 @@ server:
 spring:
     application:
         name: temperature-sensor
-    datasource:
-        password: password
-#        url: jdbc:postgresql://localhost:5432/sensormanager
-        url: jdbc:postgresql://sensordb-postgresql.default.svc.cluster.local:5432/sensormanager
-        username: amigoscode
     jpa:
         hibernate:
             ddl-auto: update

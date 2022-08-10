@@ -1,0 +1,5 @@
+spring:
+    datasource:
+        password: password
+        url: jdbc:postgresql://sensordb-postgresql.default.svc.cluster.local:5432/sensormanager
+        username: amigoscode

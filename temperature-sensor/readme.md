@@ -1,4 +1,4 @@
-POSTGRESS
+POSTGRESS K8s
 
 helm install sensordb bitnami/postgresql
 
@@ -93,3 +93,9 @@ docker build -t temperature-sensor .
 - docker run -it -p 8081:8081 temperature-sensor  temperature-sensor
 - eval $(minikube -p minikube docker-env)     
 kubectl apply -f deployment.yaml
+
+---
+
+POSTGRES LOCAL
+
+docker run -e POSTGRES_PASSWORD=123456 -p 5432:5432 -d postgres
