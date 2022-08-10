@@ -85,5 +85,11 @@ To create a pod that you can use as a Kafka client run the following commands:
 TEMPERATURE-SENSOR
 
 https://www.section.io/engineering-education/spring-boot-kubernetes/
+https://medium.com/swlh/deploy-a-spring-boot-application-into-kubernetes-661cb07c2c88
+https://medium.com/swlh/how-to-run-locally-built-docker-images-in-kubernetes-b28fbc32cc1d
 
 docker build -t temperature-sensor .
+- java -jar target//temperature-sensor-1.0-SNAPSHOT.jar
+- docker run -it -p 8081:8081 temperature-sensor  temperature-sensor
+- eval $(minikube -p minikube docker-env)     
+kubectl apply -f deployment.yaml

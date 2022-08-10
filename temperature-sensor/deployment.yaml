@@ -28,9 +28,9 @@ spec:
       containers:
         - name: temperature-sensor
           image: temperature-sensor
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Never
           ports:
-            - containerPort: 8080
+            - containerPort: 8082
       restartPolicy: Always
   selector:
     matchLabels:
