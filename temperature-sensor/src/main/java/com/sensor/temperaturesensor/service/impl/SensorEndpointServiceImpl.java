@@ -34,10 +34,14 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
                     getSensorEndpointByUserIdAndSensorIdAndDate(sensorEndpoint.getUserId(), sensorEndpoint.getSensorId(),
                             lastSensorEndpoint);
             if(!currentSensorEndpoint.getValue().equals(sensorEndpoint.getValue())) {
-                log.info("New SensorEndpointDTO {}", sensorEndpoint);
+                log.info("Updated SensorEndpointDTO {}", sensorEndpoint);
                 save(sensorEndpoint);
                 return currentSensorEndpoint;
             }
+        } else if(lastSensorEndpoint == null) {
+            log.info("New SensorEndpointDTO {}", sensorEndpoint);
+            save(sensorEndpoint);
+            return sensorEndpoint;
         }
         return null;
     }

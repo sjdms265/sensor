@@ -99,3 +99,23 @@ kubectl apply -f deployment.yaml
 POSTGRES LOCAL
 
 docker run -e POSTGRES_PASSWORD=123456 -p 5432:5432 -d postgres
+
+
+---
+
+KAFKA DOCKER
+
+https://developer.confluent.io/quickstart/kafka-docker/
+
+/sensor/k8s/minikube/bootstrap/kafka
+docker-compose up -d
+
+docker exec broker \
+kafka-topics --bootstrap-server broker:9092 \
+--create \
+--topic temperature
+
+docker exec broker \
+kafka-topics --bootstrap-server broker:9092 \
+--create \
+--topic temperaturechange
