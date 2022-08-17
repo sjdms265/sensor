@@ -1,7 +1,7 @@
 spring:
     datasource:
-        password: password
+        password: postgres
         url: jdbc:postgresql://sensordb-postgresql.default.svc.cluster.local:5432/sensormanager
-        username: amigoscode
+        username: postgres
     kafka:
-        bootstrap-servers: my-release-kafka.default.svc.cluster.local
+        bootstrap-servers: sensorkafka.default.svc.cluster.local:9092

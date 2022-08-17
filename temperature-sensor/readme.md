@@ -36,7 +36,7 @@ To connect to your database from outside the cluster execute the following comma
     PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432
 
 ---
-KAFKA
+KAFKA k8s
 
 helm install my-release bitnami/kafka
 
@@ -88,10 +88,11 @@ https://www.section.io/engineering-education/spring-boot-kubernetes/
 https://medium.com/swlh/deploy-a-spring-boot-application-into-kubernetes-661cb07c2c88
 https://medium.com/swlh/how-to-run-locally-built-docker-images-in-kubernetes-b28fbc32cc1d
 
+eval $(minikube -p minikube docker-env)   
 docker build -t temperature-sensor .
-- java -jar target//temperature-sensor-1.0-SNAPSHOT.jar
+- java -jar  -Dspring.profiles.active=local target//temperature-sensor-1.0-SNAPSHOT.jar
 - docker run -it -p 8081:8081 temperature-sensor  temperature-sensor
-- eval $(minikube -p minikube docker-env)     
+kubectl delete -f deployment.yaml
 kubectl apply -f deployment.yaml
 
 ---
