@@ -2,6 +2,9 @@ KAFKA LOCAL
 
 https://kafka.apache.org/quickstart
 
+bin/zookeeper-server-start.sh config/zookeeper.properties
+bin/kafka-server-start.sh config/server.properties
+
 bin/kafka-topics.sh --create --topic temperature --bootstrap-server localhost:9092
 bin/kafka-topics.sh --describe --topic temperature --bootstrap-server localhost:9092
 
@@ -26,6 +29,8 @@ https://medium.com/swlh/deploy-a-spring-boot-application-into-kubernetes-661cb07
 https://medium.com/swlh/how-to-run-locally-built-docker-images-in-kubernetes-b28fbc32cc1d
 
 eval $(minikube -p minikube docker-env)
+minikube start & minikube dashboard --url
+
 mvn clean install
 - java -jar -Dspring.profiles.active=local target/sensormanager-1.0-SNAPSHOT.jar
 - docker run -it -p 8081:8081 sensormanager  sensormanager
@@ -107,5 +112,6 @@ To create a pod that you can use as a Kafka client run the following commands:
             --topic test \
             --from-beginning
 
+---------------- POSTGRES DOCKER
 
-   ~  export POSTGRES_PASSWORD=$(kubectl get secret --namespace default sensordb-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)  
+docker run --name=sensordb -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres 

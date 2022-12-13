@@ -29,4 +29,4 @@ spec:
             - name: KAFKA_BROKER_ID
               value: "0"
             - name: KAFKA_CREATE_TOPICS
-              value: temperature:1:1
+              value: "temperature:1:1, temperaturechange:1:1"

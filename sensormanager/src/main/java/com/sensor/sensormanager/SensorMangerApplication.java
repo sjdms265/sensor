@@ -30,7 +30,7 @@ public class SensorMangerApplication {
             userService.saveRole(new Role(null, "ROLE_USER"));
             userService.saveRole(new Role(null, "ROLE_ADMIN"));
 
-            SensorUser sensorUser = userService.saveUser(new SensorUser(null, "sjdms265", "sjdms265", "1234", new ArrayList<>()));
+            userService.saveUser(new SensorUser(null, "sjdms265", "sjdms265", "1234", new ArrayList<>()));
             userService.saveUser(new SensorUser(null, "admin", "admin", "1234", new ArrayList<>()));
 
             userService.addRoleToUser("sjdms265", "ROLE_USER");

@@ -1,5 +1,7 @@
 spring:
     datasource:
-        password: 123456
+        password: postgres
         url: jdbc:postgresql://localhost:5432/sensormanager
         username: postgres
+    kafka:
+        bootstrap-servers: localhost:9092

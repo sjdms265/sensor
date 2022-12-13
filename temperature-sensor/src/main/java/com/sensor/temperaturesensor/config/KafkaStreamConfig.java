@@ -32,6 +32,8 @@ public class KafkaStreamConfig {
     @Value(value = "${sensormanager.topic.temperature}")
     private String topic;
 
+    @Value(value = "${sensormanager.topic.temperaturechange}")
+    private String outputTopic;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
@@ -54,6 +56,14 @@ public class KafkaStreamConfig {
             .partitions(1)
             .replicas(1)
             .build();
+    }
+
+    @Bean
+    NewTopic outputTopic() {
+        return TopicBuilder.name(this.outputTopic)
+                .partitions(1)
+                .replicas(1)
+                .build();
     }
 
 }

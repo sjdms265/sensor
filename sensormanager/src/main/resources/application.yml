@@ -18,8 +18,6 @@ spring:
 #    mvc:
 #        converters:
 #            preferred-json-mapper: jsonb
-    kafka:
-        bootstrap-servers: poecilia:9092
 sensormanager:
     token:
         secret: secret
