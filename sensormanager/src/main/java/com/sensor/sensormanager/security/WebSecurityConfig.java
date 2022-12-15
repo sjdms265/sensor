@@ -30,14 +30,12 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        //CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManager());
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/refreshToken").permitAll();
-        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/user/**").hasAnyAuthority("ROLE_USER");
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/user/**").hasAnyAuthority("ROLE_ADMIN");
-        http.authorizeRequests().anyRequest().authenticated();
-        //http.addFilter(customAuthenticationFilter);
+        http.authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/api/refreshToken").permitAll();
+        http.authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/api/user/**").hasAnyAuthority("ROLE_USER");
+        http.authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/api/user/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeHttpRequests().anyRequest().authenticated();
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

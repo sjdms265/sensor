@@ -1,7 +1,7 @@
 package com.sensor.temperaturesensor.service.impl;
 
-import com.sensor.temperaturesensor.repository.SensorEndpointRepository;
 import com.sensor.temperaturesensor.model.SensorEndpoint;
+import com.sensor.temperaturesensor.repository.SensorEndpointRepository;
 import com.sensor.temperaturesensor.service.SensorEndpointService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +9,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 @Service
 @Slf4j
@@ -24,7 +26,7 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
 
     @Override
     @Async("threadPoolTaskExecutor")
-    public SensorEndpoint recordSensorEndpoint(SensorEndpoint sensorEndpoint) {
+    public Future<SensorEndpoint> recordSensorEndpoint(SensorEndpoint sensorEndpoint) {
 
         Date lastSensorEndpoint = sensorEndpointRepository.
                 getLastSavedSensorEndpoint(sensorEndpoint.getUserId(), sensorEndpoint.getSensorId());
@@ -36,12 +38,12 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
             if(!currentSensorEndpoint.getValue().equals(sensorEndpoint.getValue())) {
                 log.info("Updated SensorEndpointDTO {}", sensorEndpoint);
                 save(sensorEndpoint);
-                return currentSensorEndpoint;
+                return CompletableFuture.completedFuture(currentSensorEndpoint);
             }
         } else if(lastSensorEndpoint == null) {
             log.info("New SensorEndpointDTO {}", sensorEndpoint);
             save(sensorEndpoint);
-            return sensorEndpoint;
+            return CompletableFuture.completedFuture(sensorEndpoint);
         }
         return null;
     }

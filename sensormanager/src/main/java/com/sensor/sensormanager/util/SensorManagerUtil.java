@@ -8,6 +8,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sensor.sensormanager.model.Role;
 import com.sensor.sensormanager.model.SensorUser;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
@@ -18,13 +20,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -45,8 +44,7 @@ public class SensorManagerUtil implements EnvironmentAware {
         JWTCreator.Builder jwtBuilder = createCommonTokenBuilder(user.getUsername(), requestUrl, expirationTime);
 
         if(includeRoles) {
-            jwtBuilder.withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).
-                    collect(Collectors.toList()));
+            jwtBuilder.withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
         }
 
         Algorithm algorithm = Algorithm.HMAC256(SensorManagerUtil.getProperty(SENSORMANAGER_TOKEN_SECRET).getBytes());
@@ -59,8 +57,7 @@ public class SensorManagerUtil implements EnvironmentAware {
         JWTCreator.Builder jwtBuilder = createCommonTokenBuilder(user.getUsername(), requestUrl, expirationTime);
 
         if(includeRoles) {
-            jwtBuilder.withClaim("roles", user.getRoles().stream().map(Role::getName).
-                    collect(Collectors.toList()));
+            jwtBuilder.withClaim("roles", user.getRoles().stream().map(Role::getName).toList());
         }
 
         Algorithm algorithm = Algorithm.HMAC256(SensorManagerUtil.getProperty(SENSORMANAGER_TOKEN_SECRET).getBytes());
@@ -82,7 +79,7 @@ public class SensorManagerUtil implements EnvironmentAware {
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 
             String token = authorizationHeader.substring("Bearer ".length());
-            Algorithm algorithm = Algorithm.HMAC256(env.getProperty(SENSORMANAGER_TOKEN_SECRET).getBytes());
+            Algorithm algorithm = Algorithm.HMAC256(SensorManagerUtil.getProperty(SENSORMANAGER_TOKEN_SECRET).getBytes());
             JWTVerifier verifier = JWT.require(algorithm).build();
             return verifier.verify(token);
         }

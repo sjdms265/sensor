@@ -2,6 +2,10 @@ package com.sensor.sensormanager.filter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.sensor.sensormanager.util.SensorManagerUtil;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -10,13 +14,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 
@@ -40,7 +39,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     String username = decodedJWT.getSubject();
                     String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
                     Collection<SimpleGrantedAuthority> authorities = stream(roles).
-                            map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+                            map(SimpleGrantedAuthority::new).toList();
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(username, null, authorities);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
