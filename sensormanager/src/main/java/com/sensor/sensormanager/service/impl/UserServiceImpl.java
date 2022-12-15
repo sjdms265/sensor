@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,14 +34,26 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public SensorUser saveUser(SensorUser sensorUser) {
         log.info("saveUser {}", sensorUser.getUsername());
-        sensorUser.setPassword(passwordEncoder.encode(sensorUser.getPassword()));
-        return userRepository.save(sensorUser);
+
+        SensorUser existingUSer = userRepository.findUserByUsername(sensorUser.getUsername());
+        if(existingUSer == null) {
+            sensorUser.setPassword(passwordEncoder.encode(sensorUser.getPassword()));
+            return userRepository.save(sensorUser);
+        }
+        return existingUSer;
+
     }
 
     @Override
     public Role saveRole(Role role) {
         log.info("saveRole {}", role.getName());
-        return roleRepository.save(role);
+
+        Role existingRole = roleRepository.findByName(role.getName());
+        if(existingRole == null) {
+            return roleRepository.save(role);
+        }
+        return existingRole;
+
     }
 
     @Override
@@ -48,14 +61,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         SensorUser sensorUser = userRepository.findUserByUsername(username);
         Role role = roleRepository.findByName(roleName);
         log.info("addRole {} ToUser {}", roleName, sensorUser.getUsername());
-        sensorUser.getRoles().add(role);
-        userRepository.save(sensorUser);
+        Optional<Role> currentRule = sensorUser.getRoles().stream().filter(currentRole -> role.getName().equals(currentRole.getName())).findAny();
+
+        if(!currentRule.isPresent()) {
+            sensorUser.getRoles().add(role);
+            userRepository.save(sensorUser);
+        }
 
     }
 
     @Override
     public SensorUser getUser(String username) {
-        //log.info("getUser {}", username);
+        log.info("getUser {}", username);
         return userRepository.findUserByUsername(username);
     }
 
