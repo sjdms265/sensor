@@ -115,3 +115,16 @@ To create a pod that you can use as a Kafka client run the following commands:
 ---------------- POSTGRES DOCKER
 
 docker run --name=sensordb -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres 
+
+--------------- TEST endpoints
+
+###
+POST http://localhost:8081/login
+Content-Type: application/x-www-form-urlencoded
+
+username=sjdms265&password=1234
+
+
+###
+GET http://localhost:8081/api/users
+Authorization: Bearer yJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzamRtczI2NSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODEvbG9naW4iLCJleHAiOjE2NzExMzE1MjF9.fVjCfsaX_f5DfUfeRM8GxI9eltcxJg5z6dkvYBQRblE

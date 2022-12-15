@@ -3,11 +3,10 @@ package com.sensor.sensormanager.filter;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.sensor.sensormanager.util.SensorManagerUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -21,10 +20,8 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.stream;
 
 @Slf4j
+@Component
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
-
-    @Autowired
-    private Environment env;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

@@ -3,13 +3,11 @@ package com.sensor.sensormanager.security;
 import com.sensor.sensormanager.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,13 +18,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * https://www.bezkoder.com/websecurityconfigureradapter-deprecated-spring-boot/
  * https://www.youtube.com/watch?v=b9O9NI-RJ3o
  **/
-@Configuration
-@EnableWebSecurity
+/*@Configuration
+@EnableWebSecurity*/
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private final CustomAuthorizationFilter customAuthorizationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -38,7 +38,7 @@ public class WebSecurityConfig {
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/user/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
         //http.addFilter(customAuthenticationFilter);
-        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
