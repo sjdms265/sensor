@@ -1,5 +1,6 @@
 package com.sensor.sensormanager.security;
 
+import com.sensor.sensormanager.filter.CustomAuthenticationFilter;
 import com.sensor.sensormanager.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,10 @@ public class WebSecurityConfig {
     private final UserDetailsService userDetailsService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private final CustomAuthorizationFilter customAuthorizationFilter;
+
+    private final AuthenticationConfiguration authConfiguration;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
@@ -36,7 +41,8 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/api/user/**").hasAnyAuthority("ROLE_USER");
         http.authorizeHttpRequests().requestMatchers(HttpMethod.POST, "/api/user/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeHttpRequests().anyRequest().authenticated();
-        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilter(new CustomAuthenticationFilter(authenticationManager()));
+        http.addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -52,7 +58,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager() throws Exception {
         return authConfiguration.getAuthenticationManager();
     }
 
