@@ -72,10 +72,12 @@ public class UserController {
 
                 String accessToken = SensorManagerUtil.createToken(user, request.getRequestURL().toString(),
                         SensorManagerUtil.getTokenAccessExpire(), true);
+                String refreshToken = SensorManagerUtil.createToken(user, request.getRequestURL().toString(),
+                        SensorManagerUtil.getTokenRefreshExpire(), false);
 
                 Map<String, String> tokens = new HashMap<>();
                 tokens.put("access_token", accessToken);
-                //tokens.put("refresh_token", refreshToken); //fixme
+                tokens.put("refresh_token", refreshToken);
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                 new ObjectMapper().writeValue(response.getOutputStream(), tokens);
 
