@@ -71,7 +71,7 @@ public class UserController {
                 SensorUser user = userService.getUser(username);
 
                 String accessToken = SensorManagerUtil.createToken(user, request.getRequestURL().toString(),
-                        Integer.parseInt(SensorManagerUtil.getProperty(SensorManagerUtil.SENSORMANAGER_TOKEN_ACCESS_EXPIRES)), true);
+                        SensorManagerUtil.getTokenAccessExpire(), true);
 
                 Map<String, String> tokens = new HashMap<>();
                 tokens.put("access_token", accessToken);

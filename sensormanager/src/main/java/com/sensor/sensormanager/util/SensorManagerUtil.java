@@ -11,8 +11,7 @@ import com.sensor.sensormanager.model.SensorUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,17 +26,11 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class SensorManagerUtil implements EnvironmentAware {
+public class SensorManagerUtil {
 
-    public static final String SENSORMANAGER_TOKEN_SECRET = "sensormanager.token.secret";
-    public static final String SENSORMANAGER_TOKEN_ACCESS_EXPIRES = "sensormanager.token.access-expires";
-    public static final String SENSORMANAGER_TOKEN_REFRESH_EXPIRES = "sensormanager.token.refresh-expires";
-
-    private static Environment env;
-
-    public static String getProperty(String key) {
-        return  env.getProperty(key);
-    }
+    private static String tokenSecret;
+    private static Integer tokenAccessExpire;
+    private static Integer tokenRefreshExpire;
 
     public static  String createToken(final User user, final String requestUrl, int expirationTime, boolean includeRoles) {
 
@@ -47,7 +40,7 @@ public class SensorManagerUtil implements EnvironmentAware {
             jwtBuilder.withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
         }
 
-        Algorithm algorithm = Algorithm.HMAC256(SensorManagerUtil.getProperty(SENSORMANAGER_TOKEN_SECRET).getBytes());
+        Algorithm algorithm = Algorithm.HMAC256(tokenSecret.getBytes());
         return jwtBuilder.sign(algorithm);
     }
 
@@ -60,17 +53,15 @@ public class SensorManagerUtil implements EnvironmentAware {
             jwtBuilder.withClaim("roles", user.getRoles().stream().map(Role::getName).toList());
         }
 
-        Algorithm algorithm = Algorithm.HMAC256(SensorManagerUtil.getProperty(SENSORMANAGER_TOKEN_SECRET).getBytes());
+        Algorithm algorithm = Algorithm.HMAC256(tokenSecret.getBytes());
         return jwtBuilder.sign(algorithm);
     }
 
     public static JWTCreator.Builder createCommonTokenBuilder(String userName, final String requestUrl, int expirationTime) {
 
-
-        JWTCreator.Builder jwtBuilder = JWT.create().withSubject(userName)
+        return JWT.create().withSubject(userName)
                 .withExpiresAt(new Date(System.currentTimeMillis()  +expirationTime))
                 .withIssuer(requestUrl);
-        return jwtBuilder;
     }
 
     public static DecodedJWT getToken(HttpServletRequest request) {
@@ -79,7 +70,7 @@ public class SensorManagerUtil implements EnvironmentAware {
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 
             String token = authorizationHeader.substring("Bearer ".length());
-            Algorithm algorithm = Algorithm.HMAC256(SensorManagerUtil.getProperty(SENSORMANAGER_TOKEN_SECRET).getBytes());
+            Algorithm algorithm = Algorithm.HMAC256(tokenSecret.getBytes());
             JWTVerifier verifier = JWT.require(algorithm).build();
             return verifier.verify(token);
         }
@@ -100,10 +91,29 @@ public class SensorManagerUtil implements EnvironmentAware {
         new ObjectMapper().writeValue(response.getOutputStream(), error);
     }
 
-    @Override
-    public void setEnvironment(Environment environment) {
-        this.env = environment;
+    @Value("${sensormanager.token.secret}")
+    public void setTokenSecret(String tokenSecret) {
+        SensorManagerUtil.tokenSecret = tokenSecret;
+    }
+    @Value("${sensormanager.token.access-expires}")
+    public void setTokenAccessExpire(Integer tokenAccessExpire) {
+        SensorManagerUtil.tokenAccessExpire = tokenAccessExpire;
+    }
+    @Value("${sensormanager.token.refresh-expires}")
+    public void setTokenRefreshExpire(Integer tokenRefreshExpire) {
+        SensorManagerUtil.tokenRefreshExpire = tokenRefreshExpire;
     }
 
+    public static String getTokenSecret() {
+        return tokenSecret;
+    }
+
+    public static Integer getTokenAccessExpire() {
+        return tokenAccessExpire;
+    }
+
+    public static Integer getTokenRefreshExpire() {
+        return tokenRefreshExpire;
+    }
 
 }

@@ -44,9 +44,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         final User user = (User) authResult.getPrincipal();
 
         String accessToken = SensorManagerUtil.createToken(user, request.getRequestURL().toString(),
-                Integer.parseInt(SensorManagerUtil.getProperty(SensorManagerUtil.SENSORMANAGER_TOKEN_ACCESS_EXPIRES)), true);
+                SensorManagerUtil.getTokenAccessExpire(), true);
         String refreshToken = SensorManagerUtil.createToken(user, request.getRequestURL().toString(),
-                Integer.parseInt(SensorManagerUtil.getProperty(SensorManagerUtil.SENSORMANAGER_TOKEN_REFRESH_EXPIRES)), false);
+                SensorManagerUtil.getTokenRefreshExpire(), false);
 
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", accessToken);
