@@ -28,13 +28,17 @@ https://www.section.io/engineering-education/spring-boot-kubernetes/
 https://medium.com/swlh/deploy-a-spring-boot-application-into-kubernetes-661cb07c2c88
 https://medium.com/swlh/how-to-run-locally-built-docker-images-in-kubernetes-b28fbc32cc1d
 
+###SAME CONSOLE TAB###
+https://minikube.sigs.k8s.io/docs/handbook/pushing/#1-pushing-directly-to-the-in-cluster-docker-daemon-docker-env
+
+minikube start
 eval $(minikube -p minikube docker-env)
-minikube start & minikube dashboard --url
+minikube dashboard --url (IN A NEW CONSOLE  TAB)
 
 mvn clean install
-- java -jar -Dspring.profiles.active=local target/sensormanager-1.0-SNAPSHOT.jar
-- docker run -it -p 8081:8081 sensormanager  sensormanager
+java -jar -Dspring.profiles.active=local target/sensormanager-1.0-SNAPSHOT.jar
 docker build -t sensormanager .
+docker run -it -p 8081:8081 sensormanager  sensormanager
 kubectl delete -f deployment.yaml
 kubectl apply -f deployment.yaml
 
