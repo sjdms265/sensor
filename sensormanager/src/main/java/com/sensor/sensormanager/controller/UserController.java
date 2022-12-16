@@ -1,7 +1,6 @@
 package com.sensor.sensormanager.controller;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sensor.sensormanager.dto.RoleToUserForm;
 import com.sensor.sensormanager.model.Role;
 import com.sensor.sensormanager.model.SensorUser;
@@ -10,7 +9,6 @@ import com.sensor.sensormanager.util.SensorManagerUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,9 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -70,16 +66,9 @@ public class UserController {
 
                 SensorUser user = userService.getUser(username);
 
-                String accessToken = SensorManagerUtil.createToken(user, request.getRequestURL().toString(),
-                        SensorManagerUtil.getTokenAccessExpire(), true);
-                String refreshToken = SensorManagerUtil.createToken(user, request.getRequestURL().toString(),
-                        SensorManagerUtil.getTokenRefreshExpire(), false);
+                List<String> claims = user.getRoles().stream().map(Role::getName).toList();
 
-                Map<String, String> tokens = new HashMap<>();
-                tokens.put("access_token", accessToken);
-                tokens.put("refresh_token", refreshToken);
-                response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+                SensorManagerUtil.writeTokensResponse(request, response, claims, user.getUsername());
 
 
             } catch (Exception e) {
