@@ -9,7 +9,7 @@ import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Component;
@@ -19,18 +19,17 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class LogTemperatureProcessor {
 
-    private final Serde<String> STRING_SERDE = Serdes.String();
+    private Serde<String> STRING_SERDE = Serdes.String();
     private Serde<SensorEndpointDTO> SENSOR_ENDPOINT_DTO_SERDE = Serdes.serdeFrom(new JsonSerializer<>(),
             new JsonDeserializer<>(SensorEndpointDTO.class));
 
     private final SensorEndpointService sensorEndpointService;
 
-    private final Environment env;
+    @Value("${sensormanager.topic.temperaturechange}")
+    private String topic;
 
     @Autowired
     void buildPipeline(StreamsBuilder streamsBuilder) {
-
-        String topic = env.getProperty("sensormanager.topic.temperaturechange");
 
         streamsBuilder
             .stream(topic, Consumed.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE))

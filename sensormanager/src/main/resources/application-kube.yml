@@ -1,7 +1,19 @@
 spring:
     datasource:
-        password: postgres
+        password: ${POSTGRES_PASSWORD}
         url: jdbc:postgresql://sensordb-postgresql.default.svc.cluster.local:5432/sensormanager
         username: postgres
     kafka:
         bootstrap-servers: sensorkafka.default.svc.cluster.local:9092
+#    jpa:
+#        properties:
+#            hibernate:
+#                temp:
+#                    use_jdbc_metadata_defaults: true
+#                c3p0:
+#                    min_size: 1
+#                    max_size: 30
+#                    timeout: 120
+#                    max_statements: 100
+
+

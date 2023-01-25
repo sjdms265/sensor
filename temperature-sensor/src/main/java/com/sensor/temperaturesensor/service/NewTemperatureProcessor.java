@@ -41,7 +41,8 @@ public class NewTemperatureProcessor {
                 .stream(this.topic, Consumed.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE))
                 .peek((key, value) -> log.info("reduce topic {} key {} value {}", topic, key, value));
 
-        Reducer<SensorEndpointDTO> temperatureChange = (sensor1, sensor2) -> sensor1.getValue() != sensor2.getValue() ? sensor1 : sensor2;
+        Reducer<SensorEndpointDTO> temperatureChange = (sensor1, sensor2) -> sensor1.getValue().equals(sensor2.getValue())
+                && sensor1.getSensorId().equalsIgnoreCase(sensor2.getSensorId()) ? sensor1 : sensor2;
 
         messageStream.groupByKey()
                 .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(30)))
@@ -88,17 +89,17 @@ public class NewTemperatureProcessor {
 //                        .withValueSerde(SENSOR_ENDPOINT_DTO_SERDE));
 
         changeTemperatureTable.mapValues(sensorEndpoint -> {
-                    System.out.println(String.format("size %s value %s date %s", sensorEndpointMap.size(), sensorEndpoint.getValue(), sensorEndpoint.getDate()));
+                    log.debug(String.format("size %s value %s date %s", sensorEndpointMap.size(), sensorEndpoint.getValue(), sensorEndpoint.getDate()));
                     sensorEndpointMap.put(String.valueOf(sensorEndpoint.getValue()), sensorEndpoint);
                     return sensorEndpoint;
                 })
                 .filter((key, sensorEndpoint) -> sensorEndpointMap.get(String.valueOf(sensorEndpoint.getValue())) != null)
                 .toStream()
-                .peek((key, sensorEndpoint) -> {
-                    System.out.println(String.format("size %s value %s date %s exists %s", sensorEndpointMap.size(),
+                .peek((key, sensorEndpoint) ->
+                    log.debug("size %s value %s date %s exists %b", sensorEndpointMap.size(),
                             sensorEndpoint.getValue(),
-                            sensorEndpoint.getDate(), sensorEndpointMap.get(String.valueOf(sensorEndpoint.getValue()) == null)));
-                })
+                            sensorEndpoint.getDate(), sensorEndpointMap.get(String.valueOf(sensorEndpoint.getValue())) == null)
+                )
                         .to(this.outputTopic, Produced.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE));
 
 
