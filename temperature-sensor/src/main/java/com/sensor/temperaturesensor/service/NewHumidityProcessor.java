@@ -5,7 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.kstream.Aggregator;
+import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.Reducer;
+import org.apache.kafka.streams.kstream.TimeWindows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
@@ -18,7 +25,7 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class NewTemperatureProcessor {
+public class NewHumidityProcessor {
 
     @Value(value = "${sensormanager.topic.temperature}")
     private String topic;
@@ -26,7 +33,7 @@ public class NewTemperatureProcessor {
     @Value(value = "${sensormanager.topic.temperaturechange}")
     private String outputTopic;
 
-    private final String sensorId = "sensor.10000db11e_t";
+    private final String sensorId = "sensor.10000db11e_h";
 
     private static final Serde<String> STRING_SERDE = Serdes.String();
     private static final Serde<SensorEndpointDTO> SENSOR_ENDPOINT_DTO_SERDE = Serdes.serdeFrom(new JsonSerializer<>(),
@@ -47,12 +54,12 @@ public class NewTemperatureProcessor {
                     }
                 });
 
-        Reducer<SensorEndpointDTO> temperatureChange = (sensor1, sensor2) -> sensor1.getSensorId().equalsIgnoreCase(sensorId) &&
-                sensor1.getSensorId().equalsIgnoreCase(sensor2.getSensorId()) && !sensor1.getValue().equals(sensor2.getValue()) ? sensor1 : sensor2;
+        Reducer<SensorEndpointDTO> valueChange = (sensor1, sensor2) -> !sensor1.getValue().equals(sensor2.getValue())
+                && sensor1.getSensorId().equalsIgnoreCase(sensorId) ? sensor1 : sensor2;
 
         messageStream.groupByKey()
                 .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(30)))
-                .reduce(temperatureChange)
+                .reduce(valueChange)
                 .toStream()
                 .to(this.outputTopic);
 

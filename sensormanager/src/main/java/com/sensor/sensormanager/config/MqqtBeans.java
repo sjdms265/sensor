@@ -3,13 +3,11 @@ package com.sensor.sensormanager.config;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sensor.sensormanager.dto.SensorEndpointDTO;
-import com.sensor.sensormanager.enums.SensorType;
 import com.sensor.sensormanager.model.SensorUser;
 import com.sensor.sensormanager.service.UserService;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,11 +43,14 @@ public class MqqtBeans {
     @Value("${sensormanager.topic.temperature}")
     private String topicTemperature;
 
-    @Autowired
     private final UserService userService;
 
-    @Autowired
     private final KafkaTemplate<String, SensorEndpointDTO> kafkaTemplate;
+
+    public MqqtBeans(UserService userService, KafkaTemplate<String, SensorEndpointDTO> kafkaTemplate) {
+        this.userService = userService;
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     @Bean
     public MqttPahoClientFactory mqqttClientFactory() {
@@ -88,16 +89,15 @@ public class MqqtBeans {
     public MessageHandler handler() {
 
         return message -> {
-            String topic = message.getHeaders().get(MqttHeaders.RECEIVED_TOPIC).toString().toUpperCase();
+            String topic = String.valueOf(message.getHeaders().get(MqttHeaders.RECEIVED_TOPIC)).toUpperCase();
             String payload = message.getPayload().toString();
 
-            SensorType sensorType = SensorType.valueOf(topic);
+            //SensorType sensorType = SensorType.valueOf(topic);
 
             ObjectMapper om = new ObjectMapper();
 
             try {
                 SensorEndpointDTO sensorEndpointDTO = om.readValue(payload, SensorEndpointDTO.class);
-                //System.out.println(String.format("%s Message from topic %s: %s", sensorEndpointDTO.getDate() , topic, sensorEndpointDTO));
                 log.info("{} Topic {} message {}",  sensorEndpointDTO.getDate(), topic, message.getPayload());
 
                 SensorUser sensorUser = userService.getUser(sensorEndpointDTO.getUserId());
