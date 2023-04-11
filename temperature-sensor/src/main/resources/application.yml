@@ -3,6 +3,10 @@ server:
 spring:
     application:
         name: temperature-sensor
+    datasource:
+        password: postgres
+        url: jdbc:postgresql://localhost:5432/sensormanager
+        username: postgres
     jpa:
         hibernate:
             ddl-auto: update
@@ -11,16 +15,6 @@ spring:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
                 format_sql: true
         show-sql: false
-    cloud:
-        function:
-            definition: mosquitto-ingest
-        stream:
-            bindings:
-                mosquitto-ingest-in-0:
-                    content-type: application/json
-                    destination: temperature
-                    group: sensor-manager
-                    binder: kafka
 
 sensormanager:
     topic:

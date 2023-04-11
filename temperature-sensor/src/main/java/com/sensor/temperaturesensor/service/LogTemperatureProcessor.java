@@ -8,6 +8,7 @@ import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
+import org.apache.kafka.streams.kstream.KStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
@@ -31,7 +32,7 @@ public class LogTemperatureProcessor {
     @Autowired
     void buildPipeline(StreamsBuilder streamsBuilder) {
 
-        streamsBuilder
+        KStream<String, SensorEndpointDTO> messageStream = streamsBuilder
             .stream(topic, Consumed.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE))
                 .peek((key, sensorEndpointDTO) -> {
                     log.info("buildPipeline topic {} key {} value {}", topic, key, sensorEndpointDTO);
@@ -40,6 +41,8 @@ public class LogTemperatureProcessor {
 
                     sensorEndpointService.recordSensorEndpoint(sensorEndpoint);
                 });
+
+        messageStream.foreach((s, sensorEndpointDTO) -> log.info(sensorEndpointDTO.toString()));
 
     }
 

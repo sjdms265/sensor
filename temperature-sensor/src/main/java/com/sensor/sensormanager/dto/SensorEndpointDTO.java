@@ -18,7 +18,7 @@ public class SensorEndpointDTO {
     private String sensorId;
     private Float value;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSSSSX")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSSS")
     private Date date;
 
 }

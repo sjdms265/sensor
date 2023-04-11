@@ -1,12 +1,16 @@
+app:
+    kafka:
+        producer:
+            topic: ${sensormanager.topic.temperature}:1:1
 server:
     port: 8081
 spring:
     application:
         name: sensormanager
     datasource:
-        password: password
+        password: postgres
         url: jdbc:postgresql://localhost:5432/sensormanager
-        username: amigoscode
+        username: postgres
     jpa:
         hibernate:
             ddl-auto: update
@@ -15,6 +19,13 @@ spring:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
                 format_sql: true
         show-sql: false
+    kafka:
+        bootstrap-servers: temperature
+        producer:
+            retries: 0
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 #    mvc:
 #        converters:
 #            preferred-json-mapper: jsonb
@@ -30,3 +41,12 @@ sensormanager:
         channel: '#'
     topic:
         temperature: temperature
+
+camel:
+    component:
+        kafka:
+            brokers: localhost:9092
+        paho-mqtt5:
+            broker-url: 'tcp://192.168.50.4:1883'
+            user-name: mosquito
+            password: mosquito123

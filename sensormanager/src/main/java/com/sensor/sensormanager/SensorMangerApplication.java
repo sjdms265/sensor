@@ -40,23 +40,4 @@ public class SensorMangerApplication {
         };
     }
 
-    /*@Bean
-    public MessageChannel mqttInputChannel() {
-        return new DirectChannel();
-    }
-
-    @Bean
-    @ServiceActivator(inputChannel = "mqttInputChannel")
-    public MessageHandler handler() {
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd HH:m:mm:ss");
-
-        return message -> {
-            String topic = message.getHeaders().get(MqttHeaders.RECEIVED_TOPIC).toString();
-            System.out.println(String.format("%s Message from topic %s: %s", dateFormat.format(new Date()) , topic, message.getPayload()));
-            //log.debug("{} Topic {} message {}",  new Date().getTime(), topic, message.getPayload()); //fixme
-        };
-
-    }*/
-
 }
