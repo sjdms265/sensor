@@ -29,10 +29,10 @@ public class KafkaStreamConfig {
     @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
-    @Value(value = "${sensormanager.topic.temperature}")
+    @Value(value = "${sensor-manager.topic.sensor-value}")
     private String topic;
 
-    @Value(value = "${sensormanager.topic.temperaturechange}")
+    @Value(value = "${sensor-manager.topic.sensor-value-change}")
     private String outputTopic;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)

@@ -16,7 +16,7 @@ spring:
                 format_sql: true
         show-sql: false
 
-sensormanager:
+sensor-manager:
     topic:
-        temperature: temperature
-        temperaturechange: temperaturechange
+        sensor-value: sensor-value
+        sensor-value-change: sensor-value-change

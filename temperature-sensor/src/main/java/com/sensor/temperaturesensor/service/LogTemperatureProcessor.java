@@ -26,7 +26,7 @@ public class LogTemperatureProcessor {
 
     private final SensorEndpointService sensorEndpointService;
 
-    @Value("${sensormanager.topic.temperaturechange}")
+    @Value("${sensor-manager.topic.sensor-value-change}")
     private String topic;
 
     @Autowired

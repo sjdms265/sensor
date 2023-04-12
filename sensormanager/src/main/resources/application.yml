@@ -20,7 +20,7 @@ spring:
                 format_sql: true
         show-sql: false
     kafka:
-        bootstrap-servers: temperature
+        bootstrap-servers: localhost:9092
         producer:
             retries: 0
             key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -29,18 +29,13 @@ spring:
 #    mvc:
 #        converters:
 #            preferred-json-mapper: jsonb
-sensormanager:
+sensor-manager:
     token:
         secret: secret
         access-expires: 600000
         refresh-expires: 1800000
-    homeassistant:
-        uri: 'tcp://192.168.50.4:1883'
-        userName: mosquito
-        password: mosquito123
-        channel: '#'
     topic:
-        temperature: temperature
+        sensor-value: sensor-value
 
 camel:
     component:

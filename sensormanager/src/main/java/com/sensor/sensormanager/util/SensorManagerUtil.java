@@ -88,15 +88,15 @@ public class SensorManagerUtil {
         new ObjectMapper().writeValue(response.getOutputStream(), error);
     }
 
-    @Value("${sensormanager.token.secret}")
+    @Value("${sensor-manager.token.secret}")
     public void setTokenSecret(String tokenSecret) {
         SensorManagerUtil.tokenSecret = tokenSecret;
     }
-    @Value("${sensormanager.token.access-expires}")
+    @Value("${sensor-manager.token.access-expires}")
     public void setTokenAccessExpire(Integer tokenAccessExpire) {
         SensorManagerUtil.tokenAccessExpire = tokenAccessExpire;
     }
-    @Value("${sensormanager.token.refresh-expires}")
+    @Value("${sensor-manager.token.refresh-expires}")
     public void setTokenRefreshExpire(Integer tokenRefreshExpire) {
         SensorManagerUtil.tokenRefreshExpire = tokenRefreshExpire;
     }

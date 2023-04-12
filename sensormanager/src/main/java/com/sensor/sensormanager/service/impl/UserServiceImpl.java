@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -63,7 +62,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         log.info("addRole {} ToUser {}", roleName, sensorUser.getUsername());
         Optional<Role> currentRule = sensorUser.getRoles().stream().filter(currentRole -> role.getName().equals(currentRole.getName())).findAny();
 
-        if(!currentRule.isPresent()) {
+        if(currentRule.isEmpty()) {
             sensorUser.getRoles().add(role);
             userRepository.save(sensorUser);
         }
@@ -78,7 +77,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public List<SensorUser> getUsers() {
-        log.info("getUsers {}");
+        List<SensorUser> sensorUsers = userRepository.findAll();
+        log.info("getUsers {}", sensorUsers);
         return userRepository.findAll();
     }
 
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
         Collection<SimpleGrantedAuthority> authorities = sensorUser.getRoles().stream().
-                map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+                map(role -> new SimpleGrantedAuthority(role.getName())).toList();
 
         return new User(sensorUser.getUsername(), sensorUser.getPassword(), authorities);
     }

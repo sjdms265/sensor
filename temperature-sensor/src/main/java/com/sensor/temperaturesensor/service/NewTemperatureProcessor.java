@@ -27,10 +27,10 @@ import java.util.Map;
 @Slf4j
 public class NewTemperatureProcessor {
 
-    @Value(value = "${sensormanager.topic.temperature}")
+    @Value(value = "${sensor-manager.topic.sensor-value}")
     private String topic;
 
-    @Value(value = "${sensormanager.topic.temperaturechange}")
+    @Value(value = "${sensor-manager.topic.sensor-value-change}")
     private String outputTopic;
 
     private final String sensorId = "sensor.10000db11e_t";
@@ -54,12 +54,12 @@ public class NewTemperatureProcessor {
                     }
                 });
 
-        Reducer<SensorEndpointDTO> temperatureChange = (sensor1, sensor2) -> sensor1.getSensorId().equalsIgnoreCase(sensorId) &&
+        Reducer<SensorEndpointDTO> sensorValueChange = (sensor1, sensor2) -> sensor1.getSensorId().equalsIgnoreCase(sensorId) &&
                 sensor1.getSensorId().equalsIgnoreCase(sensor2.getSensorId()) && !sensor1.getValue().equals(sensor2.getValue()) ? sensor1 : sensor2;
 
         messageStream.groupByKey()
                 .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(30)))
-                .reduce(temperatureChange)
+                .reduce(sensorValueChange)
                 .toStream()
                 .to(this.outputTopic);
 
@@ -73,7 +73,7 @@ public class NewTemperatureProcessor {
 
         final SensorEndpointDTO initialSensorEndpoint = SensorEndpointDTO.builder().value(Float.MIN_VALUE).build();
 
-        Aggregator<String, SensorEndpointDTO, SensorEndpointDTO> temperatureChange =
+        Aggregator<String, SensorEndpointDTO, SensorEndpointDTO> sensorValueChange =
                 (userId, sensorEndpoint, uniqueTemperature) -> {
                     if(!sensorEndpoint.getValue().equals(initialSensorEndpoint.getValue())) {
                         initialSensorEndpoint.setValue(sensorEndpoint.getValue());
@@ -85,7 +85,7 @@ public class NewTemperatureProcessor {
 
         messageStream.groupByKey()
                 .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(30)))
-                .aggregate(() -> initialSensorEndpoint, temperatureChange, Materialized.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE))
+                .aggregate(() -> initialSensorEndpoint, sensorValueChange, Materialized.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE))
                 .toStream()
                 .filter((userId, sensorEndpoint) -> !sensorEndpoint.getValue().equals(Float.MIN_VALUE))
                 .to(this.outputTopic);

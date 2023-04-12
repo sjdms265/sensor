@@ -18,8 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * https://www.bezkoder.com/websecurityconfigureradapter-deprecated-spring-boot/
- * https://www.youtube.com/watch?v=b9O9NI-RJ3o
+ * <a href="https://www.bezkoder.com/websecurityconfigureradapter-deprecated-spring-boot/">...</a>
+ * <a href="https://www.youtube.com/watch?v=b9O9NI-RJ3o">...</a>
  **/
 @Configuration
 @EnableWebSecurity
