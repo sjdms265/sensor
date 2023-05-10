@@ -15,8 +15,32 @@ spring:
                 dialect: org.hibernate.dialect.PostgreSQLDialect
                 format_sql: true
         show-sql: false
+        open-in-view: false
+    devtools:
+        livereload:
+            port: 35730
 
 sensor-manager:
     topic:
         sensor-value: sensor-value
         sensor-value-change: sensor-value-change
+        stream-window: 60
+
+logging:
+    level:
+        root: info
+        com:
+            sensor:
+                temperaturesensor:
+                    service: debug
+    pattern:
+        level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: '*'
+    tracing:
+        sampling:
+            probability: 1.0

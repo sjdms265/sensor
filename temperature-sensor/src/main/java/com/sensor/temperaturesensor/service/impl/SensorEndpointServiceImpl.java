@@ -3,6 +3,7 @@ package com.sensor.temperaturesensor.service.impl;
 import com.sensor.temperaturesensor.model.SensorEndpoint;
 import com.sensor.temperaturesensor.repository.SensorEndpointRepository;
 import com.sensor.temperaturesensor.service.SensorEndpointService;
+import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -15,6 +16,7 @@ import java.util.concurrent.Future;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Observed(name = "SensorEndpointServiceImpl")
 public class SensorEndpointServiceImpl implements SensorEndpointService {
 
     private final SensorEndpointRepository sensorEndpointRepository;
@@ -36,12 +38,12 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
                     getSensorEndpointByUserIdAndSensorIdAndDate(sensorEndpoint.getUserId(), sensorEndpoint.getSensorId(),
                             lastSensorEndpoint);
             if(!currentSensorEndpoint.getValue().equals(sensorEndpoint.getValue())) {
-                log.info("Updated SensorEndpointDTO {}", sensorEndpoint);
+                log.debug("Updated SensorEndpointDTO {}", sensorEndpoint);
                 save(sensorEndpoint);
                 return CompletableFuture.completedFuture(currentSensorEndpoint);
             }
         } else if(lastSensorEndpoint == null) {
-            log.info("New SensorEndpointDTO {}", sensorEndpoint);
+            log.debug("New SensorEndpointDTO {}", sensorEndpoint);
             save(sensorEndpoint);
             return CompletableFuture.completedFuture(sensorEndpoint);
         }

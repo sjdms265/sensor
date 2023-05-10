@@ -5,6 +5,7 @@ import com.sensor.sensormanager.model.SensorUser;
 import com.sensor.sensormanager.repository.RoleRepository;
 import com.sensor.sensormanager.repository.UserRepository;
 import com.sensor.sensormanager.service.UserService;
+import io.micrometer.observation.annotation.Observed;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,6 +25,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @Transactional
 @Slf4j
+@Observed(name = "UserServiceImpl")
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
@@ -32,7 +34,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public SensorUser saveUser(SensorUser sensorUser) {
-        log.info("saveUser {}", sensorUser.getUsername());
+        log.debug("saveUser {}", sensorUser.getUsername());
 
         SensorUser existingUSer = userRepository.findUserByUsername(sensorUser.getUsername());
         if(existingUSer == null) {
@@ -45,7 +47,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public Role saveRole(Role role) {
-        log.info("saveRole {}", role.getName());
+        log.debug("saveRole {}", role.getName());
 
         Role existingRole = roleRepository.findByName(role.getName());
         if(existingRole == null) {
@@ -59,7 +61,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public void addRoleToUser(String username, String roleName) {
         SensorUser sensorUser = userRepository.findUserByUsername(username);
         Role role = roleRepository.findByName(roleName);
-        log.info("addRole {} ToUser {}", roleName, sensorUser.getUsername());
+        log.debug("addRole {} ToUser {}", roleName, sensorUser.getUsername());
         Optional<Role> currentRule = sensorUser.getRoles().stream().filter(currentRole -> role.getName().equals(currentRole.getName())).findAny();
 
         if(currentRule.isEmpty()) {
@@ -71,14 +73,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public SensorUser getUser(String username) {
-        log.info("getUser {}", username);
+        log.debug("getUser {}", username);
         return userRepository.findUserByUsername(username);
     }
 
     @Override
     public List<SensorUser> getUsers() {
         List<SensorUser> sensorUsers = userRepository.findAll();
-        log.info("getUsers {}", sensorUsers);
+        log.debug("getUsers {}", sensorUsers);
         return userRepository.findAll();
     }
 
@@ -90,7 +92,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             log.error("User {} not found", username);
             throw  new UsernameNotFoundException(String.format("User %s not found", username));
         } else {
-            log.info("User {} found", username);
+            log.debug("User {} found", username);
         }
 
         Collection<SimpleGrantedAuthority> authorities = sensorUser.getRoles().stream().

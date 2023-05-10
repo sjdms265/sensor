@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class LogTemperatureProcessor {
+public class SensorValueChangeProcessor {
 
     private Serde<String> STRING_SERDE = Serdes.String();
     private Serde<SensorEndpointDTO> SENSOR_ENDPOINT_DTO_SERDE = Serdes.serdeFrom(new JsonSerializer<>(),
@@ -34,15 +34,13 @@ public class LogTemperatureProcessor {
 
         KStream<String, SensorEndpointDTO> messageStream = streamsBuilder
             .stream(topic, Consumed.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE))
-                .peek((key, sensorEndpointDTO) -> {
-                    log.info("buildPipeline topic {} key {} value {}", topic, key, sensorEndpointDTO);
-                    SensorEndpoint sensorEndpoint = SensorEndpoint.builder().userId(sensorEndpointDTO.getUserId()).
-                            sensorId(sensorEndpointDTO.getSensorId()).value(sensorEndpointDTO.getValue()).date(sensorEndpointDTO.getDate()).build();
+            .peek((key, sensorEndpointDTO) -> {
+                log.debug("Possible value changed, topic {} key {} value {}", topic, key, sensorEndpointDTO);
+                SensorEndpoint sensorEndpoint = SensorEndpoint.builder().userId(sensorEndpointDTO.getUserId()).
+                        sensorId(sensorEndpointDTO.getSensorId()).value(sensorEndpointDTO.getValue()).date(sensorEndpointDTO.getDate()).build();
 
-                    sensorEndpointService.recordSensorEndpoint(sensorEndpoint);
-                });
-
-        messageStream.foreach((s, sensorEndpointDTO) -> log.info(sensorEndpointDTO.toString()));
+                sensorEndpointService.recordSensorEndpoint(sensorEndpoint);
+            });
 
     }
 

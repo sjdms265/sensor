@@ -1,6 +1,7 @@
 package com.sensor.temperaturesensor.service;
 
 import com.sensor.sensormanager.dto.SensorEndpointDTO;
+import io.micrometer.observation.annotation.Observed;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -25,6 +26,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
+@Observed(name = "NewHumidityProcessor")
 public class NewHumidityProcessor {
 
     @Value(value = "${sensor-manager.topic.sensor-value}")
@@ -32,6 +34,9 @@ public class NewHumidityProcessor {
 
     @Value(value = "${sensor-manager.topic.sensor-value-change}")
     private String outputTopic;
+
+    @Value(value = "${sensor-manager.topic.stream-window:60}")
+    private long streamWindow;
 
     private final String sensorId = "sensor.10000db11e_h";
 
@@ -48,19 +53,15 @@ public class NewHumidityProcessor {
     private void reduce(StreamsBuilder streamsBuilder) {
         KStream<String, SensorEndpointDTO> messageStream = streamsBuilder
                 .stream(this.topic, Consumed.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE))
-                .peek((key, value) -> {
-                    if(value.getSensorId().equalsIgnoreCase(sensorId)) {
-                        log.info("reduce topic {} key {} value {}", topic, key, value);
-                    }
-                });
+                .filter((s, sensorEndpointDTO) -> sensorEndpointDTO.getSensorId().equalsIgnoreCase(sensorId));
 
-        Reducer<SensorEndpointDTO> valueChange = (sensor1, sensor2) -> !sensor1.getValue().equals(sensor2.getValue())
-                && sensor1.getSensorId().equalsIgnoreCase(sensorId) ? sensor1 : sensor2;
+        Reducer<SensorEndpointDTO> valueChange = (sensor1, sensor2) -> !sensor1.getValue().equals(sensor2.getValue()) ? sensor1 : sensor2;
 
         messageStream.groupByKey()
-                .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(30)))
+                .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofSeconds(streamWindow)))
                 .reduce(valueChange)
                 .toStream()
+                .peek((key, value) -> log.info("reduce topic {} key {} value {}", topic, key, value))
                 .to(this.outputTopic);
 
     }
@@ -68,7 +69,7 @@ public class NewHumidityProcessor {
     private void aggregator(StreamsBuilder streamsBuilder) {
         KStream<String, SensorEndpointDTO> messageStream = streamsBuilder
                 .stream(this.topic, Consumed.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE))
-                .peek((key, value) -> log.info("aggregator topic {} key {} value {}", topic, key, value));
+                .peek((key, value) -> log.debug("aggregator topic {} key {} value {}", topic, key, value));
 
 
         final SensorEndpointDTO initialSensorEndpoint = SensorEndpointDTO.builder().value(Float.MIN_VALUE).build();

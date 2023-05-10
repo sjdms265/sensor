@@ -27,7 +27,6 @@ public class Mqtt2Kafka extends RouteBuilder {
         from("paho-mqtt5:temperature").routeId("consumeTemperature")
                 .process(sensorEndpointKeyProcessor)
                 .log("Message read from topic ${in.header.CamelMQTTSubscribeTopic} body ${body} key ${in.header.kafka.KEY}.")
-//                .toD("kafka:" + topic + "?key=${in.header.kafka.KEY}");
                 .to("kafka:" + topic);
 
         from("paho-mqtt5:humidity").routeId("consumeHumidity")
