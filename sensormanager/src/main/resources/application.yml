@@ -32,6 +32,9 @@ spring:
     sql:
         init:
             mode: never
+    output:
+        ansi:
+            enabled: DETECT
 #            mode: always
 
 #    mvc:
@@ -56,19 +59,16 @@ camel:
 
 logging:
     level:
-        root: info
-        com:
-            sensor:
-                sensormanager:
-                    config: info
-        org:
-            eclipse:
-                paho:
-                    mqttv5:
-                        client:
-                            internal: error
+        #root: info
+        com.sensor.sensormanager.config: info
+        org.eclipse.paho.mqttv5.client.internal: error
     pattern:
+        ##console: "%d %-5level %logger : %msg%n"
+        ##file: "%d %-5level [%thread] %logger : %msg%n"
         level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+    ##https://mkyong.com/spring-boot/spring-boot-slf4j-logging-example/
+    ##file: sensor-manager.log
+
 management:
     endpoints:
         web:

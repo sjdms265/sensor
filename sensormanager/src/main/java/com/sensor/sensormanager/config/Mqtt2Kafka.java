@@ -15,6 +15,8 @@ public class Mqtt2Kafka extends RouteBuilder {
 
     private final Processor sensorEndpointKeyProcessor;
 
+    private final SensorValueWebSocketHandler sensorValueWebSocketHandler;
+
     /**
      * <a href="https://camel.apache.org/manual/route-configuration.html">...</a>
      * <a href="https://stackoverflow.com/questions/35042672/read-mqtt-topic-of-received-message-in-camel-route">...</a>
@@ -27,11 +29,13 @@ public class Mqtt2Kafka extends RouteBuilder {
         from("paho-mqtt5:temperature").routeId("consumeTemperature")
                 .process(sensorEndpointKeyProcessor)
                 .log("Message read from topic ${in.header.CamelMQTTSubscribeTopic} body ${body} key ${in.header.kafka.KEY}.")
+                .filter().method(sensorValueWebSocketHandler, "sendMessage(${body})")
                 .to("kafka:" + topic);
 
         from("paho-mqtt5:humidity").routeId("consumeHumidity")
                 .process(sensorEndpointKeyProcessor)
                 .log("Message read from topic ${in.header.CamelMQTTSubscribeTopic} body ${body} key ${in.header.kafka.KEY}.")
+//                .filter().method(sensorValueWebSocketHandler, "sendMessage(${body})")
                 .toD("kafka:" + topic);
     }
 }
