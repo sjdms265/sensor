@@ -30,7 +30,7 @@ public class SensorEndpointKeyProcessor implements Processor {
 
         if(sensorUser != null) {
             log.debug("sensorUser {}", sensorUser);
-            exchange.getIn().setHeader(KafkaConstants.KEY, sensorEndpointDTO.getUserId());
+            exchange.getIn().setHeader(KafkaConstants.KEY, sensorEndpointDTO.getUserId() + "-" + sensorEndpointDTO.getSensorId());
         } else {
             log.error("userId {} doesn't exist", userId);
         }

@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -34,13 +35,21 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
                 getLastSavedSensorEndpoint(sensorEndpoint.getUserId(), sensorEndpoint.getSensorId());
 
         if(lastSensorEndpoint != null && lastSensorEndpoint.compareTo(sensorEndpoint.getDate()) < 1) {
-            SensorEndpoint currentSensorEndpoint = sensorEndpointRepository.
-                    getSensorEndpointByUserIdAndSensorIdAndDate(sensorEndpoint.getUserId(), sensorEndpoint.getSensorId(),
+            List<SensorEndpoint> currentSensorEndpoints = sensorEndpointRepository.
+                    getSensorEndpointsByUserIdAndSensorIdAndDate(sensorEndpoint.getUserId(), sensorEndpoint.getSensorId(),
                             lastSensorEndpoint);
-            if(!currentSensorEndpoint.getValue().equals(sensorEndpoint.getValue())) {
+
+            if(currentSensorEndpoints.size() > 1) {
+                log.error("Duplicate sensor endpoints {} size {}", currentSensorEndpoints.get(0), currentSensorEndpoints.size());
+            } else if(currentSensorEndpoints.isEmpty()) {
+                log.error("No sensor endpoint for getSensorEndpointsByUserIdAndSensorIdAndDate {}", sensorEndpoint);
+                return null;
+            }
+
+            if(!currentSensorEndpoints.get(0).getValue().equals(sensorEndpoint.getValue())) {
                 log.debug("Updated SensorEndpointDTO {}", sensorEndpoint);
                 save(sensorEndpoint);
-                return CompletableFuture.completedFuture(currentSensorEndpoint);
+                return CompletableFuture.completedFuture(currentSensorEndpoints.get(0));
             }
         } else if(lastSensorEndpoint == null) {
             log.debug("New SensorEndpointDTO {}", sensorEndpoint);

@@ -20,8 +20,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SensorValueChangeProcessor {
 
-    private Serde<String> STRING_SERDE = Serdes.String();
-    private Serde<SensorEndpointDTO> SENSOR_ENDPOINT_DTO_SERDE = Serdes.serdeFrom(new JsonSerializer<>(),
+    private static final Serde<String> STRING_SERDE = Serdes.String();
+    private static final Serde<SensorEndpointDTO> SENSOR_ENDPOINT_DTO_SERDE = Serdes.serdeFrom(new JsonSerializer<>(),
             new JsonDeserializer<>(SensorEndpointDTO.class));
 
     private final SensorEndpointService sensorEndpointService;

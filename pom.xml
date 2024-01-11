@@ -16,12 +16,11 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <spring.boot.maven.plugin.version>3.1.5</spring.boot.maven.plugin.version>
-        <spring.boot.dependencies.version>3.1.5</spring.boot.dependencies.version>
+        <spring.boot.maven.plugin.version>3.2.1</spring.boot.maven.plugin.version>
+        <spring.boot.dependencies.version>3.2.1</spring.boot.dependencies.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-cloud.version>2022.0.4</spring-cloud.version>
-        <camel.version>4.0.1</camel.version>
-        <!-- camel.version>3.20.6</camel.version-->
+        <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <camel.version>4.3.0</camel.version>
     </properties>
 
     <dependencyManagement>
@@ -114,7 +113,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
-            <version>3.0.5</version>
         </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
@@ -127,19 +125,28 @@
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-exporter-zipkin</artifactId>
+            <version>1.32.0</version>
         </dependency>
 
 
         <!-- CVE vulnerabilities -->
+        <!-- from opentelemetry-exporter-zipkin -->
         <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <version>3.5.0</version>
+            <groupId>com.squareup.okio</groupId>
+            <artifactId>okio-jvm</artifactId>
+            <version>3.6.0</version>
         </dependency>
+        <!-- from spring boot starter -->
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>2.0</version>
+        </dependency>
+        <!-- spring-kafka -->
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+            <version>1.1.10.5</version>
         </dependency>
 
         <!-- Test -->
@@ -183,6 +190,21 @@
                         <arg>-parameters</arg>
                     </compilerArgs>
                 </configuration>
+            </plugin>
+            <!-- mvn dependency-check:check
+                 mvn dependency:tree
+            -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>8.4.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

@@ -70,4 +70,8 @@ public class SensorValueWebSocketHandler extends TextWebSocketHandler {
         session.sendMessage(message);
 
     }
+
+    public boolean supportsPartialMessages() {
+        return true;
+    }
 }

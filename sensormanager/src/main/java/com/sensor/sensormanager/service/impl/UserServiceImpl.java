@@ -39,11 +39,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         SensorUser existingUSer = userRepository.findUserByUsername(sensorUser.getUsername());
         if(existingUSer == null) {
             sensorUser.setPassword(passwordEncoder.encode(sensorUser.getPassword()));
-            return userRepository.save(sensorUser);
+            return save(sensorUser);
         }
         return existingUSer;
 
     }
+
+    public SensorUser save(SensorUser sensorUser) {
+        log.debug("save {}", sensorUser.getUsername());
+        return userRepository.save(sensorUser);
+    }
+
+
 
     @Override
     public Role saveRole(Role role) {

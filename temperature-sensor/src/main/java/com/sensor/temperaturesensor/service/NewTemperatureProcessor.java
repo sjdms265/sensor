@@ -1,7 +1,6 @@
 package com.sensor.temperaturesensor.service;
 
 import com.sensor.sensormanager.dto.SensorEndpointDTO;
-import io.micrometer.observation.annotation.Observed;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
@@ -26,7 +25,7 @@ import java.util.Map;
 
 @Service
 @Slf4j
-@Observed(name = "NewHumidityProcessor")
+//@Observed(name = "NewTemperatureProcessor")
 public class NewTemperatureProcessor {
 
     @Value(value = "${sensor-manager.topic.sensor-value}")
@@ -47,13 +46,15 @@ public class NewTemperatureProcessor {
     @Autowired
     void buildPipeline(StreamsBuilder streamsBuilder) {
 
-        reduce(streamsBuilder);
+        //reduce(streamsBuilder);
     }
 
     private void reduce(StreamsBuilder streamsBuilder) {
         KStream<String, SensorEndpointDTO> messageStream = streamsBuilder
                 .stream(this.topic, Consumed.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE))
-                .filter((s, sensorEndpointDTO) -> sensorEndpointDTO.getSensorId().equalsIgnoreCase(sensorId));
+                .peek((key, sensorEndpointDTO) ->
+                    log.info("NewTemperatureProcessor, topic {} key {} value {}", topic, key, sensorEndpointDTO)
+                ).filter((s, sensorEndpointDTO) -> sensorEndpointDTO.getSensorId().equalsIgnoreCase(sensorId));
 
         Reducer<SensorEndpointDTO> sensorValueChange = (sensor1, sensor2) -> !sensor1.getValue().equals(sensor2.getValue()) ? sensor1 : sensor2;
 
@@ -110,7 +111,7 @@ public class NewTemperatureProcessor {
                 .filter((key, sensorEndpoint) -> sensorEndpointMap.get(String.valueOf(sensorEndpoint.getValue())) != null)
                 .toStream()
                 .peek((key, sensorEndpoint) ->
-                    log.debug("size %s value %s date %s exists %b", sensorEndpointMap.size(),
+                    log.debug("size {} value {} date {} exists {}", sensorEndpointMap.size(),
                             sensorEndpoint.getValue(),
                             sensorEndpoint.getDate(), sensorEndpointMap.get(String.valueOf(sensorEndpoint.getValue())) == null)
                 )

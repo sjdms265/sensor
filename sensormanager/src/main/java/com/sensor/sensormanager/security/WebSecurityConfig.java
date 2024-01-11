@@ -42,6 +42,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/refreshToken").permitAll()
                 .requestMatchers("/sensor-gui/**").permitAll()
                 .requestMatchers("/test/**").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/user/**").hasAnyAuthority("ROLE_USER")
                 .requestMatchers(HttpMethod.POST, "/api/user/**").hasAnyAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated());

@@ -29,13 +29,15 @@ public class Mqtt2Kafka extends RouteBuilder {
         from("paho-mqtt5:temperature").routeId("consumeTemperature")
                 .process(sensorEndpointKeyProcessor)
                 .log("Message read from topic ${in.header.CamelMQTTSubscribeTopic} body ${body} key ${in.header.kafka.KEY}.")
-                .filter().method(sensorValueWebSocketHandler, "sendMessage(${body})")
-                .to("kafka:" + topic);
+                .toD("kafka:" + topic)
+                .bean(sensorValueWebSocketHandler, "sendMessage(${body})");
+
 
         from("paho-mqtt5:humidity").routeId("consumeHumidity")
                 .process(sensorEndpointKeyProcessor)
                 .log("Message read from topic ${in.header.CamelMQTTSubscribeTopic} body ${body} key ${in.header.kafka.KEY}.")
-//                .filter().method(sensorValueWebSocketHandler, "sendMessage(${body})")
-                .toD("kafka:" + topic);
+                .toD("kafka:" + topic)
+                .bean(sensorValueWebSocketHandler, "sendMessage(${body})");
+
     }
 }

@@ -24,7 +24,7 @@ sensor-manager:
     topic:
         sensor-value: sensor-value
         sensor-value-change: sensor-value-change
-        stream-window: 180
+        stream-window: 60
 
 logging:
     level:
