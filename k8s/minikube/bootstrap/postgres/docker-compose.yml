@@ -8,6 +8,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sensormanager
       PGDATA: /data/postgres
     volumes:
       - postgres-db:/data/postgres

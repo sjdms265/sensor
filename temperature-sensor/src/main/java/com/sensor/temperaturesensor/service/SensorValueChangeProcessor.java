@@ -8,7 +8,6 @@ import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
@@ -32,7 +31,7 @@ public class SensorValueChangeProcessor {
     @Autowired
     void buildPipeline(StreamsBuilder streamsBuilder) {
 
-        KStream<String, SensorEndpointDTO> messageStream = streamsBuilder
+        streamsBuilder
             .stream(topic, Consumed.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE))
             .peek((key, sensorEndpointDTO) -> {
                 log.debug("Possible value changed, topic {} key {} value {}", topic, key, sensorEndpointDTO);

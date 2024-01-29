@@ -60,7 +60,7 @@ public class SensorValueWebSocketHandler extends TextWebSocketHandler {
 
         WebSocketSession session;
         if (this.sessions.isEmpty()) {
-            log.error("No websocket sessions available");
+            log.warn("No websocket sessions available");
             return;
         } else {
             session = this.sessions.get(0);
