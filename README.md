@@ -9,6 +9,9 @@ https://towardsdatascience.com/install-and-run-multiple-java-versions-on-linux-u
 # docker-compose
 
 docker-compose -f /home/barnowl/Documents/java/sensor/k8s/minikube/bootstrap/kafka/docker-compose.yml -p kafka start zookeeper broker
+docker-compose -f /home/barnowl/Documents/spring-boot/k8s/minikube/bootstrap/kafka/docker-compose.yml -p kafka up -d
+
 docker-compose -f /home/barnowl/Documents/java/sensor/k8s/minikube/bootstrap/postgres/docker-compose.yml -p postgres start postgres
+
 docker-compose -f /home/barnowl/Documents/java/sensor/k8s/minikube/bootstrap/zipkin/docker-componse.yml -p zipkin start zipkin
 

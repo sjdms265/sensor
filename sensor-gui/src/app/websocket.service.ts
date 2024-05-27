@@ -9,8 +9,6 @@ export class WebsocketService {
   public connect() {
     let socket = new SockJS(`http://localhost:8081/sensor-gui`);
 
-    let stompClient = Stomp.over(socket);
-
-    return stompClient;
+    return Stomp.over(<WebSocket>socket);
   }
 }

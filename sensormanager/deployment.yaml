@@ -28,7 +28,7 @@ spec:
       containers:
         - name: sensormanager
           image: sensormanager
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8081
       restartPolicy: Always

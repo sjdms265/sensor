@@ -16,11 +16,11 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <spring.boot.maven.plugin.version>3.2.2</spring.boot.maven.plugin.version>
-        <spring.boot.dependencies.version>3.2.2</spring.boot.dependencies.version>
+        <spring.boot.maven.plugin.version>3.2.4</spring.boot.maven.plugin.version>
+        <spring.boot.dependencies.version>3.3.0</spring.boot.dependencies.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-cloud.version>2023.0.0</spring-cloud.version>
-        <camel.version>4.3.0</camel.version>
+        <spring-cloud.version>2023.0.1</spring-cloud.version>
+        <camel.version>4.6.0</camel.version>
     </properties>
 
     <dependencyManagement>
@@ -70,7 +70,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.12.0</version>
+            <version>3.14.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -125,7 +125,7 @@
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-exporter-zipkin</artifactId>
-            <version>1.32.0</version>
+            <version>1.38.0</version>
         </dependency>
 
 
@@ -134,7 +134,7 @@
         <dependency>
             <groupId>com.squareup.okio</groupId>
             <artifactId>okio-jvm</artifactId>
-            <version>3.6.0</version>
+            <version>3.9.0</version>
         </dependency>
         <!-- from spring boot starter -->
         <dependency>
@@ -158,7 +158,7 @@
     </dependencies>
 
     <build>
-        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (maybe moved to parent pom) -->
             <plugins>
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
@@ -208,5 +208,11 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>maven</id>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </repository>
+    </repositories>
 
 </project>
