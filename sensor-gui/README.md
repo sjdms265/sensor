@@ -33,3 +33,12 @@ npm install -g @angular/cli
 ## run app
 
 ng serve --open
+
+## select node version
+nvm list
+nvm use v20.13.1
+nvm install v20.13.1
+
+## update angular
+ng update @angular/core@18 @angular/cli@18
+

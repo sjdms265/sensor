@@ -1,10 +1,10 @@
 spring:
     datasource:
         password: ${POSTGRES_PASSWORD}
-        url: jdbc:postgresql://sensordb-postgresql.default.svc.cluster.local:5432/sensormanager
+        url: jdbc:postgresql://sensormanager-postgresql.default.svc.cluster.local:5432/sensormanager
         username: postgres
     kafka:
-        bootstrap-servers: sensorkafka.default.svc.cluster.local:9092
+        bootstrap-servers: broker springkafka.default.svc.cluster.local:9092
 #    jpa:
 #        properties:
 #            hibernate:
