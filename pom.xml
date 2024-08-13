@@ -20,7 +20,7 @@
         <spring.boot.dependencies.version>3.3.2</spring.boot.dependencies.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud.version>2023.0.3</spring-cloud.version>
-        <camel.version>4.6.0</camel.version>
+        <camel.version>4.7.0</camel.version>
     </properties>
 
     <dependencyManagement>

@@ -23,6 +23,7 @@ sensor-manager:
     topic:
         sensor-value: sensor-value
         sensor-value-change: sensor-value-change
+        last-sensor-value: last-sensor-value
         stream-window: 60
 
 logging:

@@ -1,3 +1,6 @@
+-- https://bcrypt-generator.com/
+-- https://www.uuidgenerator.net/version4
+
 -- insert into role (name) values ('ROLE_USER') on conflict (name) do nothing;
 -- insert into role (name) values ('ROLE_ADMIN') on conflict (name) do nothing;
 --

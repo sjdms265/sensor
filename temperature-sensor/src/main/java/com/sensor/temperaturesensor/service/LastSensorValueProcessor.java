@@ -4,15 +4,10 @@ import com.sensor.sensormanager.dto.SensorEndpointDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.Aggregator;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.KTable;
-import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.Produced;
-import org.apache.kafka.streams.kstream.Reducer;
-import org.apache.kafka.streams.kstream.TimeWindows;
+import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.state.KeyValueStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
@@ -20,19 +15,20 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 @Slf4j
 //@Observed(name = "NewTemperatureProcessor")
-public class NewTemperatureProcessor {
+public class LastSensorValueProcessor {
 
     @Value(value = "${sensor-manager.topic.sensor-value}")
     private String topic;
 
     @Value(value = "${sensor-manager.topic.sensor-value-change}")
     private String outputTopic;
+
+    @Value(value = "${sensor-manager.topic.last-sensor-value}")
+    private String outputTopicLastValue;
 
     private final String sensorId = "sensor.10000db11e_t";
 
@@ -46,7 +42,7 @@ public class NewTemperatureProcessor {
     @Autowired
     void buildPipeline(StreamsBuilder streamsBuilder) {
 
-        //reduce(streamsBuilder);
+//        setOutputTopicLastValue(streamsBuilder);
     }
 
     private void reduce(StreamsBuilder streamsBuilder) {
@@ -94,44 +90,19 @@ public class NewTemperatureProcessor {
 
     }
 
-    private void ktable(StreamsBuilder streamsBuilder) {
-                Map<String, SensorEndpointDTO> sensorEndpointMap = new HashMap<>();
+    private void setOutputTopicLastValue(StreamsBuilder streamsBuilder) {
 
         KTable<String, SensorEndpointDTO> changeTemperatureTable = streamsBuilder
-                .table(this.topic, Consumed.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE));
-//                .table(this.topic, Materialized.<String, SensorEndpointDTO, KeyValueStore<Bytes, byte[]>>as("ktable-changeTemperature")
-//                        .withKeySerde(STRING_SERDE)
-//                        .withValueSerde(SENSOR_ENDPOINT_DTO_SERDE));
+                .table(this.topic, Materialized.<String, SensorEndpointDTO, KeyValueStore<Bytes, byte[]>>as("last-sensor-value")
+                        .withKeySerde(STRING_SERDE)
+                        .withValueSerde(SENSOR_ENDPOINT_DTO_SERDE));
 
-        changeTemperatureTable.mapValues(sensorEndpoint -> {
-                    log.debug(String.format("size %s value %s date %s", sensorEndpointMap.size(), sensorEndpoint.getValue(), sensorEndpoint.getDate()));
-                    sensorEndpointMap.put(String.valueOf(sensorEndpoint.getValue()), sensorEndpoint);
-                    return sensorEndpoint;
-                })
-                .filter((key, sensorEndpoint) -> sensorEndpointMap.get(String.valueOf(sensorEndpoint.getValue())) != null)
+        changeTemperatureTable.filter((key, sensorEndpoint) -> sensorEndpoint.getValue() != null)
                 .toStream()
                 .peek((key, sensorEndpoint) ->
-                    log.debug("size {} value {} date {} exists {}", sensorEndpointMap.size(),
-                            sensorEndpoint.getValue(),
-                            sensorEndpoint.getDate(), sensorEndpointMap.get(String.valueOf(sensorEndpoint.getValue())) == null)
-                )
-                        .to(this.outputTopic, Produced.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE));
+                    log.debug("value {} date {}", sensorEndpoint.getValue(), sensorEndpoint.getDate())
+                ).to(this.outputTopicLastValue, Produced.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE));
 
-
-//        streamsBuilder
-//                .table(this.topic, Consumed.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE))
-//                .mapValues(sensorEndpoint -> sensorEndpointMap.put(sensorEndpoint.getValue(), sensorEndpoint));
-//
-//        sensorEndpointMap.keySet().stream().peek(key -> System.out.println(String.format("value %s date %s", key, sensorEndpointMap.get(key).getDate())));
-
-
-   /*     KTable<String, Long> wordCounts = messageStream
-            .mapValues((ValueMapper<String, String>) String::toLowerCase)
-            .flatMapValues(value -> Arrays.asList(value.split("\\W+")))
-            .groupBy((key, word) -> word, Grouped.with(STRING_SERDE, STRING_SERDE))
-            .count(Materialized.as("counts"));
-
-        wordCounts.toStream().to("output-topic");*/
     }
 
 }
