@@ -9,16 +9,11 @@ import com.sensor.sensormanager.util.SensorManagerUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -26,8 +21,9 @@ import java.util.List;
 @RequestMapping("/api")
 public class UserController {
 
-
     private final UserService userService;
+
+    private final SensorManagerUtil sensorManagerUtil;
 
     @GetMapping("/users")
     public ResponseEntity<List<SensorUser>> getUsers() {
@@ -36,27 +32,26 @@ public class UserController {
 
     @PostMapping("/user/save")
     public ResponseEntity<SensorUser> saveUser(@RequestBody SensorUser user) {
-        URI location = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
-        return ResponseEntity.created(location).body(userService.saveUser(user));
+//        URI location = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
+        return new ResponseEntity<>(userService.saveUser(user), HttpStatus.CREATED);
     }
 
     @PostMapping("/role/save")
-    public ResponseEntity<Role> saveUser(@RequestBody Role role) {
-        URI location = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/role/save").toUriString());
-        return ResponseEntity.created(location).body(userService.saveRole(role));
+    public ResponseEntity<Role> saveRole(@RequestBody Role role) {
+//        URI location = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/role/save").toUriString());
+        return new ResponseEntity<>(userService.saveRole(role), HttpStatus.CREATED);
     }
 
     @PostMapping("/role/addtouser")
-    public ResponseEntity<URI> addRoleToUser(@RequestBody RoleToUserForm roleToUserForm) {
-        URI location = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/role/addtouser").toUriString());
-        userService.addRoleToUser(roleToUserForm.username(), roleToUserForm.roleName());
-        return ResponseEntity.created(location).build();
+    public ResponseEntity<Role> addRoleToUser(@RequestBody RoleToUserForm roleToUserForm) {
+//        URI location = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/role/addtouser").toUriString());
+        return new ResponseEntity<>(userService.addRoleToUser(roleToUserForm.username(), roleToUserForm.roleName()), HttpStatus.OK);
     }
 
     @GetMapping("/refreshToken")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        DecodedJWT decodedJWT = SensorManagerUtil.getToken(request);
+        DecodedJWT decodedJWT = sensorManagerUtil.getToken(request);
 
         if(decodedJWT != null) {
 
@@ -68,11 +63,11 @@ public class UserController {
 
                 List<String> claims = user.getRoles().stream().map(Role::getName).toList();
 
-                SensorManagerUtil.writeTokensResponse(request, response, claims, user.getUsername());
+                sensorManagerUtil.writeTokensResponse(request, response, claims, user.getUsername());
 
 
             } catch (Exception e) {
-                SensorManagerUtil.setResponseMessage(response, e);
+                sensorManagerUtil.setResponseMessage(response, e);
             }
         } else {
             throw new IOException("Refresh token missing");

@@ -2,7 +2,10 @@ package com.sensor.temperaturesensor.service;
 
 import com.sensor.sensormanager.dto.SensorEndpointDTO;
 import com.sensor.temperaturesensor.model.SensorEndpoint;
-import org.apache.kafka.streams.*;
+import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.TestInputTopic;
+import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.TopologyTestDriver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +44,8 @@ class SensorValueChangeProcessorTest {
     @Test
     void buildPipeline() {
 
+        Mockito.when(sensorEndpointService.recordSensorEndpoint(Mockito.any())).thenReturn(CompletableFuture.completedFuture(new SensorEndpoint()));
+
         final StreamsBuilder streamsBuilder = new StreamsBuilder();
         sensorValueChangeProcessor.buildPipeline(streamsBuilder);
         Topology topology = streamsBuilder.build();
@@ -53,9 +58,6 @@ class SensorValueChangeProcessorTest {
             SensorEndpointDTO sensorEndpointDTO = SensorEndpointDTO.builder().sensorId("sensorId").value(1.0F).date(new Date()).userId("userId").build();
             sensorEndpointDTOTestInputTopic.pipeInput(sensorEndpointDTO.getUserId() + "-" + sensorEndpointDTO.getSensorId(), sensorEndpointDTO);
         }
-
-        Mockito.when(sensorEndpointService.recordSensorEndpoint(Mockito.any())).thenReturn(CompletableFuture.completedFuture(new SensorEndpoint()));
-
 
         Mockito.verify(sensorEndpointService, Mockito.times(1)).recordSensorEndpoint(Mockito.any());
     }

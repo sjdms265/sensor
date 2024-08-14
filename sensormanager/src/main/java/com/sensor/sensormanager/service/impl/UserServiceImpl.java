@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void addRoleToUser(String username, String roleName) {
+    public Role addRoleToUser(String username, String roleName) {
         SensorUser sensorUser = userRepository.findUserByUsername(username);
         Role role = roleRepository.findByName(roleName);
         log.debug("addRole {} ToUser {}", roleName, sensorUser.getUsername());
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             sensorUser.getRoles().add(role);
             userRepository.save(sensorUser);
         }
-
+        return role;
     }
 
     @Override

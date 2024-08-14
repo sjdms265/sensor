@@ -11,7 +11,7 @@ public interface UserService {
 
     Role saveRole(Role role);
 
-    void addRoleToUser(String username, String roleName);
+    Role addRoleToUser(String username, String roleName);
 
     SensorUser getUser(String username);
 

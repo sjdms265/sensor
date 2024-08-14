@@ -29,7 +29,7 @@ public class SensorManagerUtil {
     private static Integer tokenAccessExpire;
     private static Integer tokenRefreshExpire;
 
-    public static  String createToken(final String userName, List<String> claims, final String requestUrl, int expirationTime, boolean includeRoles) {
+    public String createToken(final String userName, List<String> claims, final String requestUrl, int expirationTime, boolean includeRoles) {
 
         JWTCreator.Builder jwtBuilder = createCommonTokenBuilder(userName, requestUrl, expirationTime);
 
@@ -41,14 +41,14 @@ public class SensorManagerUtil {
         return jwtBuilder.sign(algorithm);
     }
 
-    public static JWTCreator.Builder createCommonTokenBuilder(String userName, final String requestUrl, int expirationTime) {
+    public JWTCreator.Builder createCommonTokenBuilder(String userName, final String requestUrl, int expirationTime) {
 
         return JWT.create().withSubject(userName)
                 .withExpiresAt(new Date(System.currentTimeMillis()  +expirationTime))
                 .withIssuer(requestUrl);
     }
 
-    public static DecodedJWT getToken(HttpServletRequest request) {
+    public DecodedJWT getToken(HttpServletRequest request) {
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -63,7 +63,7 @@ public class SensorManagerUtil {
 
     }
 
-    public static void writeTokensResponse(HttpServletRequest request, HttpServletResponse response, List<String> claims, String username) throws IOException {
+    public void writeTokensResponse(HttpServletRequest request, HttpServletResponse response, List<String> claims, String username) throws IOException {
         String accessToken = createToken(username, claims, request.getRequestURL().toString(),
                 getTokenAccessExpire(), true);
         String refreshToken = createToken(username, claims, request.getRequestURL().toString(),
@@ -76,7 +76,7 @@ public class SensorManagerUtil {
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
     }
 
-    public static void setResponseMessage(HttpServletResponse response, Exception e) throws IOException {
+    public void setResponseMessage(HttpServletResponse response, Exception e) throws IOException {
         log.error("error logging {}", e.getMessage());
 
         response.setHeader("error", e.getMessage());

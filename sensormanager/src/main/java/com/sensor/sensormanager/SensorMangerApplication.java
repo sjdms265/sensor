@@ -18,5 +18,4 @@ public class SensorMangerApplication {
         return new BCryptPasswordEncoder();
     }
 
-
 }

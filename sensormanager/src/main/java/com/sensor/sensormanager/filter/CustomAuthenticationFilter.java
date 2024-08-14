@@ -4,6 +4,7 @@ import com.sensor.sensormanager.util.SensorManagerUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,13 +18,12 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
 
-    public CustomAuthenticationFilter(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
+    private final SensorManagerUtil sensorManagerUtil;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -43,7 +43,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
 
         List<String> claims = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
-        SensorManagerUtil.writeTokensResponse(request, response, claims, user.getUsername());
+        sensorManagerUtil.writeTokensResponse(request, response, claims, user.getUsername());
     }
 
 }
