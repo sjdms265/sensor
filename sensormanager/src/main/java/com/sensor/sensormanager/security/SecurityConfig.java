@@ -49,6 +49,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/user/**").hasAnyRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/refreshToken").permitAll()
                                 .requestMatchers("/api/refreshToken").permitAll()
+
+                                //websocket
                                 .requestMatchers("/sensor-gui").permitAll()
                                 .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())

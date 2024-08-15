@@ -8,6 +8,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -25,11 +26,14 @@ import java.util.Map;
 @Slf4j
 public class SensorManagerUtil {
 
+    @Getter
     private static String tokenSecret;
+    @Getter
     private static Integer tokenAccessExpire;
+    @Getter
     private static Integer tokenRefreshExpire;
 
-    public String createToken(final String userName, List<String> claims, final String requestUrl, int expirationTime, boolean includeRoles) {
+    private String createToken(final String userName, List<String> claims, final String requestUrl, int expirationTime, boolean includeRoles) {
 
         JWTCreator.Builder jwtBuilder = createCommonTokenBuilder(userName, requestUrl, expirationTime);
 
@@ -41,10 +45,10 @@ public class SensorManagerUtil {
         return jwtBuilder.sign(algorithm);
     }
 
-    public JWTCreator.Builder createCommonTokenBuilder(String userName, final String requestUrl, int expirationTime) {
+    private JWTCreator.Builder createCommonTokenBuilder(String userName, final String requestUrl, int expirationTime) {
 
         return JWT.create().withSubject(userName)
-                .withExpiresAt(new Date(System.currentTimeMillis()  +expirationTime))
+                .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
                 .withIssuer(requestUrl);
     }
 
@@ -63,7 +67,7 @@ public class SensorManagerUtil {
 
     }
 
-    public void writeTokensResponse(HttpServletRequest request, HttpServletResponse response, List<String> claims, String username) throws IOException {
+    public Map<String, String> writeTokensResponse(HttpServletRequest request, HttpServletResponse response, List<String> claims, String username) throws IOException {
         String accessToken = createToken(username, claims, request.getRequestURL().toString(),
                 getTokenAccessExpire(), true);
         String refreshToken = createToken(username, claims, request.getRequestURL().toString(),
@@ -74,9 +78,11 @@ public class SensorManagerUtil {
         tokens.put("refresh_token", refreshToken);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
+
+        return tokens;
     }
 
-    public void setResponseMessage(HttpServletResponse response, Exception e) throws IOException {
+    public Map<String, String> setResponseMessage(HttpServletResponse response, Exception e) throws IOException {
         log.error("error logging {}", e.getMessage());
 
         response.setHeader("error", e.getMessage());
@@ -86,6 +92,8 @@ public class SensorManagerUtil {
         error.put("error_message", e.getMessage());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), error);
+
+        return error;
     }
 
     @Value("${sensor-manager.token.secret}")
@@ -99,18 +107,6 @@ public class SensorManagerUtil {
     @Value("${sensor-manager.token.refresh-expires}")
     public void setTokenRefreshExpire(Integer tokenRefreshExpire) {
         SensorManagerUtil.tokenRefreshExpire = tokenRefreshExpire;
-    }
-
-    public static String getTokenSecret() {
-        return tokenSecret;
-    }
-
-    public static Integer getTokenAccessExpire() {
-        return tokenAccessExpire;
-    }
-
-    public static Integer getTokenRefreshExpire() {
-        return tokenRefreshExpire;
     }
 
 }

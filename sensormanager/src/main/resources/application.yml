@@ -29,7 +29,7 @@ spring:
             value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     sql:
         init:
-            mode: never
+            mode: always
     output:
         ansi:
             enabled: DETECT

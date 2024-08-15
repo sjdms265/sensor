@@ -21,6 +21,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 class UserControllerTest {
@@ -91,7 +92,7 @@ class UserControllerTest {
     @Test
     void refreshToken() throws IOException {
 
-        //https://jwt.io/
+        //https://jwt.io/  change signature tokenSecret
         Algorithm algorithm = Algorithm.HMAC256("tokenSecret".getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
 
@@ -99,7 +100,7 @@ class UserControllerTest {
         SensorUser sensorUser = new SensorUser();
         sensorUser.setRoles(new ArrayList<>());
         Mockito.when(userService.getUser(Mockito.anyString())).thenReturn(sensorUser);
-        Mockito.doNothing().when(sensorManagerUtil).writeTokensResponse(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.when(sensorManagerUtil.writeTokensResponse(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new HashMap<>());
 
         userController.refreshToken(new MockHttpServletRequest(), new MockHttpServletResponse());
 

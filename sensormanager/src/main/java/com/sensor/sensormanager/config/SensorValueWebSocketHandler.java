@@ -2,16 +2,15 @@ package com.sensor.sensormanager.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sensor.sensormanager.dto.SensorEndpointDTO;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -20,7 +19,9 @@ import java.util.List;
 @Component
 @Slf4j
 public class SensorValueWebSocketHandler extends TextWebSocketHandler {
+
     private final ObjectMapper objectMapper = new ObjectMapper();
+    @Getter
     private final List<WebSocketSession> sessions = Collections.synchronizedList(new ArrayList<>());
 
     @Override
@@ -47,31 +48,32 @@ public class SensorValueWebSocketHandler extends TextWebSocketHandler {
         super.afterConnectionClosed(session, status);
         sessions.remove(session);
     }
-    @Override
-    public void handleMessage(@NotNull WebSocketSession session, @NotNull WebSocketMessage<?> message) throws Exception {
 
-        super.handleMessage(session, message);
-        for (WebSocketSession webSocketSession : sessions) {
-            webSocketSession.sendMessage(message);
-        }
-    }
+    /*
+     * Called by camel route
+     */
+    public TextMessage sendMessage(final SensorEndpointDTO sensorEndpointDTO) throws Exception {
 
-    public void sendMessage(final SensorEndpointDTO sensorEndpointDTO) throws IOException {
-
-        WebSocketSession session;
+        TextMessage message;
         if (this.sessions.isEmpty()) {
             log.warn("No websocket sessions available");
-            return;
+            return null;
         } else {
-            session = this.sessions.get(0);
+            message = new TextMessage(objectMapper.writeValueAsString(sensorEndpointDTO));
+            WebSocketSession session = this.sessions.get(0);
+            super.handleMessage(session, message);
+            try {
+                session.sendMessage(message);
+            } catch (IllegalStateException ise) {
+                log.error("Error sending message {} error {}", message, ise.getMessage());
+            }
+
         }
-
-        TextMessage message = new TextMessage(objectMapper.writeValueAsString(sensorEndpointDTO));
-        session.sendMessage(message);
-
+        return message;
     }
 
     public boolean supportsPartialMessages() {
         return true;
     }
+
 }

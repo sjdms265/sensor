@@ -30,21 +30,18 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
-    @PostMapping("/user/save")
+    @PostMapping("/users/save")
     public ResponseEntity<SensorUser> saveUser(@RequestBody SensorUser user) {
-//        URI location = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/user/save").toUriString());
         return new ResponseEntity<>(userService.saveUser(user), HttpStatus.CREATED);
     }
 
-    @PostMapping("/role/save")
+    @PostMapping("/roles/save")
     public ResponseEntity<Role> saveRole(@RequestBody Role role) {
-//        URI location = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/role/save").toUriString());
         return new ResponseEntity<>(userService.saveRole(role), HttpStatus.CREATED);
     }
 
-    @PostMapping("/role/addtouser")
+    @PostMapping("/roles/addtouser")
     public ResponseEntity<Role> addRoleToUser(@RequestBody RoleToUserForm roleToUserForm) {
-//        URI location = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/role/addtouser").toUriString());
         return new ResponseEntity<>(userService.addRoleToUser(roleToUserForm.username(), roleToUserForm.roleName()), HttpStatus.OK);
     }
 
@@ -73,4 +70,5 @@ public class UserController {
             throw new IOException("Refresh token missing");
         }
     }
+
 }

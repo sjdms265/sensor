@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         SensorUser existingUSer = userRepository.findUserByUsername(sensorUser.getUsername());
         if(existingUSer == null) {
             sensorUser.setPassword(passwordEncoder.encode(sensorUser.getPassword()));
+
+            if(!sensorUser.getRoles().isEmpty()) {
+                List<Role> roles = new ArrayList<>();
+                sensorUser.getRoles().stream().forEach(role -> {
+                    Role existingRole = roleRepository.findByName(role.getName());
+
+                    if(existingRole != null) {
+                        roles.add(existingRole);
+                    } else {
+                        log.info("Role {} not found creating user {}", role.getName(), sensorUser.getUsername());
+                    }
+
+                });
+                sensorUser.setRoles(roles);
+            }
             return save(sensorUser);
         }
         return existingUSer;
@@ -88,7 +104,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public List<SensorUser> getUsers() {
         List<SensorUser> sensorUsers = userRepository.findAll();
         log.debug("getUsers {}", sensorUsers);
-        return userRepository.findAll();
+        return sensorUsers;
     }
 
     @Override
@@ -97,7 +113,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         if(sensorUser == null) {
             log.error("User {} not found", username);
-            throw  new UsernameNotFoundException(String.format("User %s not found", username));
+            throw new UsernameNotFoundException(String.format("User %s not found", username));
         } else {
             log.debug("User {} found", username);
         }
