@@ -25,27 +25,47 @@ public class UserController {
 
     private final SensorManagerUtil sensorManagerUtil;
 
-    @GetMapping("/users")
+    public final static String ADMIN_PATH = "/admin";
+    public final static String ADMIN_USERS_PATH = ADMIN_PATH + "/users";
+    public final static String USERS_PATH = "/users";
+    public final static String ADMIN_ROLES_PATH = ADMIN_PATH + "/roles";
+    public final static String ROLES_PATH = "/roles";
+    public final static String ADD_ROLE_TO_USER_PATH = "/roles/addtouser";
+    public final static String REFRESH_TOKEN = "/refreshToken";
+
+    @GetMapping(ADMIN_USERS_PATH)
     public ResponseEntity<List<SensorUser>> getUsers() {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
-    @PostMapping("/users/save")
+    @DeleteMapping(USERS_PATH + "/{userName}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteUser(@PathVariable String userName) {
+        userService.deleteUser(userName);
+    }
+
+    @PostMapping(USERS_PATH)
     public ResponseEntity<SensorUser> saveUser(@RequestBody SensorUser user) {
         return new ResponseEntity<>(userService.saveUser(user), HttpStatus.CREATED);
     }
 
-    @PostMapping("/roles/save")
+    @PostMapping(ROLES_PATH)
     public ResponseEntity<Role> saveRole(@RequestBody Role role) {
         return new ResponseEntity<>(userService.saveRole(role), HttpStatus.CREATED);
     }
 
-    @PostMapping("/roles/addtouser")
+    @PostMapping(ADD_ROLE_TO_USER_PATH)
     public ResponseEntity<Role> addRoleToUser(@RequestBody RoleToUserForm roleToUserForm) {
         return new ResponseEntity<>(userService.addRoleToUser(roleToUserForm.username(), roleToUserForm.roleName()), HttpStatus.OK);
     }
 
-    @GetMapping("/refreshToken")
+    @DeleteMapping(ROLES_PATH + "/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteRole(@PathVariable String name) {
+        userService.deleteRole(name);
+    }
+
+    @GetMapping(REFRESH_TOKEN)
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         DecodedJWT decodedJWT = sensorManagerUtil.getToken(request);

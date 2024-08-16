@@ -16,4 +16,8 @@ public interface UserService {
     SensorUser getUser(String username);
 
     List<SensorUser> getUsers();
+
+    void deleteUser(String username);
+
+    void deleteRole(String name);
 }

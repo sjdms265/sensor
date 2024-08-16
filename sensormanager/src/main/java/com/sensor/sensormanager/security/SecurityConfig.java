@@ -1,5 +1,7 @@
 package com.sensor.sensormanager.security;
 
+import com.sensor.sensormanager.controller.BaseController;
+import com.sensor.sensormanager.controller.UserController;
 import com.sensor.sensormanager.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -45,10 +47,12 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
-                                .requestMatchers(HttpMethod.GET, "/api/user/**").hasAnyRole("USER")
-                                .requestMatchers(HttpMethod.POST, "/api/user/**").hasAnyRole("ADMIN")
+                                .requestMatchers(BaseController.BASE_PATH + UserController.USERS_PATH).hasAnyRole("USER", "ADMIN")
+                                .requestMatchers(BaseController.BASE_PATH + UserController.ROLES_PATH).hasAnyRole("USER", "ADMIN")
+                                .requestMatchers(BaseController.BASE_PATH + UserController.ROLES_PATH + "/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers(BaseController.BASE_PATH + UserController.ADMIN_USERS_PATH).hasAnyRole("ADMIN")
+                                .requestMatchers(BaseController.BASE_PATH + UserController.ADMIN_ROLES_PATH).hasAnyRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/refreshToken").permitAll()
-                                .requestMatchers("/api/refreshToken").permitAll()
 
                                 //websocket
                                 .requestMatchers("/sensor-gui").permitAll()

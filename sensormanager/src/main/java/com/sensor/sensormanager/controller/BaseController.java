@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BaseController {
 
+    public final static String BASE_PATH = "/api";
+
     private final SensorManagerUtil sensorManagerUtil;
 
     @GetMapping()

@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         if(existingUSer == null) {
             sensorUser.setPassword(passwordEncoder.encode(sensorUser.getPassword()));
 
-            if(!sensorUser.getRoles().isEmpty()) {
+            if(!CollectionUtils.isEmpty(sensorUser.getRoles())) {
                 List<Role> roles = new ArrayList<>();
                 sensorUser.getRoles().stream().forEach(role -> {
                     Role existingRole = roleRepository.findByName(role.getName());
@@ -105,6 +106,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         List<SensorUser> sensorUsers = userRepository.findAll();
         log.debug("getUsers {}", sensorUsers);
         return sensorUsers;
+    }
+
+    @Override
+    public void deleteUser(String username) {
+        userRepository.delete(userRepository.findUserByUsername(username));
+    }
+
+    @Override
+    public void deleteRole(String name) {
+        roleRepository.delete(roleRepository.findByName(name));
     }
 
     @Override
