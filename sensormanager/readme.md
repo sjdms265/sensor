@@ -128,3 +128,9 @@ username=sjdms265&password=1234
 ###
 GET http://localhost:8081/api/users
 Authorization: Bearer yJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzamRtczI2NSIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODEvbG9naW4iLCJleHAiOjE2NzExMzE1MjF9.fVjCfsaX_f5DfUfeRM8GxI9eltcxJg5z6dkvYBQRblE
+
+
+--- Homeassistant 
+
+### Payload
+{% set temp = {'value': float(states('sensor.10000db11e_t')), 'sensorId':'sensor.10000db11e_t', 'userId': 'sjdms265', 'date' : utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z") } %}  {{ temp|to_json(ensure_ascii=False) }}

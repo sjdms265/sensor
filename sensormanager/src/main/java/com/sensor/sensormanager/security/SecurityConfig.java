@@ -6,7 +6,6 @@ import com.sensor.sensormanager.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -52,7 +51,8 @@ public class SecurityConfig {
                                 .requestMatchers(BaseController.BASE_PATH + UserController.ROLES_PATH + "/**").hasAnyRole("USER", "ADMIN")
                                 .requestMatchers(BaseController.BASE_PATH + UserController.ADMIN_USERS_PATH).hasAnyRole("ADMIN")
                                 .requestMatchers(BaseController.BASE_PATH + UserController.ADMIN_ROLES_PATH).hasAnyRole("ADMIN")
-                                .requestMatchers(HttpMethod.GET, "/api/refreshToken").permitAll()
+                                .requestMatchers(BaseController.BASE_PATH + "/refreshToken").permitAll()
+                                .requestMatchers(BaseController.BASE_PATH + "/echoEndpoint").permitAll()
 
                                 //websocket
                                 .requestMatchers("/sensor-gui").permitAll()
