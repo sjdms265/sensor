@@ -1,17 +1,16 @@
 package com.sensor.sensormanager.controller;
 
+import com.sensor.sensormanager.dto.SensorEndpointDTO;
 import com.sensor.sensormanager.util.SensorManagerUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -27,6 +26,8 @@ public class BaseController {
 
     private final SensorManagerUtil sensorManagerUtil;
 
+    private final StreamBridge streamBridge;
+
     @GetMapping()
     public Map<String, String> home(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal User user) throws IOException {
 
@@ -37,16 +38,13 @@ public class BaseController {
         return model;
     }
 
-
-    @PostMapping(BASE_PATH + "/echoEndpoint")
-    public void echoEndpoint(HttpServletRequest request, HttpServletResponse response) {
-        log.info("Hello echoEndpoint");
-    }
-
-    /*@PostMapping(BASE_PATH + "/echoEndpoint")
+    @PostMapping(BASE_PATH + "/echoSensorEndpoint")
     public SensorEndpointDTO echoEndpoint(@RequestBody SensorEndpointDTO sensorEndpointDTO) {
 
         log.info("echoEndpoint {}", sensorEndpointDTO);
+
+        streamBridge.send("sensorEcho", sensorEndpointDTO);
+
         return sensorEndpointDTO;
-    }*/
+    }
 }

@@ -33,6 +33,16 @@ spring:
     output:
         ansi:
             enabled: DETECT
+    cloud:
+        function:
+            definition: sensorEcho
+        stream:
+            bindings:
+                sensorEcho-out-0:
+                    destination: sensor-echo-topic
+            kafka:
+                binder:
+                    brokers: localhost:9092
 #            mode: always
 
 #    mvc:
@@ -51,7 +61,7 @@ camel:
         kafka:
             brokers: localhost:9092
         paho-mqtt5:
-            broker-url: 'tcp://192.168.50.100:1883'
+            broker-url: 'tcp://192.168.50.150:1883'
             user-name: mosquito
             password: mosquito123
 

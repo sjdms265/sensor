@@ -52,7 +52,7 @@ public class SecurityConfig {
                                 .requestMatchers(BaseController.BASE_PATH + UserController.ADMIN_USERS_PATH).hasAnyRole("ADMIN")
                                 .requestMatchers(BaseController.BASE_PATH + UserController.ADMIN_ROLES_PATH).hasAnyRole("ADMIN")
                                 .requestMatchers(BaseController.BASE_PATH + "/refreshToken").permitAll()
-                                .requestMatchers(BaseController.BASE_PATH + "/echoEndpoint").permitAll()
+                                .requestMatchers(BaseController.BASE_PATH + "/echoSensorEndpoint").permitAll()
 
                                 //websocket
                                 .requestMatchers("/sensor-gui").permitAll()

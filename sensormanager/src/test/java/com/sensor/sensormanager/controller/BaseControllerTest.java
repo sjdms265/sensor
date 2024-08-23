@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,12 +24,14 @@ class BaseControllerTest {
     @Mock
     private SensorManagerUtil sensorManagerUtil;
 
+    private StreamBridge streamBridge;
+
     private BaseController baseController;
 
     @BeforeEach
     void setUp() throws Exception {
         try (final AutoCloseable autoCloseable = MockitoAnnotations.openMocks(this)) {
-            baseController = new BaseController(sensorManagerUtil);
+            baseController = new BaseController(sensorManagerUtil, streamBridge);
         }
     }
 
