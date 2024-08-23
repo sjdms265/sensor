@@ -1,32 +1,15 @@
 package com.sensor.temperaturesensor.config;
 
-import com.sensor.sensormanager.dto.SensorEndpointDTO;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.Serde;
-import org.apache.kafka.common.serialization.Serdes;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
-import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
-import org.springframework.kafka.config.KafkaStreamsConfiguration;
-import org.springframework.kafka.config.TopicBuilder;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.apache.kafka.streams.StreamsConfig.*;
 
 @Configuration
 @EnableKafka
 @EnableKafkaStreams
 public class KafkaStreamConfig {
 
-    @Value(value = "${spring.kafka.bootstrap-servers}")
+    /*@Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
     @Value(value = "${sensor-manager.topic.sensor-value}")
@@ -64,6 +47,6 @@ public class KafkaStreamConfig {
                 .partitions(1)
                 .replicas(1)
                 .build();
-    }
+    }*/
 
 }
