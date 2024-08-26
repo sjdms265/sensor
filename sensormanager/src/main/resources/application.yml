@@ -48,6 +48,10 @@ spring:
 #    mvc:
 #        converters:
 #            preferred-json-mapper: jsonb
+hibernate:
+    dialect: org.hibernate.dialect.PostgreSQLDialect
+
+
 sensor-manager:
     token:
         secret: secret

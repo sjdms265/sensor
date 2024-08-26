@@ -18,19 +18,19 @@ spring:
     devtools:
         livereload:
             port: 35730
-    stream:
-        bindings:
-            sensor-value-out-0:
-                destination: sensor-value
-#                https://stackoverflow:com/questions/73851045/setting-partition-count-in-kafka-in-spring-boot-using-application-yml
-                producer:
-                    partition-count: 1
-                    replica-count: 1
-            sensor-value-change-out-0:
-                destination: sensor-value-change
-                producer:
-                    partition-count: 1
-                    replica-count: 1
+#    stream:
+#        bindings:
+#            sensor-value-out-0:
+#                destination: sensor-value
+##                https://stackoverflow:com/questions/73851045/setting-partition-count-in-kafka-in-spring-boot-using-application-yml
+#                producer:
+#                    partition-count: 1
+#                    replica-count: 1
+#            sensor-value-change-out-0:
+#                destination: sensor-value-change
+#                producer:
+#                    partition-count: 1
+#                    replica-count: 1
     kafka:
         consumer:
             bootstrap-servers: localhost:9092

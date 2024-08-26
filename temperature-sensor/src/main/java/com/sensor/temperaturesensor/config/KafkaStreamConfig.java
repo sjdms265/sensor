@@ -1,8 +1,12 @@
 package com.sensor.temperaturesensor.config;
 
+import org.apache.kafka.clients.admin.NewTopic;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
+import org.springframework.kafka.config.TopicBuilder;
 
 @Configuration
 @EnableKafka
@@ -10,7 +14,7 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
 public class KafkaStreamConfig {
 
     /*@Value(value = "${spring.kafka.bootstrap-servers}")
-    private String bootstrapAddress;
+    private String bootstrapAddress;*/
 
     @Value(value = "${sensor-manager.topic.sensor-value}")
     private String topic;
@@ -18,7 +22,7 @@ public class KafkaStreamConfig {
     @Value(value = "${sensor-manager.topic.sensor-value-change}")
     private String outputTopic;
 
-    @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
+    /*@Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration kStreamsConfig() {
 
         Serde<SensorEndpointDTO> sensorEndpointDTOSerde = Serdes.serdeFrom(new JsonSerializer<>(), new JsonDeserializer<>());
@@ -31,8 +35,11 @@ public class KafkaStreamConfig {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "json");
 
         return new KafkaStreamsConfiguration(props);
-    }
+    }*/
 
+    /*
+        Topics need to be created on a fresh install
+     */
     @Bean
     NewTopic inputTopic() {
         return TopicBuilder.name(this.topic)
@@ -47,6 +54,6 @@ public class KafkaStreamConfig {
                 .partitions(1)
                 .replicas(1)
                 .build();
-    }*/
+    }
 
 }
