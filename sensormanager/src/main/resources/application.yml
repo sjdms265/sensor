@@ -54,6 +54,9 @@ spring:
 hibernate:
     dialect: org.hibernate.dialect.PostgreSQLDialect
 
+graphql:
+    servlet.maxQueryDepth: 5
+
 
 sensor-manager:
     token:
