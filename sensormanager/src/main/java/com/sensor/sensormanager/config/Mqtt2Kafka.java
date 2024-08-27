@@ -31,16 +31,8 @@ public class Mqtt2Kafka extends RouteBuilder {
                 .handled(true).to("mock:handled").id("errorHandled");
 
         //fixme YAML DSL
-        from("paho-mqtt5:temperature")
-                .routeId("consumeTemperature")
-                .process(sensorEndpointKeyProcessor)
-                .log("Message read from topic ${in.header.CamelMQTTSubscribeTopic} body ${body} key ${in.header.kafka.KEY}.")
-                .toD("kafka:" + topic)
-                .bean(sensorValueWebSocketHandler, "sendMessage(${body})");
-
-
-        from("paho-mqtt5:humidity")
-                .routeId("consumeHumidity")
+        from("paho-mqtt5:sensorValue")
+                .routeId("consumeSensorValue")
                 .process(sensorEndpointKeyProcessor)
                 .log("Message read from topic ${in.header.CamelMQTTSubscribeTopic} body ${body} key ${in.header.kafka.KEY}.")
                 .toD("kafka:" + topic)

@@ -1,0 +1,17 @@
+type SensorUser {
+    id: String!
+    name: String!
+    username: String!
+    password: String!
+    roles: [Role]
+}
+
+type Role {
+   id: String!
+    name: String!
+}
+
+type Query {
+    users: [SensorUser]
+    userByUserName(username: String): SensorUser
+}

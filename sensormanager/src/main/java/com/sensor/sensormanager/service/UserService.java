@@ -13,9 +13,9 @@ public interface UserService {
 
     Role addRoleToUser(String username, String roleName);
 
-    SensorUser getUser(String username);
-
     List<SensorUser> getUsers();
+
+    SensorUser getByUsername(String username);
 
     void deleteUser(String username);
 

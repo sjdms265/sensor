@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository  extends JpaRepository<SensorUser, Long> {
 
-    SensorUser findUserByUsername(String username);
+    SensorUser getByUsername(String username);
 }

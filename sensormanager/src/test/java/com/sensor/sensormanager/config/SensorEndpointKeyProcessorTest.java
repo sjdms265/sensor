@@ -36,7 +36,7 @@ class SensorEndpointKeyProcessorTest {
 
         Exchange exchange = getExchange();
 
-        Mockito.when(userService.getUser(Mockito.anyString())).thenReturn(new SensorUser());
+        Mockito.when(userService.getByUsername(Mockito.anyString())).thenReturn(new SensorUser());
 
         processor.process(exchange);
 
@@ -49,7 +49,7 @@ class SensorEndpointKeyProcessorTest {
 
         Exchange exchange = getExchange();
 
-        Mockito.when(userService.getUser(Mockito.anyString())).thenReturn(null);
+        Mockito.when(userService.getByUsername(Mockito.anyString())).thenReturn(null);
 
         processor.process(exchange);
 

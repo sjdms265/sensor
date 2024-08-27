@@ -1,7 +1,7 @@
 app:
     kafka:
         producer:
-            topic: ${sensormanager.topic.temperature}:1:1
+            topic: ${sensormanager.topic.sensorValue}:1:1
 server:
     port: 8081
 spring:
@@ -43,6 +43,9 @@ spring:
             kafka:
                 binder:
                     brokers: localhost:9092
+    graphql:
+        graphiql:
+            enabled: true
 #            mode: always
 
 #    mvc:

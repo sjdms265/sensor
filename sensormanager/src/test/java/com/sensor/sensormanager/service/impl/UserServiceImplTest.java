@@ -42,12 +42,12 @@ class UserServiceImplTest {
     @Test
     void saveUser() {
 
-        Mockito.when(userRepository.findUserByUsername(Mockito.any())).thenReturn(null);
+        Mockito.when(userRepository.getByUsername(Mockito.any())).thenReturn(null);
         Mockito.when(passwordEncoder.encode(Mockito.any())).thenReturn("");
 
         SensorUser sensorUser = userService.saveUser(new SensorUser());
 
-        Mockito.verify(userRepository, Mockito.times(1)).findUserByUsername(Mockito.any());
+        Mockito.verify(userRepository, Mockito.times(1)).getByUsername(Mockito.any());
         Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
         Mockito.verify(passwordEncoder, Mockito.times(1)).encode(Mockito.any());
         Assertions.assertNull(sensorUser);
@@ -56,11 +56,11 @@ class UserServiceImplTest {
     @Test
     void saveUserExistingUser() {
 
-        Mockito.when(userRepository.findUserByUsername(Mockito.any())).thenReturn(new SensorUser());
+        Mockito.when(userRepository.getByUsername(Mockito.any())).thenReturn(new SensorUser());
 
         SensorUser sensorUser = userService.saveUser(new SensorUser());
 
-        Mockito.verify(userRepository, Mockito.times(1)).findUserByUsername(Mockito.any());
+        Mockito.verify(userRepository, Mockito.times(1)).getByUsername(Mockito.any());
         Mockito.verify(passwordEncoder, Mockito.times(0)).encode(Mockito.any());
         Assertions.assertNotNull(sensorUser);
     }
@@ -99,7 +99,7 @@ class UserServiceImplTest {
     @Test
     void addRoleToUser() {
 
-        Mockito.when(userRepository.findUserByUsername(Mockito.any())).thenReturn(new SensorUser());
+        Mockito.when(userRepository.getByUsername(Mockito.any())).thenReturn(new SensorUser());
         Mockito.when(roleRepository.findByName(Mockito.any())).thenReturn(new Role());
 
         Role role = userService.addRoleToUser("username", "roleName");
@@ -117,7 +117,7 @@ class UserServiceImplTest {
         roles.add(role);
         user.setRoles(roles);
 
-        Mockito.when(userRepository.findUserByUsername(Mockito.any())).thenReturn(user);
+        Mockito.when(userRepository.getByUsername(Mockito.any())).thenReturn(user);
         Mockito.when(roleRepository.findByName(Mockito.any())).thenReturn(role);
 
         Role returnedRole = userService.addRoleToUser("username", "roleName");
@@ -127,13 +127,13 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getUser() {
+    void getByUsername() {
 
-        Mockito.when(userRepository.findUserByUsername(Mockito.any())).thenReturn(new SensorUser());
+        Mockito.when(userRepository.getByUsername(Mockito.any())).thenReturn(new SensorUser());
 
-        SensorUser sensorUser = userService.getUser("username");
+        SensorUser sensorUser = userService.getByUsername("username");
 
-        Mockito.verify(userRepository, Mockito.times(1)).findUserByUsername(Mockito.any());
+        Mockito.verify(userRepository, Mockito.times(1)).getByUsername(Mockito.any());
         Assertions.assertNotNull(sensorUser);
     }
 
@@ -158,11 +158,11 @@ class UserServiceImplTest {
         roles.add(role);
         user.setRoles(roles);
 
-        Mockito.when(userRepository.findUserByUsername(Mockito.any())).thenReturn(user);
+        Mockito.when(userRepository.getByUsername(Mockito.any())).thenReturn(user);
 
         UserDetails userDetails = userService.loadUserByUsername("username");
 
-        Mockito.verify(userRepository, Mockito.times(1)).findUserByUsername(Mockito.any());
+        Mockito.verify(userRepository, Mockito.times(1)).getByUsername(Mockito.any());
         Assertions.assertNotNull(userDetails);
 
     }
@@ -170,7 +170,7 @@ class UserServiceImplTest {
     @Test
     void loadUserByUsernameDoesNotExist() {
 
-        Mockito.when(userRepository.findUserByUsername(Mockito.any())).thenReturn(null);
+        Mockito.when(userRepository.getByUsername(Mockito.any())).thenReturn(null);
 
         Assertions.assertThrows(UsernameNotFoundException.class, () -> userService.loadUserByUsername("username"));
 

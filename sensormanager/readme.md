@@ -5,11 +5,11 @@ https://kafka.apache.org/quickstart
 bin/zookeeper-server-start.sh config/zookeeper.properties
 bin/kafka-server-start.sh config/server.properties
 
-bin/kafka-topics.sh --create --topic temperature --bootstrap-server localhost:9092
-bin/kafka-topics.sh --describe --topic temperature --bootstrap-server localhost:9092
+bin/kafka-topics.sh --create --topic sensorValue --bootstrap-server localhost:9092
+bin/kafka-topics.sh --describe --topic sensorValue --bootstrap-server localhost:9092
 
-bin/kafka-topics.sh --create --topic temperaturechange --bootstrap-server localhost:9092
-bin/kafka-topics.sh --describe --topic temperaturechange --bootstrap-server localhost:9092
+bin/kafka-topics.sh --create --topic sensorValueChange --bootstrap-server localhost:9092
+bin/kafka-topics.sh --describe --topic sensorValueVhange --bootstrap-server localhost:9092
 
 ---
 
@@ -71,7 +71,7 @@ To connect to your database from outside the cluster execute the following comma
 ---
 KAFKA k8s
 
-helm install sensorkafka --set provisioning.topics[0]=temperature,provisioning.topics[1]=temperaturechange bitnami/kafka
+helm install sensorkafka --set provisioning.topics[0]=sensorValue,provisioning.topics[1]=sensorValueChange bitnami/kafka
 
 NAME: sensorkafka
 LAST DEPLOYED: Wed Aug 17 15:08:37 2022

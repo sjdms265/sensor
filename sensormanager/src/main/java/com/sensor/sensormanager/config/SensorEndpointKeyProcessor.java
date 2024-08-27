@@ -26,7 +26,7 @@ public class SensorEndpointKeyProcessor implements Processor {
 
         SensorEndpointDTO sensorEndpointDTO = objectMapper.readValue(body, SensorEndpointDTO.class);
         String userId = sensorEndpointDTO.getUserId();
-        SensorUser sensorUser = userService.getUser(userId);
+        SensorUser sensorUser = userService.getByUsername(userId);
 
         if(sensorUser != null) {
             log.debug("sensorUser {}", sensorUser);

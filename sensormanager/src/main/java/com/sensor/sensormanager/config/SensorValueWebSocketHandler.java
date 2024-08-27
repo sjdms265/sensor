@@ -6,11 +6,13 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -32,7 +34,7 @@ public class SensorValueWebSocketHandler extends TextWebSocketHandler {
         Date now = new Date();
 
         //Creating a SensorEndpointDTO Object
-        SensorEndpointDTO sensorEndpointDTO = new SensorEndpointDTO("hello", "dummySensor", (float) now.getTime(),now);
+        SensorEndpointDTO sensorEndpointDTO = new SensorEndpointDTO("hello " + session.getId(), "dummySensor", (float) now.getTime(),now);
 
         //Sending SensorEndpointDTO
         TextMessage message = new TextMessage(objectMapper.writeValueAsString(sensorEndpointDTO));
@@ -63,7 +65,14 @@ public class SensorValueWebSocketHandler extends TextWebSocketHandler {
             WebSocketSession session = this.sessions.get(0);
             super.handleMessage(session, message);
             try {
-                session.sendMessage(message);
+                if(!CollectionUtils.isEmpty(this.sessions))
+                    this.sessions.forEach(webSocketSession -> {
+                        try {
+                            webSocketSession.sendMessage(message);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
             } catch (IllegalStateException ise) {
                 log.error("Error sending message {} error {}", message, ise.getMessage());
             }

@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public SensorUser saveUser(SensorUser sensorUser) {
         log.debug("saveUser {}", sensorUser.getUsername());
 
-        SensorUser existingUSer = userRepository.findUserByUsername(sensorUser.getUsername());
+        SensorUser existingUSer = userRepository.getByUsername(sensorUser.getUsername());
         if(existingUSer == null) {
             sensorUser.setPassword(passwordEncoder.encode(sensorUser.getPassword()));
 
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public Role addRoleToUser(String username, String roleName) {
-        SensorUser sensorUser = userRepository.findUserByUsername(username);
+        SensorUser sensorUser = userRepository.getByUsername(username);
         Role role = roleRepository.findByName(roleName);
         log.debug("addRole {} ToUser {}", roleName, sensorUser.getUsername());
         Optional<Role> currentRule = sensorUser.getRoles().stream().filter(currentRole -> role.getName().equals(currentRole.getName())).findAny();
@@ -96,12 +96,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public SensorUser getUser(String username) {
-        log.debug("getUser {}", username);
-        return userRepository.findUserByUsername(username);
-    }
-
-    @Override
     public List<SensorUser> getUsers() {
         List<SensorUser> sensorUsers = userRepository.findAll();
         log.debug("getUsers {}", sensorUsers);
@@ -109,8 +103,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public SensorUser getByUsername(String username) {
+        SensorUser sensorUser = userRepository.getByUsername(username);
+        log.debug("getUserByUsername {}", sensorUser != null ? sensorUser.getUsername() : username + "not found");
+        return sensorUser;
+    }
+
+    @Override
     public void deleteUser(String username) {
-        userRepository.delete(userRepository.findUserByUsername(username));
+        userRepository.delete(userRepository.getByUsername(username));
     }
 
     @Override
@@ -120,7 +121,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        SensorUser sensorUser = userRepository.findUserByUsername(username);
+        SensorUser sensorUser = userRepository.getByUsername(username);
 
         if(sensorUser == null) {
             log.error("User {} not found", username);

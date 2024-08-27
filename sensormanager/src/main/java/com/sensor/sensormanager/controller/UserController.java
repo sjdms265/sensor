@@ -76,7 +76,7 @@ public class UserController {
 
                 String username = decodedJWT.getSubject();
 
-                SensorUser user = userService.getUser(username);
+                SensorUser user = userService.getByUsername(username);
 
                 List<String> claims = user.getRoles().stream().map(Role::getName).toList();
 

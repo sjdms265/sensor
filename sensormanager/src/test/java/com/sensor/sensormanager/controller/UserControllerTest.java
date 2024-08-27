@@ -99,7 +99,7 @@ class UserControllerTest {
         Mockito.when(sensorManagerUtil.getToken(Mockito.any())).thenReturn(verifier.verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.dqmo9euORt-zCYxaH-q6hvukkoWPNs4zRSLqTulfzwA"));
         SensorUser sensorUser = new SensorUser();
         sensorUser.setRoles(new ArrayList<>());
-        Mockito.when(userService.getUser(Mockito.anyString())).thenReturn(sensorUser);
+        Mockito.when(userService.getByUsername(Mockito.anyString())).thenReturn(sensorUser);
         Mockito.when(sensorManagerUtil.writeTokensResponse(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(new HashMap<>());
 
         userController.refreshToken(new MockHttpServletRequest(), new MockHttpServletResponse());
