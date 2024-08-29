@@ -20,7 +20,8 @@ public class SensorEndpointController {
 
     @QueryMapping
     public List<SensorEndpointDTO> sensorEndpoints(@Argument String userId, @Argument String sensorId,
-                                                   @Argument OffsetDateTime fromDate, @Argument OffsetDateTime toDate) {
-        return sensorEndpointService.getSensorEndpointsByUserIdAndSensorIdAndDate(userId, sensorId, fromDate, toDate);
+                                                   @Argument OffsetDateTime fromDate, @Argument OffsetDateTime toDate,
+                                                   @Argument Integer pageNumber, @Argument Integer pageSize) {
+        return sensorEndpointService.getByUserIdAndSensorIdAndDate(userId, sensorId, fromDate, toDate, pageNumber, pageSize);
     }
 }

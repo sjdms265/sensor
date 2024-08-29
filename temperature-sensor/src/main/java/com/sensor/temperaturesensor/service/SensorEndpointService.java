@@ -11,5 +11,6 @@ public interface SensorEndpointService {
 
     SensorEndpoint save(SensorEndpoint sensorEndpoint);
     Future<SensorEndpoint> recordSensorEndpoint(SensorEndpoint sensorEndpoint);
-    List<SensorEndpointDTO> getSensorEndpointsByUserIdAndSensorIdAndDate(String userId, String sensorId, OffsetDateTime fromDate, OffsetDateTime toDate);
+    List<SensorEndpointDTO> getByUserIdAndSensorIdAndDate(String userId, String sensorId,
+                                                          OffsetDateTime fromDate, OffsetDateTime toDate, int pageNumber, int pageSize);
 }

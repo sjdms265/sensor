@@ -10,5 +10,5 @@ type SensorEndpointDTO {
 }
 
 type Query {
-    sensorEndpoints(userId: String!, sensorId: String!, fromDate: DateTime, toDate: DateTime): [SensorEndpointDTO]
+    sensorEndpoints(userId: String!, sensorId: String!, fromDate: DateTime, toDate: DateTime, pageNumber: Int, pageSize: Int): [SensorEndpointDTO]
 }

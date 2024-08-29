@@ -7,6 +7,8 @@ import com.sensor.temperaturesensor.service.SensorEndpointService;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +41,7 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
 
         if(lastSensorEndpoint != null && lastSensorEndpoint.compareTo(sensorEndpoint.getDate()) < 1) {
             List<SensorEndpoint> currentSensorEndpoints = sensorEndpointRepository.
-                    getSensorEndpointsByUserIdAndSensorIdAndDate(sensorEndpoint.getUserId(), sensorEndpoint.getSensorId(),
+                    getByUserIdAndSensorIdAndDate(sensorEndpoint.getUserId(), sensorEndpoint.getSensorId(),
                             lastSensorEndpoint);
 
             if(currentSensorEndpoints.size() > 1) {
@@ -63,15 +65,18 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
     }
 
     @Override
-    public List<SensorEndpointDTO> getSensorEndpointsByUserIdAndSensorIdAndDate(String userId, String sensorId, OffsetDateTime fromDate, OffsetDateTime toDate) {
+    public List<SensorEndpointDTO> getByUserIdAndSensorIdAndDate(String userId, String sensorId,
+                                                                 OffsetDateTime fromDate, OffsetDateTime toDate, int pageNumber, int pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         List<SensorEndpoint> sensorEndpoints;
         if(fromDate == null && toDate == null) {
             sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdOrderByDateDesc(userId, sensorId);
         } else {
             assert fromDate != null;
-            sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdAndDateBetween(userId, sensorId,
-                    Date.from(fromDate.toInstant()),  Date.from(toDate.toInstant()));
+            sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdAndDateBetweenOrderByDateDesc(userId, sensorId,
+                    Date.from(fromDate.toInstant()),  Date.from(toDate.toInstant()), pageable);
         }
 
         return sensorEndpoints.stream().

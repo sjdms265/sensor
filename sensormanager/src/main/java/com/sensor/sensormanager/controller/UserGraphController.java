@@ -3,6 +3,7 @@ package com.sensor.sensormanager.controller;
 import com.sensor.sensormanager.dto.SensorUserDTO;
 import com.sensor.sensormanager.model.SensorUser;
 import com.sensor.sensormanager.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
@@ -10,12 +11,14 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class UserGraphController {
 
     private final UserService userService;
@@ -33,7 +36,7 @@ public class UserGraphController {
     }
 
     @MutationMapping
-    public SensorUser saveSensorUser(@Argument SensorUserDTO sensorUserDTO) {
+    public SensorUser saveSensorUser(@Valid @Argument SensorUserDTO sensorUserDTO) {
 
         log.debug("saveSensorUser {}", sensorUserDTO);
         SensorUser user = sensorUserDTO2SensorUserConverter.convert(sensorUserDTO);
