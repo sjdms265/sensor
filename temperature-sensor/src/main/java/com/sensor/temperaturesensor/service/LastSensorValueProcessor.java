@@ -1,6 +1,6 @@
 package com.sensor.temperaturesensor.service;
 
-import com.sensor.sensormanager.dto.SensorEndpointDTO;
+import com.sensor.temperaturesensor.dto.SensorEndpointDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;

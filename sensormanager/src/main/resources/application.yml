@@ -55,8 +55,9 @@ hibernate:
     dialect: org.hibernate.dialect.PostgreSQLDialect
 
 graphql:
-    servlet.maxQueryDepth: 5
-
+    servlet:
+        maxQueryDepth: 5
+        exception-handlers-enabled: true
 
 sensor-manager:
     token:

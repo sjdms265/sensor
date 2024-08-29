@@ -110,8 +110,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void deleteUser(String username) {
-        userRepository.delete(userRepository.getByUsername(username));
+    public SensorUser deleteUser(String username) {
+        SensorUser sensorUser = userRepository.getByUsername(username);
+        log.debug("deleteUser {}", sensorUser != null ? sensorUser.getUsername() : username + "not found");
+        if (sensorUser != null) {
+            userRepository.delete(sensorUser);
+            return  sensorUser;
+        }
+        return null;
     }
 
     @Override

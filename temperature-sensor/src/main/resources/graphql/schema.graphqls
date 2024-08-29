@@ -1,0 +1,14 @@
+scalar DateTime
+scalar Date
+
+type SensorEndpointDTO {
+    id: ID!
+    parsedDateTime: DateTime!
+    sensorId: String!
+    userId: String!
+    value: Float
+}
+
+type Query {
+    sensorEndpoints(userId: String!, sensorId: String!, fromDate: DateTime, toDate: DateTime): [SensorEndpointDTO]
+}

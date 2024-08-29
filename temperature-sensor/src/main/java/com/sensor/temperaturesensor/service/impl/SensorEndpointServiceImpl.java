@@ -1,5 +1,6 @@
 package com.sensor.temperaturesensor.service.impl;
 
+import com.sensor.temperaturesensor.dto.SensorEndpointDTO;
 import com.sensor.temperaturesensor.model.SensorEndpoint;
 import com.sensor.temperaturesensor.repository.SensorEndpointRepository;
 import com.sensor.temperaturesensor.service.SensorEndpointService;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -57,5 +60,23 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
             return CompletableFuture.completedFuture(sensorEndpoint);
         }
         return null;
+    }
+
+    @Override
+    public List<SensorEndpointDTO> getSensorEndpointsByUserIdAndSensorIdAndDate(String userId, String sensorId, OffsetDateTime fromDate, OffsetDateTime toDate) {
+
+        List<SensorEndpoint> sensorEndpoints;
+        if(fromDate == null && toDate == null) {
+            sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdOrderByDateDesc(userId, sensorId);
+        } else {
+            assert fromDate != null;
+            sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdAndDateBetween(userId, sensorId,
+                    Date.from(fromDate.toInstant()),  Date.from(toDate.toInstant()));
+        }
+
+        return sensorEndpoints.stream().
+                map(sensorEndpoint -> SensorEndpointDTO.builder().value(sensorEndpoint.getValue()).
+                        parsedDateTime(sensorEndpoint.getDate().toInstant()
+                                .atOffset(ZoneOffset.UTC)).build()).toList();
     }
 }

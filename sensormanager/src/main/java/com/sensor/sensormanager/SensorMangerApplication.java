@@ -1,5 +1,7 @@
 package com.sensor.sensormanager;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.record.RecordModule;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +18,11 @@ public class SensorMangerApplication {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper().registerModule(new RecordModule());
     }
 
 }

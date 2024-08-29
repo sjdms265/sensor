@@ -1,6 +1,6 @@
 package com.sensor.temperaturesensor.service;
 
-import com.sensor.sensormanager.dto.SensorEndpointDTO;
+import com.sensor.temperaturesensor.dto.SensorEndpointDTO;
 import com.sensor.temperaturesensor.model.SensorEndpoint;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.TestInputTopic;

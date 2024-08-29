@@ -8,7 +8,7 @@ type SensorUser {
 
 type Role {
    id: String!
-    name: String!
+   name: String!
 }
 
 type Query {

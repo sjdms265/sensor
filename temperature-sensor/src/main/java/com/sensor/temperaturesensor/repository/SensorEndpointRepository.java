@@ -12,7 +12,10 @@ public interface SensorEndpointRepository extends JpaRepository<SensorEndpoint, 
 
     List<SensorEndpoint> getSensorEndpointsByUserIdAndSensorIdAndDate(String userId, String sensorId, Date date);
 
+    List<SensorEndpoint> getByUserIdAndSensorIdAndDateBetween(String userId, String sensorId, Date fromDate, Date toDate);
+
     @Query(value = "SELECT max(date) FROM SensorEndpoint where userId = :userId and sensorId = :sensorId")
     Date getLastSavedSensorEndpoint(@Param("userId") String userId, @Param("sensorId") String sensorId);
 
+    List<SensorEndpoint> getByUserIdAndSensorIdOrderByDateDesc(String userId, String sensorId);
 }
