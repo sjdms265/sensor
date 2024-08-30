@@ -1,7 +1,7 @@
 package com.sensor.temperaturesensor.repository;
 
 import com.sensor.temperaturesensor.model.SensorEndpoint;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,5 +18,8 @@ public interface SensorEndpointRepository extends JpaRepository<SensorEndpoint, 
     @Query(value = "SELECT max(date) FROM SensorEndpoint where userId = :userId and sensorId = :sensorId")
     Date getLastSavedSensorEndpoint(@Param("userId") String userId, @Param("sensorId") String sensorId);
 
-    List<SensorEndpoint> getByUserIdAndSensorIdOrderByDateDesc(String userId, String sensorId);
+    List<SensorEndpoint> getByUserIdAndSensorIdOrderByDateDesc(String userId, String sensorId, Pageable pageable);
+
+    Window<SensorEndpoint> findByUserIdAndSensorIdOrderByDateDesc(String userId, String sensorId,
+                                                                  ScrollPosition scrollPosition, Limit limit, Sort sortOrder);
 }

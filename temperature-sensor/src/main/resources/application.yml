@@ -50,6 +50,7 @@ sensor-manager:
         sensor-value-change: sensor-value-change
         last-sensor-value: last-sensor-value
         stream-window: 60
+    pageSize: 10
 
 logging:
     level:

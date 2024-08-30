@@ -7,13 +7,13 @@ import com.sensor.temperaturesensor.service.SensorEndpointService;
 import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.domain.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -26,6 +26,11 @@ import java.util.concurrent.Future;
 public class SensorEndpointServiceImpl implements SensorEndpointService {
 
     private final SensorEndpointRepository sensorEndpointRepository;
+
+    private final Converter<SensorEndpoint, SensorEndpointDTO> sensorEndpoint2SensorEnpointDTOConverter;
+
+    @Value("${sensor-manager.pageSize:10}")
+    private int pageSize;
 
     @Override
     public SensorEndpoint save(SensorEndpoint sensorEndpoint) {
@@ -66,13 +71,17 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
 
     @Override
     public List<SensorEndpointDTO> getByUserIdAndSensorIdAndDate(String userId, String sensorId,
-                                                                 OffsetDateTime fromDate, OffsetDateTime toDate, int pageNumber, int pageSize) {
+                                                                 OffsetDateTime fromDate, OffsetDateTime toDate, Integer pageNumber, Integer pageSize) {
 
+        if(pageNumber == null || pageSize == null) {
+            pageNumber = 0;
+            pageSize = this.pageSize;
+        }
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         List<SensorEndpoint> sensorEndpoints;
         if(fromDate == null && toDate == null) {
-            sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdOrderByDateDesc(userId, sensorId);
+            sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdOrderByDateDesc(userId, sensorId, pageable);
         } else {
             assert fromDate != null;
             sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdAndDateBetweenOrderByDateDesc(userId, sensorId,
@@ -80,8 +89,15 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
         }
 
         return sensorEndpoints.stream().
-                map(sensorEndpoint -> SensorEndpointDTO.builder().value(sensorEndpoint.getValue()).
-                        parsedDateTime(sensorEndpoint.getDate().toInstant()
-                                .atOffset(ZoneOffset.UTC)).build()).toList();
+                map(sensorEndpoint2SensorEnpointDTOConverter::convert).toList();
+    }
+
+    @Override
+    public Window<SensorEndpoint> findByUserIdAndSensorId(String userId, String sensorId,
+                                                          ScrollPosition scrollPosition, Limit limit, Sort sort) {
+        return sensorEndpointRepository.findByUserIdAndSensorIdOrderByDateDesc(userId, sensorId, scrollPosition, limit, sort);
+
+        /*FIXME return Window.from(sensorEndpoints.stream().
+                map(sensorEndpoint2SensorEnpointDTOConverter::convert).toList(), (sp) -> scrollPosition);*/
     }
 }

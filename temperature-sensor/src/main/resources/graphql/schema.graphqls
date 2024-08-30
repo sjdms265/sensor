@@ -9,6 +9,16 @@ type SensorEndpointDTO {
     value: Float
 }
 
+type SensorEndpoint {
+    id: ID!
+    date: DateTime!
+    sensorId: String!
+    userId: String!
+    value: Float
+}
+
+
 type Query {
     sensorEndpoints(userId: String!, sensorId: String!, fromDate: DateTime, toDate: DateTime, pageNumber: Int, pageSize: Int): [SensorEndpointDTO]
+    sensorEndpointList(userId: String!, sensorId: String!, first: Int, after: String, last: Int, before: String): SensorEndpointConnection
 }
