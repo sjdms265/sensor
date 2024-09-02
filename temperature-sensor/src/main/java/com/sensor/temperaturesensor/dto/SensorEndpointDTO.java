@@ -31,4 +31,6 @@ public class SensorEndpointDTO {
 
     private OffsetDateTime parsedDateTime;
 
+    private SensorUserDTO sensorUser;
+
 }

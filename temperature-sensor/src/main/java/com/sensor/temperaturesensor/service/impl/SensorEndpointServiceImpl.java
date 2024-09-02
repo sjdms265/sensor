@@ -9,7 +9,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.ScrollPosition;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Window;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 

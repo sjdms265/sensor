@@ -2,12 +2,19 @@ scalar DateTime
 scalar Date
 
 type SensorEndpointDTO {
-    id: ID!
     parsedDateTime: DateTime!
     sensorId: String!
     userId: String!
     value: Float
+    sensorUser: SensorUserDTO
 }
+
+type SensorUserDTO {
+    name: String!
+    username: String!
+    password: String!
+}
+
 
 type SensorEndpoint {
     id: ID!

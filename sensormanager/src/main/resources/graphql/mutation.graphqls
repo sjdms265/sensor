@@ -1,9 +1,9 @@
 type Mutation {
-    saveSensorUser(sensorUserDTO: SensorUserDTO!): SensorUser!
+    saveSensorUser(sensorUserDTO: SensorUserInput!): SensorUser!
     deleteUser(username: String!): SensorUser
 }
 
-input SensorUserDTO {
+input SensorUserInput {
     name: String!
     username: String!
     password: String!
