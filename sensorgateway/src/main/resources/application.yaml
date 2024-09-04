@@ -1,0 +1,20 @@
+spring:
+  application.name: sensorgateway
+  cloud:
+    gateway:
+      routes:
+        - id: temperaturesensor
+          uri: lb://TEMPERATURESENSOR
+          predicates:
+            - Path=/temperaturesensor/**
+        - id: sensormanager
+          uri: lb://SENSORMANAGER
+          predicates:
+            - Path=/sensormanger/**
+      discovery:
+        locator:
+          enabled: true
+#          lower-case-service-id: true
+
+server:
+  port: 8090

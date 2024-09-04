@@ -6,3 +6,13 @@ eureka:
   client:
     registerWithEureka: false
     fetchRegistry: false
+  instance:
+    prefer-ip-address: true
+##    ip-address: 192.168.50.225
+spring:
+  cloud:
+    inetutils:
+      ignored-interfaces: vEthernet*
+      preferred-networks:
+        - 192.168
+      defaultIpAddress: 192.168.50.128

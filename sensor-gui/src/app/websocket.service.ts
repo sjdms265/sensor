@@ -7,7 +7,7 @@ export class WebsocketService {
 
   // Open connection with the back-end socket
   public connect() {
-    let socket = new SockJS(`http://localhost:8081/sensor-gui`);
+    let socket = new SockJS(`http://localhost:8081/sensormanager/sensor-gui`);
 
     return Stomp.over(<WebSocket>socket);
   }

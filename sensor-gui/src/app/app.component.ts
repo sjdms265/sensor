@@ -14,7 +14,7 @@ export class AppComponent {
   private webSocket : WebSocket;
 
   constructor() {
-    this.webSocket = new WebSocket('ws://localhost:8081/sensor-gui');
+    this.webSocket = new WebSocket('ws://localhost:8081/sensormanager/sensor-gui');
     this.webSocket.onmessage = (event) => {
       console.log("event.data " + event.data)
       this.sensorValue = JSON.parse(event.data);

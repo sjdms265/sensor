@@ -1,8 +1,10 @@
 server:
     port: 8082
+    servlet:
+        context-path: /temperaturesensor
 spring:
     application:
-        name: temperature-sensor
+        name: temperaturesensor
     datasource:
         password: postgres
         url: jdbc:postgresql://localhost:5432/sensormanager
@@ -44,6 +46,7 @@ spring:
             value-serializer: org.springframework.kafka.support.serializer.JsonDeserializer
 eureka:
     client:
+        enabled: false
         serviceUrl:
             defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
     instance:

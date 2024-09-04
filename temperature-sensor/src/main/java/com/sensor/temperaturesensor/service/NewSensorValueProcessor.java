@@ -43,10 +43,10 @@ public class NewSensorValueProcessor {
 
         //sensorsId.forEach(sensorId -> {
             KStream<String, SensorEndpointDTO> messageStream = streamsBuilder
-                    .stream(this.topic, Consumed.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE))
-                    .peek((key, sensorEndpointDTO) ->
+                    .stream(this.topic, Consumed.with(STRING_SERDE, SENSOR_ENDPOINT_DTO_SERDE));
+                    /*.peek((key, sensorEndpointDTO) ->
                             log.info("NewSensorValueProcessor, topic {} key {} value {}", topic, key, sensorEndpointDTO)
-                    );//.filter((s, sensorEndpointDTO) -> sensorEndpointDTO.getSensorId().equalsIgnoreCase(sensorId));
+                    ).filter((s, sensorEndpointDTO) -> sensorEndpointDTO.getSensorId().equalsIgnoreCase(sensorId));*/
 
             Reducer<SensorEndpointDTO> sensorValueChange = (sensor1, sensor2) -> sensor1.getSensorId().equals(sensor2.getSensorId()) && !sensor1.getValue().equals(sensor2.getValue()) ? sensor1 : sensor2;
 

@@ -17,11 +17,15 @@ import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.data.query.ScrollSubrange;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import reactor.core.publisher.Flux;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
@@ -65,5 +69,10 @@ public class SensorEndpointController {
 //        SensorUserDTO sensorUserDTO = new SensorUserDTO("name", sensorEndpointDTO.getUserId(), "password");
         return dataLoader.load(sensorEndpointDTO.getUserId());
 //        return  Mono.just(sensorUserDTO);
+    }
+
+    @GetMapping
+    public ResponseEntity<String> home() {
+        return ResponseEntity.ok("Hello Temperature-sensor");
     }
 }
