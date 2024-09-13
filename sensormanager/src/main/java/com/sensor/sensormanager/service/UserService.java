@@ -17,6 +17,8 @@ public interface UserService {
 
     SensorUser getByUsername(String username);
 
+    SensorUser getByUsernameAndPassword(String username, String password);
+
     SensorUser deleteUser(String username);
 
     void deleteRole(String name);

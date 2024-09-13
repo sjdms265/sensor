@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 public class BaseController {
 
     public final static String BASE_PATH = "/api";
+    public final static String ADMIN_PATH = "/admin";
+    public final static String AUTH_PATH = BASE_PATH + "/auth";
 
     private final SensorManagerUtil sensorManagerUtil;
 

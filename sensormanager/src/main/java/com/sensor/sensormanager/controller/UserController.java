@@ -1,31 +1,34 @@
 package com.sensor.sensormanager.controller;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.sensor.sensormanager.dto.RoleToUserForm;
 import com.sensor.sensormanager.model.Role;
 import com.sensor.sensormanager.model.SensorUser;
 import com.sensor.sensormanager.service.UserService;
-import com.sensor.sensormanager.util.SensorManagerUtil;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.List;
+
+import static com.sensor.sensormanager.controller.BaseController.ADMIN_PATH;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping(BaseController.BASE_PATH)
+@Slf4j
 public class UserController {
 
     private final UserService userService;
 
-    private final SensorManagerUtil sensorManagerUtil;
-
-    public final static String ADMIN_PATH = "/admin";
     public final static String ADMIN_USERS_PATH = ADMIN_PATH + "/users";
     public final static String USERS_PATH = "/users";
     public final static String ADMIN_ROLES_PATH = ADMIN_PATH + "/roles";
@@ -63,32 +66,6 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteRole(@PathVariable String name) {
         userService.deleteRole(name);
-    }
-
-    @GetMapping(REFRESH_TOKEN)
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        DecodedJWT decodedJWT = sensorManagerUtil.getToken(request);
-
-        if(decodedJWT != null) {
-
-            try {
-
-                String username = decodedJWT.getSubject();
-
-                SensorUser user = userService.getByUsername(username);
-
-                List<String> claims = user.getRoles().stream().map(Role::getName).toList();
-
-                sensorManagerUtil.writeTokensResponse(request, response, claims, user.getUsername());
-
-
-            } catch (Exception e) {
-                sensorManagerUtil.setResponseMessage(response, e);
-            }
-        } else {
-            throw new IOException("Refresh token missing");
-        }
     }
 
 }

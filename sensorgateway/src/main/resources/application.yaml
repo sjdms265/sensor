@@ -7,14 +7,23 @@ spring:
           uri: lb://TEMPERATURESENSOR
           predicates:
             - Path=/temperaturesensor/**
+          filters:
+            - AuthenticationSyncFilter
         - id: sensormanager
           uri: lb://SENSORMANAGER
           predicates:
-            - Path=/sensormanger/**
-      discovery:
-        locator:
-          enabled: true
-#          lower-case-service-id: true
+            - Path=/sensormanager/**
+          filters:
+            - AuthenticationSyncFilter
+eureka:
+  client:
+    #        enabled: false
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
 
 server:
   port: 8090

@@ -20,6 +20,11 @@ spring:
     devtools:
         livereload:
             port: 35730
+    cloud:
+        loadbalancer:
+            ribbon:
+                enabled: false
+
 #    stream:
 #        bindings:
 #            sensor-value-out-0:
@@ -46,11 +51,13 @@ spring:
             value-serializer: org.springframework.kafka.support.serializer.JsonDeserializer
 eureka:
     client:
-        enabled: false
+#        enabled: false
         serviceUrl:
             defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+        register-with-eureka: true
+        fetch-registry: true
     instance:
-        preferIpAddress: true
+        hostname: localhost
 
 sensor-manager:
     topic:

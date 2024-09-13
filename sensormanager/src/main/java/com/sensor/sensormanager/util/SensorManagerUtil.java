@@ -8,7 +8,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -26,14 +25,14 @@ import java.util.Map;
 @Slf4j
 public class SensorManagerUtil {
 
-    @Getter
-    private static String tokenSecret;
-    @Getter
-    private static Integer tokenAccessExpire;
-    @Getter
-    private static Integer tokenRefreshExpire;
+    @Value("${sensor-manager.token.secret}")
+    private String tokenSecret;
+    @Value("${sensor-manager.token.access-expires}")
+    private Integer tokenAccessExpire;
+    @Value("${sensor-manager.token.refresh-expires}")
+    private Integer tokenRefreshExpire;
 
-    private String createToken(final String userName, List<String> claims, final String requestUrl, int expirationTime, boolean includeRoles) {
+    public String createToken(final String userName, List<String> claims, final String requestUrl, int expirationTime, boolean includeRoles) {
 
         JWTCreator.Builder jwtBuilder = createCommonTokenBuilder(userName, requestUrl, expirationTime);
 
@@ -56,22 +55,32 @@ public class SensorManagerUtil {
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-
             String token = authorizationHeader.substring("Bearer ".length());
-            Algorithm algorithm = Algorithm.HMAC256(tokenSecret.getBytes());
-            JWTVerifier verifier = JWT.require(algorithm).build();
-            return verifier.verify(token);
+            return validateToken(token);
         }
 
         return null;
 
     }
 
+    public DecodedJWT validateToken(String token) {
+
+        log.debug("validateToken {}", token);
+        Algorithm algorithm = Algorithm.HMAC256(tokenSecret.getBytes());
+        JWTVerifier verifier = JWT.require(algorithm).build();
+
+        DecodedJWT jwt = verifier.verify(token);
+        log.debug("validateToken payload {}", jwt.getPayload());
+
+        return jwt;
+
+    }
+
     public Map<String, String> writeTokensResponse(HttpServletRequest request, HttpServletResponse response, List<String> claims, String username) throws IOException {
         String accessToken = createToken(username, claims, request.getRequestURL().toString(),
-                getTokenAccessExpire(), true);
+                this.tokenAccessExpire, true);
         String refreshToken = createToken(username, claims, request.getRequestURL().toString(),
-                getTokenRefreshExpire(), false);
+                this.tokenRefreshExpire, false);
 
         Map<String, String> tokens = new HashMap<>();
         tokens.put("access_token", accessToken);
@@ -85,7 +94,6 @@ public class SensorManagerUtil {
     public Map<String, String> setResponseMessage(HttpServletResponse response, Exception e) throws IOException {
         log.error("error logging {}", e.getMessage());
 
-        response.setHeader("error", e.getMessage());
         response.setStatus(HttpStatus.FORBIDDEN.value());
 
         Map<String, String> error = new HashMap<>();
@@ -94,19 +102,6 @@ public class SensorManagerUtil {
         new ObjectMapper().writeValue(response.getOutputStream(), error);
 
         return error;
-    }
-
-    @Value("${sensor-manager.token.secret}")
-    public void setTokenSecret(String tokenSecret) {
-        SensorManagerUtil.tokenSecret = tokenSecret;
-    }
-    @Value("${sensor-manager.token.access-expires}")
-    public void setTokenAccessExpire(Integer tokenAccessExpire) {
-        SensorManagerUtil.tokenAccessExpire = tokenAccessExpire;
-    }
-    @Value("${sensor-manager.token.refresh-expires}")
-    public void setTokenRefreshExpire(Integer tokenRefreshExpire) {
-        SensorManagerUtil.tokenRefreshExpire = tokenRefreshExpire;
     }
 
 }

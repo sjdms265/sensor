@@ -110,6 +110,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public SensorUser getByUsernameAndPassword(String username, String password) {
+        SensorUser sensorUser = userRepository.getByUsername(username);
+
+        if(sensorUser != null && passwordEncoder.matches(password, sensorUser.getPassword())) {
+            log.debug("getByUsernameAndPassword {}", sensorUser.getUsername());
+            return sensorUser;
+        }
+
+        return null;
+
+    }
+
+    @Override
     public SensorUser deleteUser(String username) {
         SensorUser sensorUser = userRepository.getByUsername(username);
         log.debug("deleteUser {}", sensorUser != null ? sensorUser.getUsername() : username + "not found");

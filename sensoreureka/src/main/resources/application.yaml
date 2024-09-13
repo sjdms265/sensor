@@ -6,13 +6,15 @@ eureka:
   client:
     registerWithEureka: false
     fetchRegistry: false
+    service-url.defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka
   instance:
-    prefer-ip-address: true
-##    ip-address: 192.168.50.225
-spring:
-  cloud:
-    inetutils:
-      ignored-interfaces: vEthernet*
-      preferred-networks:
-        - 192.168
-      defaultIpAddress: 192.168.50.128
+#    prefer-ip-address: true
+    hostname: localhost
+
+#spring:
+#  cloud:
+#    inetutils:
+#      ignored-interfaces: vEthernet*
+#      preferred-networks:
+#        - 192.168
+#      defaultIpAddress: 192.168.50.128
