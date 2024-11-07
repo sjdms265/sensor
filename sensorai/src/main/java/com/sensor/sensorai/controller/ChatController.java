@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.stream.Collectors;
@@ -31,8 +32,8 @@ public class ChatController {
 
     private final GraphqlSensorEndpointService graphqlSensorEndpointService;
 
-    @GetMapping("/hello")
-    public ResponseEntity<String> getChatModel() {
+    @GetMapping("/hello/{userId}/{sensorId}")
+    public ResponseEntity<String> getChatModel(final @PathVariable("userId") String userId, final @PathVariable("sensorId") String sensorId) {
 
         try{
             ChatResponse response = chatModel.call(
@@ -43,14 +44,16 @@ public class ChatController {
             String answer =  response.getResults().stream().map(generation -> generation.getOutput().getContent()).
                     collect(Collectors.joining());
 
-            String sensorEndpoints = graphqlSensorEndpointService.getSensorEndpoints("sjdms265", "sensor.10000db11e_t");
+            String sensorEndpoints = graphqlSensorEndpointService.getSensorEndpoints(userId, sensorId);
 
             //https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html
    /*         var userMessage = new UserMessage("Analyze this json data?",
                     new Media(MimeTypeUtils.APPLICATION_JSON, new ByteArrayResource(sensorEndpoints.getBytes(StandardCharsets.UTF_8))));*/
 
-            response = chatModel.call(new Prompt("Analyze this json data and calculate an average temperature: " + sensorEndpoints,
-                    OllamaOptions.builder().withModel(model).withTemperature(temperature)));
+            String contents = "Analyze this json data and calculate an average temperature: " + sensorEndpoints;
+            log.info("request to ai: {}", contents);
+
+            response = chatModel.call(new Prompt(contents, OllamaOptions.builder().withModel(model).withTemperature(temperature)));
 
             answer += "\n and the json data analysis " + response.getResults().stream().map(generation -> generation.getOutput().getContent()).
                     collect(Collectors.joining());
@@ -61,5 +64,10 @@ public class ChatController {
             throw new RuntimeException(e);
         }
 
+    }
+
+    @GetMapping("/hello")
+    public ResponseEntity<String> getChatModel() {
+        return getChatModel("sjdms265", "sensor.10000db11e_t");
     }
 }
