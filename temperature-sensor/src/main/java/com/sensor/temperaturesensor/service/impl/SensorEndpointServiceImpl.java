@@ -34,7 +34,7 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
 
     private final Converter<SensorEndpoint, SensorEndpointDTO> sensorEndpoint2SensorEnpointDTOConverter;
 
-    @Value("${sensor-manager.pageSize:10}")
+    @Value("${sensor-manager.pageSize:500}")
     private int pageSize;
 
     @Override

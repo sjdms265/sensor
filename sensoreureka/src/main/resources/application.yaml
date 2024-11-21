@@ -18,3 +18,8 @@ eureka:
 #      preferred-networks:
 #        - 192.168
 #      defaultIpAddress: 192.168.50.128
+
+#management:
+#  zipkin:
+#    tracing:
+#      endpoint: http://192.168.50.158:9411/api/v2/spans

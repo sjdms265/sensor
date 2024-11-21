@@ -17,8 +17,8 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <spring.boot.maven.plugin.version>3.3.4</spring.boot.maven.plugin.version>
-        <spring.boot.dependencies.version>3.3.5</spring.boot.dependencies.version>
+        <spring.boot.maven.plugin.version>3.3.5</spring.boot.maven.plugin.version>
+        <spring.boot.dependencies.version>3.3.6</spring.boot.dependencies.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud.version>2023.0.3</spring-cloud.version>
         <camel.version>4.7.0</camel.version>
@@ -78,16 +78,10 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.14.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper-module-record</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -140,7 +134,6 @@
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-exporter-zipkin</artifactId>
-            <version>1.38.0</version>
         </dependency>
 
         <!-- GraphQL -->
