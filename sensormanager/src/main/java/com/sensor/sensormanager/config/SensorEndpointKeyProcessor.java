@@ -22,7 +22,10 @@ public class SensorEndpointKeyProcessor implements Processor {
 
     @Override
     public void process(Exchange exchange) throws Exception {
+
         String body = exchange.getIn().getBody(String.class);
+        String topic  = (String) exchange.getIn().getHeader("CamelMqttTopic");
+        log.debug("SensorEndpoint body {} topic {}", body, topic);
 
         SensorEndpointDTO sensorEndpointDTO = objectMapper.readValue(body, SensorEndpointDTO.class);
         String userId = sensorEndpointDTO.getUserId();

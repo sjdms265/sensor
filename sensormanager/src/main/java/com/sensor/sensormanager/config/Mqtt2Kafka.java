@@ -34,7 +34,7 @@ public class Mqtt2Kafka extends RouteBuilder {
         from("paho-mqtt5:sensorValue")
                 .routeId("consumeSensorValue")
                 .process(sensorEndpointKeyProcessor)
-                .log("Message read from topic ${in.header.CamelMQTTSubscribeTopic} body ${body} key ${in.header.kafka.KEY}.")
+//                .log(LoggingLevel.INFO, "Message read from topic ${in.header.CamelMQTTSubscribeTopic} body ${body} key ${in.header.kafka.KEY}.")
                 .toD("kafka:" + topic)
                 .bean(sensorValueWebSocketHandler, "sendMessage(${body})");
 

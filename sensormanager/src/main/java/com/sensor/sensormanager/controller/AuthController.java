@@ -104,12 +104,14 @@ public class AuthController {
             if(decodedJWT == null) {
                 log.error("Token invalid {}", token);
                 model.put("error", "invalid token " + token);
+                throw new RuntimeException("Token invalid " + token);
             } else {
                 log.debug("Token valid {}", decodedJWT.getToken());
                 model.put("success", "valid token " + token);
             }
         } catch (Exception e) {
             log.error("Token invalid {} error {}", token, e.getMessage());
+            throw new RuntimeException("Token invalid " + token);
         }
         return model;
     }

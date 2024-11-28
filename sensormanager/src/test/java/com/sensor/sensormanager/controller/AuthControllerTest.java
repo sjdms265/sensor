@@ -93,10 +93,7 @@ class AuthControllerTest {
     @Test
     void invalidToken() {
 
-        Map<String, String> response = authController.validateToken("token");
-
-        assertNotNull(response);
-        Assertions.assertTrue(response.containsKey("error"));
+        Assertions.assertThrows(RuntimeException.class, () -> authController.validateToken("token"));
 
     }
 }

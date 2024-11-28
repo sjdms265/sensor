@@ -66,6 +66,7 @@ public class SensorManagerUtil {
     public DecodedJWT validateToken(String token) {
 
         log.debug("validateToken {}", token);
+        token = token.replace("Bearer ", "");
         Algorithm algorithm = Algorithm.HMAC256(tokenSecret.getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
 
