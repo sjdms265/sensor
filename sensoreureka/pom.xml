@@ -24,7 +24,7 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
         </dependency>
-        <!-- spring-cloud-starter-netflix-eureka-server -->
+        <!-- fix vulnerabilities spring-cloud-starter-netflix-eureka-server -->
         <dependency>
             <groupId>com.thoughtworks.xstream</groupId>
             <artifactId>xstream</artifactId>

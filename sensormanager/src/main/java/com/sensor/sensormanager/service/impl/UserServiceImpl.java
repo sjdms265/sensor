@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
             if(!CollectionUtils.isEmpty(sensorUser.getRoles())) {
                 List<Role> roles = new ArrayList<>();
-                sensorUser.getRoles().stream().forEach(role -> {
+                sensorUser.getRoles().forEach(role -> {
                     Role existingRole = roleRepository.findByName(role.getName());
 
                     if(existingRole != null) {
