@@ -1,5 +1,6 @@
 package com.sensor.sensorai.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -21,11 +22,12 @@ public class GraphqlSensorEndpointService {
 
     private final RestTemplate restTemplate;
 
-    public String getSensorEndpoints(String userId, String sensorId){
+    public String getSensorEndpoints(HttpServletRequest request, String userId, String sensorId){
 
         //setting up headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "Bearer " + request.getHeader("Authorization"));
 
         Map<String, Object> requestBody = getStringObjectMap(userId, sensorId);
 
@@ -39,7 +41,7 @@ public class GraphqlSensorEndpointService {
     private static Map<String, Object> getStringObjectMap(String userId, String sensorId) {
         String query = """
                 query {
-                	sensorEndpoints(userId : "$userId", sensorId : "$sensorId", pageSize : 100, pageNumber: 1) {
+                	sensorEndpoints(userId : "$userId", sensorId : "$sensorId", pageSize : 500, pageNumber: 1) {
                     parsedDateTime,
                     value
                   }

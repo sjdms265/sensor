@@ -55,16 +55,16 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
                             lastSensorEndpoint);
 
             if(currentSensorEndpoints.size() > 1) {
-                log.error("Duplicate sensor endpoints {} size {}", currentSensorEndpoints.get(0), currentSensorEndpoints.size());
+                log.error("Duplicate sensor endpoints {} size {}", currentSensorEndpoints.getFirst(), currentSensorEndpoints.size());
             } else if(currentSensorEndpoints.isEmpty()) {
                 log.error("No sensor endpoint for getSensorEndpointsByUserIdAndSensorIdAndDate {}", sensorEndpoint);
                 return null;
             }
 
-            if(!currentSensorEndpoints.get(0).getValue().equals(sensorEndpoint.getValue())) {
+            if(!currentSensorEndpoints.getFirst().getValue().equals(sensorEndpoint.getValue())) {
                 log.debug("Updated SensorEndpointDTO {}", sensorEndpoint);
                 save(sensorEndpoint);
-                return CompletableFuture.completedFuture(currentSensorEndpoints.get(0));
+                return CompletableFuture.completedFuture(currentSensorEndpoints.getFirst());
             }
         } else if(lastSensorEndpoint == null) {
             log.debug("New SensorEndpointDTO {}", sensorEndpoint);

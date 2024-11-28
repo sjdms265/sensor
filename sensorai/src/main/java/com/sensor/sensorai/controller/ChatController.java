@@ -1,7 +1,8 @@
 package com.sensor.sensorai.controller;
 
-import com.sensor.sensorai.TemperatureResults;
+import com.sensor.sensorai.dto.TemperatureResults;
 import com.sensor.sensorai.service.GraphqlSensorEndpointService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -35,15 +36,16 @@ public class ChatController {
     private final GraphqlSensorEndpointService graphqlSensorEndpointService;
 
     @GetMapping("/hello/{userId}/{sensorId}")
-    public ResponseEntity<String> getChatModel(final @PathVariable("userId") String userId, final @PathVariable("sensorId") String sensorId) {
+    public ResponseEntity<String> getChatModel(HttpServletRequest request, final @PathVariable("userId") String userId, final @PathVariable("sensorId") String sensorId) {
 
         try{
 
-            String sensorEndpoints = graphqlSensorEndpointService.getSensorEndpoints(userId, sensorId);
+            String sensorEndpoints = graphqlSensorEndpointService.getSensorEndpoints(request, userId, sensorId);
 
             //https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html
-   /*         var userMessage = new UserMessage("Analyze this json data?",
+         /*var userMessage = new UserMessage("Analyze this json data?",
                     new Media(MimeTypeUtils.APPLICATION_JSON, new ByteArrayResource(sensorEndpoints.getBytes(StandardCharsets.UTF_8))));*/
+
 
             String contents = "Analyze this json data and calculate the average temperature, highest temperature and lowest temperature: "
                     + sensorEndpoints + "\n" + responseFormat();
@@ -51,9 +53,9 @@ public class ChatController {
 
             ChatResponse response = chatModel.call(new Prompt(contents, OllamaOptions.builder().withModel(model).withTemperature(temperature)));
 
-            String answer = "[" + response.getResults().stream().
+            String answer = response.getResults().stream().
                     map(generation -> "{" +generation.getOutput().getContent() + "}").
-                    collect(Collectors.joining(",")) + "]";
+                    collect(Collectors.joining(","));
 
             return ResponseEntity.ok(answer);
         } catch (Exception e) {
@@ -75,14 +77,14 @@ public class ChatController {
                 + "Do not include markdown code blocks in your response.\n"
                 + "Remove the ```json markdown from the output.\n"
                 + "the json property parsedDateTime is the timestamp when the temperature was recorded and it is UTC formated.\n"
-                + "the json property value is the value of the temperature in celsius when the temperature was recorded."
+                + "the json property value is the value of the temperature in celsius when the temperature was recorded.\n"
                 + "Here is the JSON Schema instance your output must adhere to:\n```%s```\n";
         return String.format(template, format);
 
     }
 
     @GetMapping("/hello")
-    public ResponseEntity<String> getChatModel() {
-        return getChatModel("sjdms265", "sensor.10000db11e_t");
+    public ResponseEntity<String> getChatModel(HttpServletRequest request) {
+        return getChatModel(request, "sjdms265", "sensor.10000db11e_t");
     }
 }

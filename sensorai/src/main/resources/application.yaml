@@ -12,6 +12,6 @@ server:
 #  servlet:
 #    context-path: /sensorai
 
-sensor-manager.url: http://localhost:8082/temperaturesensor/graphql
+sensor-manager.url: http://localhost:8090/temperaturesensor/graphql
 
 
