@@ -25,6 +25,7 @@ import java.util.Map;
 @Slf4j
 public class SensorManagerUtil {
 
+    public static final String BEARER = "Bearer ";
     @Value("${sensor-manager.token.secret}")
     private String tokenSecret;
     @Value("${sensor-manager.token.access-expires}")
@@ -54,8 +55,8 @@ public class SensorManagerUtil {
     public DecodedJWT getToken(HttpServletRequest request) {
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            String token = authorizationHeader.substring("Bearer ".length());
+        if(authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
+            String token = authorizationHeader.substring(BEARER.length());
             return validateToken(token);
         }
 
@@ -66,7 +67,7 @@ public class SensorManagerUtil {
     public DecodedJWT validateToken(String token) {
 
         log.debug("validateToken {}", token);
-        token = token.replace("Bearer ", "");
+        token = token.replace(BEARER, "");
         Algorithm algorithm = Algorithm.HMAC256(tokenSecret.getBytes());
         JWTVerifier verifier = JWT.require(algorithm).build();
 

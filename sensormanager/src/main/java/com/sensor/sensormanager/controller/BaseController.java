@@ -10,11 +10,14 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/")
@@ -22,9 +25,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BaseController {
 
-    public final static String BASE_PATH = "/api";
-    public final static String ADMIN_PATH = "/admin";
-    public final static String AUTH_PATH = BASE_PATH + "/auth";
+    public static final String BASE_PATH = "/api";
+    public static final String ADMIN_PATH = "/admin";
+    public static final String AUTH_PATH = BASE_PATH + "/auth";
 
     private final SensorManagerUtil sensorManagerUtil;
 
@@ -34,7 +37,7 @@ public class BaseController {
     public Map<String, String> home(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal User user) throws IOException {
 
         Map<String, String> model = sensorManagerUtil.writeTokensResponse(request, response, user.getAuthorities().
-                stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()), user.getUsername());
+                stream().map(GrantedAuthority::getAuthority).toList(), user.getUsername());
 
         model.put("user", String.format("Hello %s to Sensor Manager", user.getUsername()));
         return model;

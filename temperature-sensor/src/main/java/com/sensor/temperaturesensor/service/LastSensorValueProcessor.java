@@ -30,7 +30,7 @@ public class LastSensorValueProcessor {
     @Value(value = "${sensor-manager.topic.last-sensor-value}")
     private String outputTopicLastValue;
 
-    private final String sensorId = "sensor.10000db11e_t";
+    private static final String sensorId = "sensor.10000db11e_t";
 
     @Value(value = "${sensor-manager.topic.stream-window:60}")
     private long streamWindow;

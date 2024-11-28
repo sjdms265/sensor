@@ -19,6 +19,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -84,11 +85,10 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
         }
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        List<SensorEndpoint> sensorEndpoints;
+        List<SensorEndpoint> sensorEndpoints = new ArrayList<>();
         if(fromDate == null && toDate == null) {
             sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdOrderByDateDesc(userId, sensorId, pageable);
-        } else {
-            assert fromDate != null;
+        } else if (fromDate != null) {
             sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdAndDateBetweenOrderByDateDesc(userId, sensorId,
                     Date.from(fromDate.toInstant()),  Date.from(toDate.toInstant()), pageable);
         }

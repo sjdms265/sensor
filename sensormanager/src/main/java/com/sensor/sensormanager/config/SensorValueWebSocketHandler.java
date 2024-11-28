@@ -81,6 +81,7 @@ public class SensorValueWebSocketHandler extends TextWebSocketHandler {
         return message;
     }
 
+    @Override
     public boolean supportsPartialMessages() {
         return true;
     }

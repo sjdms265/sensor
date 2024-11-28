@@ -25,6 +25,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 public class SecurityConfig {
 
+    public static final String ADMIN = "ADMIN";
+    public static final String USER = "USER";
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder bCryptPasswordEncoder;
 
@@ -43,11 +45,11 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry
-                                .requestMatchers(BaseController.BASE_PATH + UserController.USERS_PATH).hasAnyRole("USER", "ADMIN")
-                                .requestMatchers(BaseController.BASE_PATH + UserController.ROLES_PATH).hasAnyRole("USER", "ADMIN")
-                                .requestMatchers(BaseController.BASE_PATH + UserController.ROLES_PATH + "/**").hasAnyRole("USER", "ADMIN")
-                                .requestMatchers(BaseController.BASE_PATH + UserController.ADMIN_USERS_PATH).hasAnyRole("ADMIN")
-                                .requestMatchers(BaseController.BASE_PATH + UserController.ADMIN_ROLES_PATH).hasAnyRole("ADMIN")
+                                .requestMatchers(BaseController.BASE_PATH + UserController.USERS_PATH).hasAnyRole(USER, ADMIN)
+                                .requestMatchers(BaseController.BASE_PATH + UserController.ROLES_PATH).hasAnyRole(USER, ADMIN)
+                                .requestMatchers(BaseController.BASE_PATH + UserController.ROLES_PATH + "/**").hasAnyRole(USER, ADMIN)
+                                .requestMatchers(BaseController.BASE_PATH + UserController.ADMIN_USERS_PATH).hasAnyRole(ADMIN)
+                                .requestMatchers(BaseController.BASE_PATH + UserController.ADMIN_ROLES_PATH).hasAnyRole(ADMIN)
                                 .requestMatchers(BaseController.AUTH_PATH + "/**").permitAll()
                                 .requestMatchers(BaseController.BASE_PATH + "/echoSensorEndpoint").permitAll()
                                 //websocket
@@ -56,7 +58,6 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-//        http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -33,7 +33,7 @@ public class AuthenticationSyncFilter extends AbstractGatewayFilterFactory<Authe
 
         log.debug("Starting AuthenticationSyncFilter");
 
-        return (((exchange, chain) -> {
+        return ((exchange, chain) -> {
 
             if(routeValidator.isAuth.test(exchange.getRequest())) {
 
@@ -64,7 +64,7 @@ public class AuthenticationSyncFilter extends AbstractGatewayFilterFactory<Authe
 
             }
             return chain.filter(exchange);
-        }));
+        });
     }
 
     public static class Config {
