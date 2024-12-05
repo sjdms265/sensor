@@ -17,10 +17,10 @@
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <spring.boot.maven.plugin.version>3.3.5</spring.boot.maven.plugin.version>
-        <spring.boot.dependencies.version>3.3.6</spring.boot.dependencies.version>
+        <spring.boot.maven.plugin.version>3.4.0</spring.boot.maven.plugin.version>
+        <spring.boot.dependencies.version>3.4.0</spring.boot.dependencies.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-cloud.version>2023.0.4</spring-cloud.version>
+        <spring-cloud.version>2024.0.0</spring-cloud.version>
         <camel.version>4.8.1</camel.version>
         <spring-boot.run.jvmArguments>-Duser.timezone=UTC</spring-boot.run.jvmArguments>
     </properties>
@@ -96,28 +96,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-
-        <!-- apache camel -->
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-spring-boot-starter</artifactId>
-            <version>${camel.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-paho-mqtt5-starter</artifactId>
-            <version>${camel.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-kafka-starter</artifactId>
-            <version>${camel.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
-            <artifactId>camel-rest-starter</artifactId>
-            <version>${camel.version}</version>
         </dependency>
 
         <!-- observability https://betterprogramming.pub/observability-in-spring-boot-3-with-aop-micrometer-and-zipkin-a2afbba187dc -->
