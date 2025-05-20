@@ -5,19 +5,15 @@ import com.sensor.sensorai.service.GraphqlSensorEndpointService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.ollama.OllamaChatModel;
-import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/sensorai")
@@ -51,11 +47,11 @@ public class ChatController {
                     + sensorEndpoints + "\n" + responseFormat();
             log.info("request to ai: {}", contents);
 
-            ChatResponse response = chatModel.call(new Prompt(contents, OllamaOptions.builder().withModel(model).withTemperature(temperature)));
+            ChatClient ai = ChatClient.builder(chatModel).build();
 
-            String answer = response.getResults().stream().
-                    map(generation -> "{" +generation.getOutput().getContent() + "}").
-                    collect(Collectors.joining(","));
+            String answer =  ai.prompt().user(contents).call().content();
+
+            log.info("answer: {}", answer);
 
             return ResponseEntity.ok(answer);
         } catch (Exception e) {
