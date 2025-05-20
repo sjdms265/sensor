@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.ollama.OllamaChatModel;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 public class ChatController {
 
-    @Value("${spring.ai.ollama.chat.options.model}")
-    private String model;
-
-    @Value("${spring.ai.ollama.chat.options.temperature}")
-    private Double temperature;
-
     private final OllamaChatModel chatModel;
 
     private final GraphqlSensorEndpointService graphqlSensorEndpointService;
@@ -37,11 +30,6 @@ public class ChatController {
         try{
 
             String sensorEndpoints = graphqlSensorEndpointService.getSensorEndpoints(request, userId, sensorId);
-
-            //https://docs.spring.io/spring-ai/reference/api/chat/ollama-chat.html
-         /*var userMessage = new UserMessage("Analyze this json data?",
-                    new Media(MimeTypeUtils.APPLICATION_JSON, new ByteArrayResource(sensorEndpoints.getBytes(StandardCharsets.UTF_8))));*/
-
 
             String contents = "Analyze this json data and calculate the average temperature, highest temperature and lowest temperature: "
                     + sensorEndpoints + "\n" + responseFormat();
@@ -68,13 +56,16 @@ public class ChatController {
 
         String format = beanOutputConverter.getFormat();
 
-        String template = "Your response should be in JSON format.\n"
-                + "Do not include any explanations, only provide a RFC8259 compliant JSON response following this format without deviation.\n"
-                + "Do not include markdown code blocks in your response.\n"
-                + "Remove the ```json markdown from the output.\n"
-                + "the json property parsedDateTime is the timestamp when the temperature was recorded and it is UTC formated.\n"
-                + "the json property value is the value of the temperature in celsius when the temperature was recorded.\n"
-                + "Here is the JSON Schema instance your output must adhere to:\n```%s```\n";
+        String template = """
+                Your response should be in JSON format.
+                Do not include any explanations, only provide a RFC8259 compliant JSON response following this format without deviation.
+                Do not include markdown code blocks in your response.
+                Remove the ```json markdown from the output.
+                the json property parsedDateTime is the timestamp when the temperature was recorded and it is UTC formated.
+                the json property value is the value of the temperature in celsius when the temperature was recorded.
+                Here is the JSON Schema instance your output must adhere to:
+                ```%s```
+                """;
         return String.format(template, format);
 
     }
