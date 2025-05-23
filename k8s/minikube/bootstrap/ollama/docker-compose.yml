@@ -26,8 +26,6 @@
 #docker volume create ollama-local
 #docker volume create open-webui-local
 
-version: "3.8"
-
 services:
   ollama:
     build: .

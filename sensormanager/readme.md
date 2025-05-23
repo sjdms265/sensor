@@ -123,7 +123,14 @@ https://www.baeldung.com/ops/docker-compose-latest-image
 docker-compose pull && docker-compose up -d
 docker-compose pull my_app && docker-compose up -d
 
---------------- zipking optoins
+--------------- DOCKER CLEAN
+https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes
+
+Start all containers before running 
+docker system prune -a
+
+
+--------------- zipking options
 
 https://stackoverflow.com/questions/66517888/opentelemetry-with-zipkin-exporter-is-not-working-as-expected-throws-statusrunt
 
