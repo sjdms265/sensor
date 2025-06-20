@@ -2,19 +2,21 @@ spring:
   application.name: sensorgateway
   cloud:
     gateway:
-      routes:
-        - id: temperaturesensor
-          uri: lb://TEMPERATURESENSOR
-          predicates:
-            - Path=/temperaturesensor/**
-          filters:
-            - AuthenticationSyncFilter
-        - id: sensormanager
-          uri: lb://SENSORMANAGER
-          predicates:
-            - Path=/sensormanager/**
-          filters:
-            - AuthenticationSyncFilter
+      server:
+        webflux:
+          routes:
+            - id: temperaturesensor
+              uri: lb://TEMPERATURESENSOR
+              predicates:
+                - Path=/temperaturesensor/**
+              filters:
+                - AuthenticationSyncFilter
+            - id: sensormanager
+              uri: lb://SENSORMANAGER
+              predicates:
+                - Path=/sensormanager/**
+              filters:
+                - AuthenticationSyncFilter
 eureka:
   client:
     #        enabled: false
