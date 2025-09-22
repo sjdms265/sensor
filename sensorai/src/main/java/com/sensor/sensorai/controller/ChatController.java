@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.converter.BeanOutputConverter;
-import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 public class ChatController {
 
-    private final OllamaChatModel chatModel;
+    private final ChatClient ollamaChatClient;
 
     private final GraphqlSensorEndpointService graphqlSensorEndpointService;
 
@@ -29,15 +28,13 @@ public class ChatController {
 
         try{
 
-            String sensorEndpoints = graphqlSensorEndpointService.getSensorEndpoints(request, userId, sensorId);
+            String sensorEndpoints = graphqlSensorEndpointService.getSensorEndpoints(request, userId, sensorId, 50);
 
             String contents = "Analyze this json data and calculate the average temperature, highest temperature and lowest temperature: "
                     + sensorEndpoints + "\n" + responseFormat();
             log.info("request to ai: {}", contents);
 
-            ChatClient ai = ChatClient.builder(chatModel).build();
-
-            String answer =  ai.prompt().user(contents).call().content();
+            String answer =  ollamaChatClient.prompt().user(contents).call().content();
 
             log.info("answer: {}", answer);
 
@@ -50,7 +47,7 @@ public class ChatController {
     }
 
     //https://www.baeldung.com/spring-artificial-intelligence-structure-output
-    private String responseFormat() {
+    public static String responseFormat() {
 
         BeanOutputConverter<TemperatureResults> beanOutputConverter = new BeanOutputConverter<>(TemperatureResults.class);
 

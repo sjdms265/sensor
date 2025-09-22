@@ -22,14 +22,14 @@ public class GraphqlSensorEndpointService {
 
     private final RestTemplate restTemplate;
 
-    public String getSensorEndpoints(HttpServletRequest request, String userId, String sensorId){
+    public String getSensorEndpoints(HttpServletRequest request, String userId, String sensorId, Integer pageSize){
 
         //setting up headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + request.getHeader("Authorization"));
 
-        Map<String, Object> requestBody = getStringObjectMap(userId, sensorId);
+        Map<String, Object> requestBody = getStringObjectMap(userId, sensorId, pageSize);
 
         HttpEntity<Object> entity = new HttpEntity<>(requestBody, headers);
 
@@ -38,15 +38,15 @@ public class GraphqlSensorEndpointService {
         return response.getBody();
     }
 
-    private static Map<String, Object> getStringObjectMap(String userId, String sensorId) {
+    private static Map<String, Object> getStringObjectMap(String userId, String sensorId, Integer pageSize) {
         String query = """
                 query {
-                	sensorEndpoints(userId : "$userId", sensorId : "$sensorId", pageSize : 50, pageNumber: 1) {
+                	sensorEndpoints(userId : "$userId", sensorId : "$sensorId", pageSize : $pageSize, pageNumber: 1) {
                     parsedDateTime,
                     value
                   }
                 }
-                """.replace("$userId", userId).replace("$sensorId", sensorId);
+                """.replace("$userId", userId).replace("$sensorId", sensorId).replace("$pageSize", pageSize.toString());
 
         //create requestBody with query
         Map<String, Object> requestBody = new HashMap<>();
