@@ -76,8 +76,8 @@ graphql:
 sensor-manager:
     token:
         secret: ${JWT_SECRET:secret}
-        access-expires: 600000
-        refresh-expires: 1800000
+        access-expires: 1800000
+        refresh-expires: 60000000
     topic:
         sensor-value: sensor-value
 

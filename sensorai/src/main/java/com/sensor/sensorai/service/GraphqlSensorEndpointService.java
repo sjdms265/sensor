@@ -41,7 +41,7 @@ public class GraphqlSensorEndpointService {
     private static Map<String, Object> getStringObjectMap(String userId, String sensorId, Integer pageSize) {
         String query = """
                 query {
-                	sensorEndpoints(userId : "$userId", sensorId : "$sensorId", pageSize : $pageSize, pageNumber: 1) {
+                	sensorEndpoints(userId : "$userId", sensorId : "$sensorId", pageSize : $pageSize, pageNumber: 0) {
                     parsedDateTime,
                     value
                   }

@@ -1,5 +1,6 @@
 package com.sensor.sensorai.controller;
 
+import com.sensor.sensorai.dto.Rain;
 import com.sensor.sensorai.dto.TemperatureResults;
 import com.sensor.sensorai.service.GraphqlSensorEndpointService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,22 +20,73 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Slf4j
 public class ChatController {
 
-    private final ChatClient ollamaChatClient;
+    private final ChatClient chatClient;
 
     private final GraphqlSensorEndpointService graphqlSensorEndpointService;
 
-    @GetMapping("/hello/{userId}/{sensorId}")
-    public ResponseEntity<String> getChatModel(HttpServletRequest request, final @PathVariable("userId") String userId, final @PathVariable("sensorId") String sensorId) {
+    @GetMapping("/stats/{userId}/{sensorId}/{pageSize}")
+    public ResponseEntity<String> getBasicStats(HttpServletRequest request, final @PathVariable("userId") String userId, final @PathVariable("sensorId") String sensorId, @PathVariable(required = false) Integer pageSize) {
+
+        if(pageSize == null) pageSize = 10;
 
         try{
 
-            String sensorEndpoints = graphqlSensorEndpointService.getSensorEndpoints(request, userId, sensorId, 50);
+            String sensorEndpoints = graphqlSensorEndpointService.getSensorEndpoints(request, userId, sensorId, pageSize);
 
             String contents = "Analyze this json data and calculate the average temperature, highest temperature and lowest temperature: "
-                    + sensorEndpoints + "\n" + responseFormat();
+                    + sensorEndpoints + "\n" + responseFormat("TemperatureResults");
             log.info("request to ai: {}", contents);
 
-            String answer =  ollamaChatClient.prompt().user(contents).call().content();
+            String answer =  chatClient.prompt().user(contents).call().content();
+
+            log.info("answer: {}", answer);
+
+            return ResponseEntity.ok(answer);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+    }
+
+//    @GetMapping("/graphline/{userId}/{sensorId}")
+    public ResponseEntity<String> getGraphline(HttpServletRequest request, final @PathVariable("userId") String userId, final @PathVariable("sensorId") String sensorId) {
+
+        try{
+
+            String sensorEndpoints = graphqlSensorEndpointService.getSensorEndpoints(request, userId, sensorId, 10);
+
+            String contents = "Generate a line graph image for the temperature data: " + sensorEndpoints + "\n" + "No source code";
+            log.info("request to ai: {}", contents);
+
+            String answer =  chatClient.prompt().user(contents).call().content();
+
+            log.info("answer: {}", answer);
+
+            return ResponseEntity.ok(answer);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @GetMapping("/rain/{userId}/{pageSize}")
+    public ResponseEntity<String> rainProbability(HttpServletRequest request, final @PathVariable("userId") String userId, @PathVariable(required = false) Integer pageSize) {
+
+        if(pageSize == null) pageSize = 10;
+
+        try{
+
+            //FIXME endpoint that get en sensor associated to an user
+            String sensorEndpointsTemperature = graphqlSensorEndpointService.getSensorEndpoints(request, userId, "sensor.10000db11e_t", pageSize);
+            String sensorEndpointsHumidity = graphqlSensorEndpointService.getSensorEndpoints(request, userId, "sensor.10000db11e_h", pageSize);
+
+            String contents = "What is the probability of rain for today? The last values of temperature are " +
+                    sensorEndpointsTemperature + " and the last values of temperature are" + sensorEndpointsHumidity +  responseFormat("Rain");
+            log.info("request to ai: {}", contents);
+
+            String answer =  chatClient.prompt().user(contents).call().content();
 
             log.info("answer: {}", answer);
 
@@ -47,9 +99,15 @@ public class ChatController {
     }
 
     //https://www.baeldung.com/spring-artificial-intelligence-structure-output
-    public static String responseFormat() {
+    public static String responseFormat(String className) {
 
-        BeanOutputConverter<TemperatureResults> beanOutputConverter = new BeanOutputConverter<>(TemperatureResults.class);
+        BeanOutputConverter beanOutputConverter = null;
+
+        //FIXME repace by factory
+        switch (className) {
+            case "TemperatureResults":  beanOutputConverter = new BeanOutputConverter<>(TemperatureResults.class);
+            case "Rain" :  beanOutputConverter = new BeanOutputConverter<>(Rain.class);
+        }
 
         String format = beanOutputConverter.getFormat();
 
@@ -67,8 +125,8 @@ public class ChatController {
 
     }
 
-    @GetMapping("/hello")
+    @GetMapping("/stats/hello")
     public ResponseEntity<String> getChatModel(HttpServletRequest request) {
-        return getChatModel(request, "sjdms265", "sensor.10000db11e_t");
+        return getBasicStats(request, "sjdms265", "sensor.10000db11e_t", null);
     }
 }

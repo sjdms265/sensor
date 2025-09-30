@@ -3,6 +3,7 @@ package com.sensor.sensorai.config;
 import org.springframework.ai.anthropic.AnthropicChatModel;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -22,7 +23,8 @@ public class SensorAiConfig {
         return new RestTemplate();
     }
 
-    @Bean(name = "ollamaChatClient")
+    @Bean(name = "chatClient")
+    @ConditionalOnProperty(name = "spring.ai.active-model", havingValue = "ollama")
     public ChatClient ollamaChatClient(OllamaChatModel ollamaChatModel) {
 
         var defaultSystem = """
@@ -32,7 +34,8 @@ public class SensorAiConfig {
         return ChatClient.builder(ollamaChatModel).defaultSystem(defaultSystem).build();
     }
 
-    @Bean(name = "anthropicChatClient")
+    @Bean(name = "chatClient")
+    @ConditionalOnProperty(name = "spring.ai.active-model", havingValue = "anthropic")
     public ChatClient anthropicChatClient(AnthropicChatModel anthropicChatModel) {
 
         var defaultSystem = """

@@ -12,6 +12,8 @@ spring:
     chat:
       client:
         enabled: false
+    active-model: ollama
+#    active-model: anthropic
 
 server:
   port: 8083

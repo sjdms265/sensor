@@ -15,7 +15,7 @@
     <description>sensorai</description>
     <properties>
         <java.version>21</java.version>
-        <spring-ai.version>1.0.1</spring-ai.version>
+        <spring-ai.version>1.0.2</spring-ai.version>
     </properties>
     <dependencies>
         <!-- avoid ReactiveWebServerFactory error on startup -->
