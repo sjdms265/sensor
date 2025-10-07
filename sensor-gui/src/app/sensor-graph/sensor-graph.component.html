@@ -1,0 +1,23 @@
+<div class="sensor-graph-container">
+  <div class="header">
+    <h2>Sensor Data Graph</h2>
+    <button (click)="refreshData('sjdms265', 'sensor.10000db11e_t', '10')" [disabled]="loading">
+      {{ loading ? 'Loading...' : 'Refresh' }}
+    </button>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error && graphData.length > 0">
+    <app-line-graph
+      [data]="graphData"
+      [title]="'Sensor Values Over Time'">
+    </app-line-graph>
+  </div>
+
+  <div *ngIf="!loading && !error && graphData.length === 0" class="no-data">
+    No data available
+  </div>
+</div>

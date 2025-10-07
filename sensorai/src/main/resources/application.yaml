@@ -22,4 +22,14 @@ server:
 
 sensor-manager.url: http://localhost:8090/temperaturesensor/graphql
 
+eureka:
+  client:
+    #        enabled: false
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+
 

@@ -31,7 +31,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        if(request.getServletPath().equals("/login") || request.getServletPath().equals("/api/refreshToken")) {
+        if(request.getServletPath().equals("/login") || request.getServletPath().startsWith("/api/auth")) {
             filterChain.doFilter(request, response);
         } else {
             DecodedJWT decodedJWT = sensorManagerUtil.getToken(request);

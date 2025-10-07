@@ -16,10 +16,10 @@ export class AppComponent {
   constructor() {
     this.webSocket = new WebSocket('ws://localhost:8081/sensormanager/sensor-gui');
     this.webSocket.onmessage = (event) => {
-      console.log("event.data " + event.data)
+      // console.log("event.data " + event.data)
       this.sensorValue = JSON.parse(event.data);
       this.sensorValues.push(this.sensorValue);
-      console.log("sensorValues size " + this.sensorValues.length)
+      // console.log("sensorValues size " + this.sensorValues.length)
     }
   }
 }

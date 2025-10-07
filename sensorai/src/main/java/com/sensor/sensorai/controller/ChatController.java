@@ -1,5 +1,6 @@
 package com.sensor.sensorai.controller;
 
+import com.sensor.sensorai.dto.GraphSensorEndpoint;
 import com.sensor.sensorai.dto.Rain;
 import com.sensor.sensorai.dto.TemperatureResults;
 import com.sensor.sensorai.service.GraphqlSensorEndpointService;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/sensorai")
@@ -49,21 +52,15 @@ public class ChatController {
 
     }
 
-//    @GetMapping("/graphline/{userId}/{sensorId}")
-    public ResponseEntity<String> getGraphline(HttpServletRequest request, final @PathVariable("userId") String userId, final @PathVariable("sensorId") String sensorId) {
+    @GetMapping("/graphline/{userId}/{sensorId}")
+    public ResponseEntity<List<GraphSensorEndpoint>> getGraphline(HttpServletRequest request, final @PathVariable("userId") String userId, final @PathVariable("sensorId") String sensorId) {
 
         try{
 
-            String sensorEndpoints = graphqlSensorEndpointService.getSensorEndpoints(request, userId, sensorId, 10);
+            List<GraphSensorEndpoint> graphSensorEndpoints = graphqlSensorEndpointService.getSensorEndpointsList(request, userId, sensorId, 50);
+            log.info("answer: {}", graphSensorEndpoints);
 
-            String contents = "Generate a line graph image for the temperature data: " + sensorEndpoints + "\n" + "No source code";
-            log.info("request to ai: {}", contents);
-
-            String answer =  chatClient.prompt().user(contents).call().content();
-
-            log.info("answer: {}", answer);
-
-            return ResponseEntity.ok(answer);
+            return ResponseEntity.ok(graphSensorEndpoints);
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);
