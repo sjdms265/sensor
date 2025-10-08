@@ -1,4 +1,10 @@
-<app-sensor-graph></app-sensor-graph>
+<app-sensor-graph
+  [sensorId]="'sensor.10000db501_t'"></app-sensor-graph>
+
+<app-sensor-list
+  [userId]="'sjdms265'"
+  (sensorSelected)="onSensorSelected($event)">
+</app-sensor-list>
 
 <h2>Sensor Values Real time</h2>
 <ul><li *ngFor="let sensorValue of sensorValues; index as i;">{{sensorValue | json}}</li></ul>

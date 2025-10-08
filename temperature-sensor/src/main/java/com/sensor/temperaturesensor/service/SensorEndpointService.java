@@ -18,5 +18,7 @@ public interface SensorEndpointService {
     List<SensorEndpointDTO> getByUserIdAndSensorIdAndDate(String userId, String sensorId,
                                                           OffsetDateTime fromDate, OffsetDateTime toDate, Integer pageNumber, Integer pageSize);
 
+    List<SensorEndpointDTO> getDistinctSensorIdByUserId(String userId);
+
     Window<SensorEndpoint> findByUserIdAndSensorId(String userId, String sensorId, ScrollPosition scrollPosition, Limit limit, Sort sort);
 }

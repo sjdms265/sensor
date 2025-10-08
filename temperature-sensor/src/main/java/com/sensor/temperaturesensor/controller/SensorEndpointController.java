@@ -53,6 +53,11 @@ public class SensorEndpointController {
     }
 
     @QueryMapping
+    public List<SensorEndpointDTO> sensorsByUser(@Argument String userId) {
+        return sensorEndpointService.getDistinctSensorIdByUserId(userId);
+    }
+
+    @QueryMapping
     public Window<SensorEndpoint> sensorEndpointList(@Argument String userId, @Argument String sensorId, ScrollSubrange scrollSubrange) {
         ScrollPosition scrollPosition = scrollSubrange.position().orElse(ScrollPosition.offset());
         Limit limit = Limit.of(scrollSubrange.count().orElse(pageSize));

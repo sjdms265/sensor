@@ -39,6 +39,7 @@ spring:
                   - PATCH
                   - OPTIONS
                   - HEAD
+                  - GRAPHQL
                 allowedHeaders:
                   - "*"
                 exposedHeaders:

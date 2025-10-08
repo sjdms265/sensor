@@ -8,17 +8,21 @@ import { AppComponent } from './app.component';
 import { LineGraphComponent } from './line-graph/line-graph.component';
 import { SensorGraphComponent } from './sensor-graph/sensor-graph.component';
 import { SensorDataService } from './sensor-data.service';
+import { SensorListComponent } from './sensor-list/sensor-list.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
     AppComponent,
     LineGraphComponent,
-    SensorGraphComponent
+    SensorGraphComponent,
+    SensorListComponent
   ],
   imports: [
     BrowserModule,
     CommonModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule
   ],
   providers: [SensorDataService,
     provideHttpClient(withInterceptorsFromDi())],

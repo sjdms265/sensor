@@ -98,6 +98,22 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
     }
 
     @Override
+    public List<SensorEndpointDTO> getDistinctSensorIdByUserId(String userId) {
+
+        List<String> sensorIds = sensorEndpointRepository.getDistinctSensorIdByUserId(userId);
+
+        List<SensorEndpointDTO> sensorEndpoints = new ArrayList<>();
+
+        sensorIds.forEach(sensorId -> {
+            SensorEndpointDTO sensorEndpointDTO = SensorEndpointDTO.builder().sensorId(sensorId).userId(userId).build();
+            sensorEndpoints.add(sensorEndpointDTO);
+        });
+
+        return sensorEndpoints;
+
+    }
+
+    @Override
     public Window<SensorEndpoint> findByUserIdAndSensorId(String userId, String sensorId,
                                                           ScrollPosition scrollPosition, Limit limit, Sort sort) {
         return sensorEndpointRepository.findByUserIdAndSensorIdOrderByDateDesc(userId, sensorId, scrollPosition, limit, sort);

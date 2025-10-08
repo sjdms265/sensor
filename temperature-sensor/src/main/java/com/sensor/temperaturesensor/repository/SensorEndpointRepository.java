@@ -22,4 +22,7 @@ public interface SensorEndpointRepository extends JpaRepository<SensorEndpoint, 
 
     Window<SensorEndpoint> findByUserIdAndSensorIdOrderByDateDesc(String userId, String sensorId,
                                                                   ScrollPosition scrollPosition, Limit limit, Sort sortOrder);
+
+    @Query("SELECT DISTINCT s.sensorId FROM SensorEndpoint s WHERE s.userId = :userId")
+    List<String> getDistinctSensorIdByUserId(@Param("userId") String userId);
 }
