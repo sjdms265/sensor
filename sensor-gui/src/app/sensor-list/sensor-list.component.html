@@ -1,0 +1,45 @@
+<div class="sensor-list-container">
+  <div class="sensor-list-header">
+    <label for="sensorDropdown">Select Sensor:</label>
+    <button
+      (click)="refreshSensors()"
+      [disabled]="loading"
+      class="refresh-button"
+      title="Refresh sensor list">
+      🔄
+    </button>
+  </div>
+
+  <div class="dropdown-container">
+    <select
+      id="sensorDropdown"
+      [(ngModel)]="selectedSensorId"
+      (change)="onSensorChange()"
+      [disabled]="loading || sensors.length === 0"
+      class="sensor-dropdown">
+      <option value="" disabled>
+        {{ loading ? 'Loading sensors...' : 'Select a sensor' }}
+      </option>
+      <option *ngFor="let sensor of sensors" [value]="sensor.sensorId">
+        {{ sensor.sensorId }}
+      </option>
+    </select>
+
+    <div *ngIf="loading" class="loading-spinner">
+      <span>Loading...</span>
+    </div>
+
+    <div *ngIf="error" class="error-message">
+      <span>⚠️ {{ error }}</span>
+      <button (click)="refreshSensors()" class="retry-button">Retry</button>
+    </div>
+
+    <div *ngIf="!loading && sensors.length === 0 && !error" class="no-data-message">
+      <span>No sensors found for this user</span>
+    </div>
+  </div>
+
+  <div *ngIf="selectedSensorId" class="selected-sensor-info">
+    <strong>Selected Sensor:</strong> {{ selectedSensorId }}
+  </div>
+</div>
