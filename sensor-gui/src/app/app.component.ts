@@ -16,6 +16,8 @@ export class AppComponent implements OnInit {
 
   error: string = '';
 
+  selectedSensorId: string = 'sensor.10000db501_t';
+
   constructor(private authService: AuthService) {
     this.webSocket = new WebSocket('ws://localhost:8081/sensormanager/sensor-gui');
     this.webSocket.onmessage = (event) => {
@@ -48,6 +50,7 @@ export class AppComponent implements OnInit {
   // In your parent component TypeScript
   onSensorSelected(sensorId: string): void {
     console.log('Selected sensor:', sensorId);
+    this.selectedSensorId = sensorId;
     // Do something with the selected sensor ID
   }
 }
