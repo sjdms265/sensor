@@ -40,7 +40,7 @@ services:
     ports:
       - "11434:11434"
     volumes:
-      - /run/media/barnowl/t71/chucho/ollama-models:/root/.ollama
+      - ./ollama:/root/.ollama
     environment:
       # - OLLAMA_HOST='0.0.0.0'  # uncomment to make ollama reachable by other computers on your network
       - OLLAMA_KEEP_ALIVE=5m
