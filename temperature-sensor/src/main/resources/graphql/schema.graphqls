@@ -27,5 +27,6 @@ type SensorEndpoint {
 
 type Query {
     sensorEndpoints(userId: String!, sensorId: String!, fromDate: DateTime, toDate: DateTime, pageNumber: Int, pageSize: Int): [SensorEndpointDTO]
+    sensorsByUser(userId: String!): [SensorEndpointDTO]
     sensorEndpointList(userId: String!, sensorId: String!, first: Int, after: String, last: Int, before: String): SensorEndpointConnection
 }

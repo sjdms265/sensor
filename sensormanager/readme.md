@@ -116,6 +116,26 @@ To create a pod that you can use as a Kafka client run the following commands:
 
 docker run --name=sensordb -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres 
 
+
+--------------- DOCKER UPDATE CONTAINERS
+
+https://www.baeldung.com/ops/docker-compose-latest-image
+docker-compose pull && docker-compose up -d
+docker-compose pull my_app && docker-compose up -d
+
+--------------- DOCKER CLEAN
+https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes
+
+Start all containers before running 
+docker system prune -a
+
+
+--------------- zipking options
+
+https://stackoverflow.com/questions/66517888/opentelemetry-with-zipkin-exporter-is-not-working-as-expected-throws-statusrunt
+
+-Dotel.traces.exporter=zipkin -Dotel.metrics.exporter=none -Dotel.exporter.zipkin.endpoint=http://localhost:9411/api/v2/spans
+
 --------------- TEST endpoints
 
 ###

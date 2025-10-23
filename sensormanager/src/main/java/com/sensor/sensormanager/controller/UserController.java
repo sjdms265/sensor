@@ -29,12 +29,12 @@ public class UserController {
 
     private final UserService userService;
 
-    public final static String ADMIN_USERS_PATH = ADMIN_PATH + "/users";
-    public final static String USERS_PATH = "/users";
-    public final static String ADMIN_ROLES_PATH = ADMIN_PATH + "/roles";
-    public final static String ROLES_PATH = "/roles";
-    public final static String ADD_ROLE_TO_USER_PATH = "/roles/addtouser";
-    public final static String REFRESH_TOKEN = "/refreshToken";
+    public static final String ADMIN_USERS_PATH = ADMIN_PATH + "/users";
+    public static final String USERS_PATH = "/users";
+    public static final String ADMIN_ROLES_PATH = ADMIN_PATH + "/roles";
+    public static final String ROLES_PATH = "/roles";
+    public static final String ADD_ROLE_TO_USER_PATH = "/roles/addtouser";
+    public static final String REFRESH_TOKEN = "/refreshToken";
 
     @GetMapping(ADMIN_USERS_PATH)
     public ResponseEntity<List<SensorUser>> getUsers() {

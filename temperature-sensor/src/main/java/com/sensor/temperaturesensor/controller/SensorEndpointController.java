@@ -23,9 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import reactor.core.publisher.Flux;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
@@ -42,8 +40,7 @@ public class SensorEndpointController {
         batchLoaderRegistry.forTypePair(String.class, SensorUserDTO.class).registerBatchLoader(
                 (List<String> keys, BatchLoaderEnvironment env) -> {
                     log.debug("Loading sensor users {}", keys);
-                    Flux<SensorUserDTO> usersByUserName = Flux.just(new SensorUserDTO("name", "username", "password"));
-                    return usersByUserName;
+                    return Flux.just(new SensorUserDTO("name", "username", "password"));
                 }
         );
     }
@@ -53,6 +50,11 @@ public class SensorEndpointController {
                                                    @Argument OffsetDateTime fromDate, @Argument OffsetDateTime toDate,
                                                    @Argument Integer pageNumber, @Argument Integer pageSize) {
         return sensorEndpointService.getByUserIdAndSensorIdAndDate(userId, sensorId, fromDate, toDate, pageNumber, pageSize);
+    }
+
+    @QueryMapping
+    public List<SensorEndpointDTO> sensorsByUser(@Argument String userId) {
+        return sensorEndpointService.getDistinctSensorIdByUserId(userId);
     }
 
     @QueryMapping

@@ -136,3 +136,13 @@ ZIPKIN
 
 http://localhost:9411/zipkin
 http://localhost:8082/actuator/metrics/NewHumidityProcessor
+
+GRAPHIQL
+
+http://localhost:8082/temperaturesensor/graphiql
+
+{
+    sensorsByUser(userId: "sjdms265") {
+        sensorId
+    }
+}

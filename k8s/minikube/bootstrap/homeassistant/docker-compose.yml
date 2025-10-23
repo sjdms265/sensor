@@ -1,0 +1,13 @@
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - 'C:\Users\david.martinez\docs\ha\config:/config'
+      - 'C:\Users\david.martinez\docs\ha\etc\localtime:/etc/localtime:ro'
+      - 'C:\Users\david.martinez\docs\ha\run\dbus:/run/dbus:ro'
+    ports:
+      - '8123:8123'
+    restart: unless-stopped
+    privileged: true
+#    network_mode: host

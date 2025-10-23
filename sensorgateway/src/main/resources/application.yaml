@@ -2,19 +2,52 @@ spring:
   application.name: sensorgateway
   cloud:
     gateway:
-      routes:
-        - id: temperaturesensor
-          uri: lb://TEMPERATURESENSOR
-          predicates:
-            - Path=/temperaturesensor/**
-          filters:
-            - AuthenticationSyncFilter
-        - id: sensormanager
-          uri: lb://SENSORMANAGER
-          predicates:
-            - Path=/sensormanager/**
-          filters:
-            - AuthenticationSyncFilter
+      server:
+        webflux:
+          routes:
+            - id: temperaturesensor
+              uri: lb://TEMPERATURESENSOR
+              predicates:
+                - Path=/temperaturesensor/**
+              filters:
+                - AuthenticationSyncFilter
+            - id: sensormanager
+              uri: lb://SENSORMANAGER
+              predicates:
+                - Path=/sensormanager/**
+              filters:
+                - AuthenticationSyncFilter
+            - id: sensorai
+              uri: lb://SENSORAI
+              predicates:
+                - Path=/sensorai/**
+              filters:
+                - AuthenticationSyncFilter
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOriginPatterns:
+                  - "http://localhost:4200"
+                  - "http://localhost:8080"
+                  - "http://127.0.0.1:4200"
+                  - "http://127.0.0.1:8080"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - PATCH
+                  - OPTIONS
+                  - HEAD
+                  - GRAPHQL
+                allowedHeaders:
+                  - "*"
+                exposedHeaders:
+                  - Authorization
+                  - Content-Disposition
+                allowCredentials: true
+                maxAge: 3600
+
 eureka:
   client:
     #        enabled: false

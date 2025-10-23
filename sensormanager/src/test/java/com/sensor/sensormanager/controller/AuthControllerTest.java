@@ -9,7 +9,6 @@ import com.sensor.sensormanager.service.UserService;
 import com.sensor.sensormanager.util.SensorManagerUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -21,9 +20,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class AuthControllerTest {
 
@@ -79,24 +75,9 @@ class AuthControllerTest {
     }
 
     @Test
-    @Disabled
-    void validToken() {
-
-        //https://jwt.io/  change signature tokenSecret
-        Map<String, String> response = authController.
-                validateToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.dqmo9euORt-zCYxaH-q6hvukkoWPNs4zRSLqTulfzwA");
-
-        assertNotNull(response);
-        Assertions.assertTrue(response.containsKey("success"));
-    }
-
-    @Test
     void invalidToken() {
 
-        Map<String, String> response = authController.validateToken("token");
-
-        assertNotNull(response);
-        Assertions.assertTrue(response.containsKey("error"));
+        Assertions.assertThrows(RuntimeException.class, () -> authController.validateToken("token"));
 
     }
 }

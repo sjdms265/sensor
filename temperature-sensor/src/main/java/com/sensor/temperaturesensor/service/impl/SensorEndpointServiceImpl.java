@@ -19,6 +19,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -34,7 +35,7 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
 
     private final Converter<SensorEndpoint, SensorEndpointDTO> sensorEndpoint2SensorEnpointDTOConverter;
 
-    @Value("${sensor-manager.pageSize:10}")
+    @Value("${sensor-manager.pageSize:500}")
     private int pageSize;
 
     @Override
@@ -55,16 +56,16 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
                             lastSensorEndpoint);
 
             if(currentSensorEndpoints.size() > 1) {
-                log.error("Duplicate sensor endpoints {} size {}", currentSensorEndpoints.get(0), currentSensorEndpoints.size());
+                log.error("Duplicate sensor endpoints {} size {}", currentSensorEndpoints.getFirst(), currentSensorEndpoints.size());
             } else if(currentSensorEndpoints.isEmpty()) {
                 log.error("No sensor endpoint for getSensorEndpointsByUserIdAndSensorIdAndDate {}", sensorEndpoint);
                 return null;
             }
 
-            if(!currentSensorEndpoints.get(0).getValue().equals(sensorEndpoint.getValue())) {
+            if(!currentSensorEndpoints.getFirst().getValue().equals(sensorEndpoint.getValue())) {
                 log.debug("Updated SensorEndpointDTO {}", sensorEndpoint);
                 save(sensorEndpoint);
-                return CompletableFuture.completedFuture(currentSensorEndpoints.get(0));
+                return CompletableFuture.completedFuture(currentSensorEndpoints.getFirst());
             }
         } else if(lastSensorEndpoint == null) {
             log.debug("New SensorEndpointDTO {}", sensorEndpoint);
@@ -84,17 +85,32 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
         }
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        List<SensorEndpoint> sensorEndpoints;
+        List<SensorEndpoint> sensorEndpoints = new ArrayList<>();
         if(fromDate == null && toDate == null) {
             sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdOrderByDateDesc(userId, sensorId, pageable);
-        } else {
-            assert fromDate != null;
+        } else if (fromDate != null) {
             sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdAndDateBetweenOrderByDateDesc(userId, sensorId,
                     Date.from(fromDate.toInstant()),  Date.from(toDate.toInstant()), pageable);
         }
 
         return sensorEndpoints.stream().
                 map(sensorEndpoint2SensorEnpointDTOConverter::convert).toList();
+    }
+
+    @Override
+    public List<SensorEndpointDTO> getDistinctSensorIdByUserId(String userId) {
+
+        List<String> sensorIds = sensorEndpointRepository.getDistinctSensorIdByUserId(userId);
+
+        List<SensorEndpointDTO> sensorEndpoints = new ArrayList<>();
+
+        sensorIds.forEach(sensorId -> {
+            SensorEndpointDTO sensorEndpointDTO = SensorEndpointDTO.builder().sensorId(sensorId).userId(userId).build();
+            sensorEndpoints.add(sensorEndpointDTO);
+        });
+
+        return sensorEndpoints;
+
     }
 
     @Override

@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.record.RecordModule;
+
 
 import java.util.Collection;
 import java.util.List;
@@ -20,7 +19,7 @@ class SensorUserDTO2SensorUserConverterTest {
     void setUp() throws Exception {
 
         try (final AutoCloseable autoCloseable = MockitoAnnotations.openMocks(this)) {
-            converter = new SensorUserDTO2SensorUserConverter(new ModelMapper().registerModule(new RecordModule()));
+            converter = new SensorUserDTO2SensorUserConverter();
         }
     }
 

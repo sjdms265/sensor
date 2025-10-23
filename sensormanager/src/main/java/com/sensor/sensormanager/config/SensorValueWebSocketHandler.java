@@ -62,7 +62,7 @@ public class SensorValueWebSocketHandler extends TextWebSocketHandler {
             return null;
         } else {
             message = new TextMessage(objectMapper.writeValueAsString(sensorEndpointDTO));
-            WebSocketSession session = this.sessions.get(0);
+            WebSocketSession session = this.sessions.getFirst();
             super.handleMessage(session, message);
             try {
                 if(!CollectionUtils.isEmpty(this.sessions))
@@ -81,6 +81,7 @@ public class SensorValueWebSocketHandler extends TextWebSocketHandler {
         return message;
     }
 
+    @Override
     public boolean supportsPartialMessages() {
         return true;
     }

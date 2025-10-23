@@ -6,9 +6,9 @@ import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFac
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 /*
     https://www.youtube.com/watch?v=MWvnmyLRUik
@@ -33,7 +33,7 @@ public class AuthenticationSyncFilter extends AbstractGatewayFilterFactory<Authe
 
         log.debug("Starting AuthenticationSyncFilter");
 
-        return (((exchange, chain) -> {
+        return ((exchange, chain) -> {
 
             if(routeValidator.isAuth.test(exchange.getRequest())) {
 
@@ -41,7 +41,7 @@ public class AuthenticationSyncFilter extends AbstractGatewayFilterFactory<Authe
                     throw new RuntimeException("Authorization header not present");
                 }
 
-                String token = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).getFirst();
+                String token = Objects.requireNonNull(exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION)).getFirst();
                 if(token.startsWith("Bearer ")) {
                     token = token.substring("Bearer ".length());
                 }
@@ -53,8 +53,10 @@ public class AuthenticationSyncFilter extends AbstractGatewayFilterFactory<Authe
                        uri("lb://SENSORMANAGER/sensormanager/api/auth/validateToken/" + token).
                        exchangeToMono(clientResponse -> {
                            log.debug("client response {}", clientResponse.statusCode());
-                           return clientResponse.statusCode().is2xxSuccessful() ?
-                                   clientResponse.bodyToMono(HashMap.class) : Mono.just(new HashMap<>());
+
+                           if (clientResponse.statusCode().is2xxSuccessful()) return clientResponse.bodyToMono(HashMap.class);
+
+                           throw new CustomRequestException("Not authorized");
                        }).
                        map(hashMap -> {
                            exchange.getRequest().mutate().build();
@@ -64,7 +66,7 @@ public class AuthenticationSyncFilter extends AbstractGatewayFilterFactory<Authe
 
             }
             return chain.filter(exchange);
-        }));
+        });
     }
 
     public static class Config {

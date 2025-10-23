@@ -1,7 +1,5 @@
 package com.sensor.temperaturesensor;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.record.RecordModule;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -21,11 +19,6 @@ public class TemperatureSensorApplication {
     @Bean(name = "threadPoolTaskExecutor")
     public Executor threadPoolTaskExecutor() {
         return new ThreadPoolTaskExecutor();
-    }
-
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper().registerModule(new RecordModule());
     }
 
 }

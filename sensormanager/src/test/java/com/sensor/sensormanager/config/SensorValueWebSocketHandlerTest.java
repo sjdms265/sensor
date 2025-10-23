@@ -76,7 +76,4 @@ class SensorValueWebSocketHandlerTest {
         Assertions.assertNull(textMessage);
     }
 
-    @Test
-    void supportsPartialMessages() {
-    }
 }
