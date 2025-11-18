@@ -10,10 +10,14 @@ import { SensorGraphComponent } from './sensor-graph/sensor-graph.component';
 import { SensorDataService } from './sensor-data.service';
 import { SensorListComponent } from './sensor-list/sensor-list.component';
 import {FormsModule} from "@angular/forms";
+import { LoginComponent } from './login/login.component';
+import { AuthService } from './auth.service';
+import { AuthGuard } from './auth.guard';
 
 @NgModule({
   declarations: [
     AppComponent,
+    LoginComponent,
     LineGraphComponent,
     SensorGraphComponent,
     SensorListComponent
@@ -24,7 +28,7 @@ import {FormsModule} from "@angular/forms";
     AppRoutingModule,
     FormsModule
   ],
-  providers: [SensorDataService,
+  providers: [SensorDataService, AuthService, AuthGuard,
     provideHttpClient(withInterceptorsFromDi())],
   bootstrap: [AppComponent]
 })

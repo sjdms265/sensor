@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
-import { TokenResponse } from './TokenResponse';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { TokenResponse } from './dto/TokenResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +11,11 @@ export class AuthService {
   private authTokenSubject = new BehaviorSubject<string | null>(null);
   public authToken$ = this.authTokenSubject.asObservable();
 
-  private readonly AUTH_URL = 'http://localhost:8090/sensormanager/api/auth/token';
   private readonly TOKEN_KEY = 'authToken';
   private readonly REFRESH_TOKEN_KEY = 'refreshToken';
   private readonly MAX_WAIT_TIME = 10000; // 10 seconds
   private readonly CHECK_INTERVAL = 100; // 100ms
+  private apiUrl = 'http://localhost:8090/sensormanager';
 
   private tokenRequestInProgress = false;
 
@@ -25,6 +25,32 @@ export class AuthService {
     if (existingToken) {
       this.authTokenSubject.next(existingToken);
     }
+  }
+
+  login(username: string, password: string): Observable<TokenResponse> {
+    return this.http.post<TokenResponse>(`${this.apiUrl}/api/auth/token`, {
+      username,
+      password
+    }).pipe(
+      tap(response => {
+        this.setToken(response.access_token);
+        if (response.refresh_token) {
+          this.setRefreshToken(response.refresh_token);
+        }
+      })
+    );
+  }
+
+  requestToken(): Observable<TokenResponse> {
+    // This is for automatic token requests (if still needed)
+    return this.http.get<TokenResponse>(`${this.apiUrl}/token`).pipe(
+      tap(response => {
+        this.setToken(response.access_token);
+        if (response.refresh_token) {
+          this.setRefreshToken(response.refresh_token);
+        }
+      })
+    );
   }
 
   /**
@@ -46,41 +72,39 @@ export class AuthService {
    * Check if user is authenticated
    */
   isAuthenticated(): boolean {
-    return !!this.getStoredToken();
-  }
-
-  /**
-   * Request authentication token
-   */
-  requestToken(username: string = 'admin', password: string = '1234'): Observable<TokenResponse> {
-    if (this.tokenRequestInProgress) {
-      console.log('Token request already in progress');
-      return throwError(() => new Error('Token request already in progress'));
+    const token = this.getToken();
+    if (!token) {
+      return false;
     }
 
-    this.tokenRequestInProgress = true;
+    // Optional: Check if token is expired
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const expiry = payload.exp * 1000; // Convert to milliseconds
+      return Date.now() < expiry;
+    } catch (e) {
+      return false;
+    }
+  }
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
+  getToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
+  }
 
-    const body = { username, password };
+  setToken(token: string): void {
+    localStorage.setItem(this.TOKEN_KEY, token);
+  }
 
-    return this.http.post<TokenResponse>(this.AUTH_URL, body, { headers }).pipe(
-      tap((data: TokenResponse) => {
-        console.log('Token response:', data);
-        localStorage.setItem(this.TOKEN_KEY, data.access_token);
-        localStorage.setItem(this.REFRESH_TOKEN_KEY, data.refresh_token);
-        this.authTokenSubject.next(data.access_token);
-        this.tokenRequestInProgress = false;
-        console.log('Token successfully requested and stored');
-      }),
-      catchError((error) => {
-        this.tokenRequestInProgress = false;
-        console.error('Failed to request token:', error);
-        return throwError(() => error);
-      })
-    );
+  getRefreshToken(): string | null {
+    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+  }
+
+  setRefreshToken(token: string): void {
+    localStorage.setItem(this.REFRESH_TOKEN_KEY, token);
+  }
+
+  getUsername(): string {
+    return localStorage.getItem("username") || '';
   }
 
   /**
@@ -121,6 +145,7 @@ export class AuthService {
   clearTokens(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    localStorage.removeItem('username');
     this.authTokenSubject.next(null);
     console.log('Tokens cleared');
   }

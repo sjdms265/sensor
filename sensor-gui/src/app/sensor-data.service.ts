@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import {GraphSensorEndpoint} from "./GraphSensorEndpoint";
+import {GraphSensorEndpoint} from "./dto/GraphSensorEndpoint";
 
 @Injectable({
   providedIn: 'root'

@@ -86,7 +86,7 @@ camel:
         kafka:
             brokers: localhost:9092
         paho-mqtt5:
-            broker-url: 'tcp://192.168.50.150:1883'
+            broker-url: 'tcp://192.168.50.11:1883'
             user-name: mosquito
             password: mosquito123
 

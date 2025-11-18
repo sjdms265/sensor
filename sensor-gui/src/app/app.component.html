@@ -1,10 +1,21 @@
-<app-sensor-graph
-  [sensorId]="selectedSensorId"></app-sensor-graph>
+<div *ngIf="authService.isAuthenticated()">
+  <nav class="navbar">
+    <h1>Sensor Manager</h1>
+    <button (click)="logout()" class="login-button">Logout</button>
+  </nav>
 
-<app-sensor-list
-  [userId]="'sjdms265'"
-  (sensorSelected)="onSensorSelected($event)">
-</app-sensor-list>
+  <app-sensor-graph
+    [sensorId]="selectedSensorId"></app-sensor-graph>
 
-<h2>Sensor Values Real time</h2>
-<ul><li *ngFor="let sensorValue of sensorValues; index as i;">{{sensorValue | json}}</li></ul>
+  <app-sensor-list
+    [userId]="authService.getUsername()"
+    (sensorSelected)="onSensorSelected($event)">
+  </app-sensor-list>
+
+  <h2>Sensor Values Real time</h2>
+  <ul><li *ngFor="let sensorValue of sensorValues; index as i;">{{sensorValue | json}}</li></ul>
+
+  <router-outlet></router-outlet>
+</div>
+
+<router-outlet *ngIf="!authService.isAuthenticated()"></router-outlet>

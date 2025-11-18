@@ -52,4 +52,10 @@ public class BaseController {
 
         return sensorEndpointDTO;
     }
+
+    @GetMapping(BASE_PATH + "/echoSensorEndpoint")
+    public String echoEndpoint() {
+        log.info("hello echoEndpoint ");
+        return "hello echoEndpoint";
+    }
 }
