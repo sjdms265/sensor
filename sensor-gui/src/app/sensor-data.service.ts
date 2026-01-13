@@ -7,7 +7,7 @@ import {GraphSensorEndpoint} from "./dto/GraphSensorEndpoint";
   providedIn: 'root'
 })
 export class SensorDataService {
-  private apiUrl = 'http://localhost:8090/sensorai/graphline/{userId}/{sensorId}';
+  private apiUrl = 'http://localhost:8090/temperaturesensor/graphline/{userId}/{sensorId}';
 
   constructor(private http: HttpClient) { }
 

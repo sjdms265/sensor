@@ -52,22 +52,6 @@ public class ChatController {
 
     }
 
-    @GetMapping("/graphline/{userId}/{sensorId}")
-    public ResponseEntity<List<GraphSensorEndpoint>> getGraphline(HttpServletRequest request, final @PathVariable("userId") String userId, final @PathVariable("sensorId") String sensorId) {
-
-        try{
-
-            List<GraphSensorEndpoint> graphSensorEndpoints = graphqlSensorEndpointService.getSensorEndpointsList(request, userId, sensorId, 50);
-            log.info("answer: {}", graphSensorEndpoints);
-
-            return ResponseEntity.ok(graphSensorEndpoints);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new RuntimeException(e);
-        }
-
-    }
-
     @GetMapping("/rain/{userId}/{pageSize}")
     public ResponseEntity<String> rainProbability(HttpServletRequest request, final @PathVariable("userId") String userId, @PathVariable(required = false) Integer pageSize) {
 

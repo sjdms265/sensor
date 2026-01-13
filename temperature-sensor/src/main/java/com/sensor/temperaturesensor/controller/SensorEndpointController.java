@@ -1,5 +1,7 @@
 package com.sensor.temperaturesensor.controller;
 
+import com.sensor.temperaturesensor.converter.SensorEndpointDTO2GraphSensorEndpointConverter;
+import com.sensor.temperaturesensor.dto.GraphSensorEndpoint;
 import com.sensor.temperaturesensor.dto.SensorEndpointDTO;
 import com.sensor.temperaturesensor.dto.SensorUserDTO;
 import com.sensor.temperaturesensor.model.SensorEndpoint;
@@ -20,11 +22,13 @@ import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Flux;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
@@ -35,8 +39,12 @@ public class SensorEndpointController {
 
     private final SensorEndpointService sensorEndpointService;
 
-    public SensorEndpointController(SensorEndpointService sensorEndpointService, BatchLoaderRegistry batchLoaderRegistry) {
+    private final SensorEndpointDTO2GraphSensorEndpointConverter sensorEndpointDTO2GraphSensorEndpointConverter;
+
+    public SensorEndpointController(SensorEndpointService sensorEndpointService,
+                                    SensorEndpointDTO2GraphSensorEndpointConverter sensorEndpointDTO2GraphSensorEndpointConverter, BatchLoaderRegistry batchLoaderRegistry) {
         this.sensorEndpointService = sensorEndpointService;
+        this.sensorEndpointDTO2GraphSensorEndpointConverter = sensorEndpointDTO2GraphSensorEndpointConverter;
         batchLoaderRegistry.forTypePair(String.class, SensorUserDTO.class).registerBatchLoader(
                 (List<String> keys, BatchLoaderEnvironment env) -> {
                     log.debug("Loading sensor users {}", keys);
@@ -76,5 +84,27 @@ public class SensorEndpointController {
     @GetMapping
     public ResponseEntity<String> home() {
         return ResponseEntity.ok("Hello Temperature-sensor");
+    }
+
+    @GetMapping("/graphline/{userId}/{sensorId}")
+    public ResponseEntity<List<GraphSensorEndpoint>> getGraphLine(@PathVariable final String userId, @PathVariable final String sensorId) {
+
+        try{
+
+            OffsetDateTime now = OffsetDateTime.now();
+
+            List<SensorEndpointDTO> sensorEndpointDTOS = sensorEndpointService.getByUserIdAndSensorIdAndDate(userId, sensorId,
+                    now.minusDays(1), now, 0, 50);
+            log.info("answer: {}", sensorEndpointDTOS);
+
+            List<GraphSensorEndpoint> graphSensorEndpoints = sensorEndpointDTOS.stream().map(
+                    sensorEndpointDTO2GraphSensorEndpointConverter::convert).collect(Collectors.toList());
+
+            return ResponseEntity.ok(graphSensorEndpoints);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
     }
 }
