@@ -86,7 +86,7 @@ public class GraphqlSensorEndpointService {
                 }
                 """.replace("$userId", userId).replace("$sensorId", sensorId).replace("$pageSize", pageSize.toString());
 
-        //create requestBody with query
+        //create requestBody with a query
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("query", query);
         return requestBody;

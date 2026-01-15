@@ -64,7 +64,7 @@ public class ChatController {
             String sensorEndpointsHumidity = graphqlSensorEndpointService.getSensorEndpoints(request, userId, "sensor.10000db11e_h", pageSize);
 
             String contents = "What is the probability of rain for today? The last values of temperature are " +
-                    sensorEndpointsTemperature + " and the last values of temperature are" + sensorEndpointsHumidity +  responseFormat(Rain.class);
+                    sensorEndpointsTemperature + " and the last values of humidity are " + sensorEndpointsHumidity +  responseFormat(Rain.class);
             log.info("request to ai: {}", contents);
 
             String answer =  chatClient.prompt().user(contents).call().content();

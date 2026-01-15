@@ -14,6 +14,7 @@
         <module>sensorai</module>
         <module>sensorgateway</module>
         <module>sensoreureka</module>
+        <module>sensor-mcp-server</module>
     </modules>
 
     <properties>

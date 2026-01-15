@@ -146,3 +146,11 @@ http://localhost:8082/temperaturesensor/graphiql
         sensorId
     }
 }
+
+{
+    sensorEndpoints(userId : "sjdms265", sensorId : "sensor.10000db11e_t",
+        pageSize : 50, pageNumber: 0) {
+            parsedDateTime,
+            value
+    }
+}
