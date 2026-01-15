@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Flux;
 
 import java.time.OffsetDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -94,11 +95,12 @@ public class SensorEndpointController {
             OffsetDateTime now = OffsetDateTime.now();
 
             List<SensorEndpointDTO> sensorEndpointDTOS = sensorEndpointService.getByUserIdAndSensorIdAndDate(userId, sensorId,
-                    now.minusDays(1), now, 0, 50);
+                    now.minusMonths(1), now, 0, 50);
             log.info("answer: {}", sensorEndpointDTOS);
 
-            List<GraphSensorEndpoint> graphSensorEndpoints = sensorEndpointDTOS.stream().map(
-                    sensorEndpointDTO2GraphSensorEndpointConverter::convert).collect(Collectors.toList());
+            List<GraphSensorEndpoint> graphSensorEndpoints = sensorEndpointDTOS.stream().
+                    sorted(Comparator.comparing(SensorEndpointDTO::getDate))
+                    .map(sensorEndpointDTO2GraphSensorEndpointConverter::convert).collect(Collectors.toList());
 
             return ResponseEntity.ok(graphSensorEndpoints);
         } catch (Exception e) {
