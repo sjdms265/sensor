@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import {GraphSensorEndpoint} from "./GraphSensorEndpoint";
+import {GraphSensorEndpoint} from "./dto/GraphSensorEndpoint";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SensorDataService {
-  private apiUrl = 'http://localhost:8090/sensorai/graphline/{userId}/{sensorId}';
+  private apiUrl = 'http://localhost:8090/temperaturesensor/graphline/{userId}/{sensorId}';
 
   constructor(private http: HttpClient) { }
 

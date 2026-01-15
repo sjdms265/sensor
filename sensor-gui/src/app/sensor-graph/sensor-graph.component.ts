@@ -2,7 +2,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import { SensorDataService } from '../sensor-data.service';
 import { AuthService } from '../auth.service';
-import {GraphSensorEndpoint} from "../GraphSensorEndpoint";
+import {GraphSensorEndpoint} from "../dto/GraphSensorEndpoint";
 
 @Component({
   selector: 'app-sensor-graph',

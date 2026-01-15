@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {ServiceEndpoint} from "./ServiceEndpoint";
+import {ServiceEndpoint} from "./dto/ServiceEndpoint";
 import { AuthService } from './auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -9,42 +10,39 @@ import { AuthService } from './auth.service';
 })
 export class AppComponent implements OnInit {
   public sensorValues: ServiceEndpoint[] = [];
-
   sensorValue: ServiceEndpoint = {};
-
-  private webSocket : WebSocket;
-
+  private webSocket : WebSocket | undefined;
   error: string = '';
+  selectedSensorId: string  = '';
 
-  selectedSensorId: string = 'sensor.10000db501_t';
-
-  constructor(private authService: AuthService) {
-    this.webSocket = new WebSocket('ws://localhost:8081/sensormanager/sensor-gui');
-    this.webSocket.onmessage = (event) => {
-      // console.log("event.data " + event.data)
-      this.sensorValue = JSON.parse(event.data);
-      this.sensorValues.push(this.sensorValue);
-      // console.log("sensorValues size " + this.sensorValues.length)
-    }
+  constructor(protected authService: AuthService, private router: Router) {
   }
 
   ngOnInit(): void {
 
-    this.authService.clearTokens()
-
-    // Request token if not available
+    // Check if user is authenticated
     if (!this.authService.isAuthenticated()) {
-      this.authService.requestToken().subscribe({
-        next: () => console.log('Authentication successful'),
-        error: (err) => {
-          this.error = 'Failed to authenticate';
-          console.error('Authentication error:', err);
-        }
-      });
+      this.router.navigate(['/login']);
     } else {
-      console.log('Already authenticated');
+      this.initializeWebSocket();
     }
+  }
 
+  private initializeWebSocket(): void {
+    this.webSocket = new WebSocket('ws://localhost:8081/sensormanager/sensor-gui');
+    this.webSocket.onmessage = (event) => {
+      this.sensorValue = JSON.parse(event.data);
+      this.sensorValues.push(this.sensorValue);
+    };
+
+    this.webSocket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      this.error = 'WebSocket connection failed';
+    };
+
+    this.webSocket.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
   }
 
   // In your parent component TypeScript
@@ -52,5 +50,13 @@ export class AppComponent implements OnInit {
     console.log('Selected sensor:', sensorId);
     this.selectedSensorId = sensorId;
     // Do something with the selected sensor ID
+  }
+
+  logout(): void {
+    this.authService.logout();
+    if (this.webSocket) {
+      this.webSocket.close();
+    }
+    this.router.navigate(['/login']);
   }
 }

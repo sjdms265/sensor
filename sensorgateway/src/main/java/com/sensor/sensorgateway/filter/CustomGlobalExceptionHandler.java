@@ -24,16 +24,16 @@ import java.util.Map;
 
 @Component
 @Order(Integer.MIN_VALUE)
-/**
+/*
  * https://www.baeldung.com/spring-cloud-global-exception-handling
  */
 class CustomGlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
 
-    public CustomGlobalExceptionHandler(final ErrorAttributes errorAttributes,
+    public CustomGlobalExceptionHandler(final ErrorAttributes customErrorAttributes,
                                         final WebProperties.Resources resources,
                                         final ApplicationContext applicationContext,
                                         final ServerCodecConfigurer configurer) {
-        super(errorAttributes, resources, applicationContext);
+        super(customErrorAttributes, resources, applicationContext);
         setMessageReaders(configurer.getReaders());
         setMessageWriters(configurer.getWriters());
     }
@@ -54,7 +54,7 @@ class CustomGlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
         errorPropertiesMap.remove("error");
 
         return ServerResponse.status(httpStatus)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(errorPropertiesMap));
     }
 
