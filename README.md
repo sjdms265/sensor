@@ -15,3 +15,8 @@ docker-compose -f /home/barnowl/Documents/java/sensor/k8s/minikube/bootstrap/pos
 
 docker-compose -f /home/barnowl/Documents/java/sensor/k8s/minikube/bootstrap/zipkin/docker-componse.yml -p zipkin start zipkin
 
+# kill port
+
+sudo lsof -i :8090
+kill PID
+

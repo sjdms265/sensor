@@ -129,6 +129,13 @@ https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-con
 Start all containers before running 
 docker system prune -a
 
+--------------- DOCKER Move docker store file
+https://picandocodigo.net/2026/mini-truco-mover-el-directorio-de-almacenamiento-de-docker/
+
+sudo nano /lib/systemd/system/docker.service
+ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+ExecStart=/usr/bin/dockerd -g /home/fernando/bin/docker_images -H fd://
+
 
 --------------- zipking options
 

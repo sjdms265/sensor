@@ -4,9 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sensor.sensormcpserver.dto.GraphSensorEndpoint;
-import com.sensor.sensormcpserver.dto.SensorEndpointDTO;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +22,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SensorService {
 
     @Value("${temperature-sensor.url}")
@@ -30,19 +30,17 @@ public class SensorService {
 
     private final RestTemplate restTemplate;
 
-    public List<SensorEndpointDTO> findByPattern(String pattern) {
-        return new ArrayList<>();
-    }
-
-    public List<GraphSensorEndpoint> getSensorEndpointsList(HttpServletRequest request, String userId, String sensorId, Integer pageSize){
+    public List<GraphSensorEndpoint> getSensorEndpointsList(String token, String userId, String sensorId, Integer pageSize){
 
         //setting up headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + request.getHeader("Authorization"));
+        headers.set("Authorization", "Bearer " + token);
         Map<String, Object> requestBody = getStringObjectMap(userId, sensorId, pageSize);
 
         HttpEntity<Object> entity = new HttpEntity<>(requestBody, headers);
+
+        log.info("calling {} with requestBody: {}", url, requestBody);
 
         ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
@@ -50,16 +48,19 @@ public class SensorService {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(response.getBody());
 
-            // Navigate to the array - adjust path based on your actual response
+            // Navigate to the array - adjust the path based on your actual response
             JsonNode dataNode = root.path("data").path("sensorEndpoints");
 
-            List<GraphSensorEndpoint> graphSensorEndpoints = mapper.treeToValue(dataNode, new TypeReference<List<GraphSensorEndpoint>>() {});
+            List<GraphSensorEndpoint> graphSensorEndpoints = mapper.treeToValue(dataNode, new TypeReference<>() {
+            });
 
             graphSensorEndpoints.sort(Comparator.comparing(GraphSensorEndpoint::parsedDateTime));
 
+            log.info("response {} with graphSensorEndpoints: {}", url, graphSensorEndpoints);
+
             return graphSensorEndpoints;
         } catch (Exception e) {
-//            log.error("Failed to parse GraphSensorEndpoint array", e);
+            log.error("Failed to parse GraphSensorEndpoint array", e);
             return new ArrayList<>();
         }
 
@@ -75,7 +76,7 @@ public class SensorService {
                 }
                 """.replace("$userId", userId).replace("$sensorId", sensorId).replace("$pageSize", pageSize.toString());
 
-        //create requestBody with a query
+        //create a requestBody with a query
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("query", query);
         return requestBody;

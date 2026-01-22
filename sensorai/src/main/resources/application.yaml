@@ -32,4 +32,4 @@ eureka:
   instance:
     hostname: localhost
 
-
+mcp.sensor-mcp-server.base-url: http://localhost:8084

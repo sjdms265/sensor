@@ -47,7 +47,7 @@ public class SensorManagerUtil {
 
     private JWTCreator.Builder createCommonTokenBuilder(String userName, final String requestUrl, int expirationTime) {
 
-        return JWT.create().withSubject(userName)
+        return JWT.create().withSubject(userName).withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
                 .withIssuer(requestUrl);
     }

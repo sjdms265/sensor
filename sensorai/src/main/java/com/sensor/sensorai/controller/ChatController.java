@@ -1,7 +1,5 @@
 package com.sensor.sensorai.controller;
 
-import com.sensor.sensorai.dto.GraphSensorEndpoint;
-import com.sensor.sensorai.dto.Rain;
 import com.sensor.sensorai.dto.TemperatureResults;
 import com.sensor.sensorai.service.GraphqlSensorEndpointService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,8 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/sensorai")
@@ -52,22 +48,16 @@ public class ChatController {
 
     }
 
-    @GetMapping("/rain/{userId}/{pageSize}")
-    public ResponseEntity<String> rainProbability(HttpServletRequest request, final @PathVariable("userId") String userId, @PathVariable(required = false) Integer pageSize) {
-
-        if(pageSize == null) pageSize = 10;
+    @GetMapping("/rain/{userId}")
+    public ResponseEntity<String> rainProbability(HttpServletRequest request, @PathVariable final String userId) {
 
         try{
 
-            //FIXME endpoint that get en sensor associated to an user
-            String sensorEndpointsTemperature = graphqlSensorEndpointService.getSensorEndpoints(request, userId, "sensor.10000db11e_t", pageSize);
-            String sensorEndpointsHumidity = graphqlSensorEndpointService.getSensorEndpoints(request, userId, "sensor.10000db11e_h", pageSize);
-
-            String contents = "What is the probability of rain for today? The last values of temperature are " +
-                    sensorEndpointsTemperature + " and the last values of humidity are " + sensorEndpointsHumidity +  responseFormat(Rain.class);
+            String contents = "What is the probability of rain for today for the user {userId}?. The last values of temperature and humidity are {pattern}, use {token} ";// +  responseFormat(Rain.class);
             log.info("request to ai: {}", contents);
 
-            String answer =  chatClient.prompt().user(contents).call().content();
+            String answer =  chatClient.prompt().user(userSpec -> userSpec.text(contents).param("userId", userId).
+                    param("pattern", "temperature,humidity").param("token", request.getHeader("Authorization"))).call().content();
 
             log.info("answer: {}", answer);
 
