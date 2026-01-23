@@ -1,35 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.9</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <artifactId>sensor</artifactId>
+        <groupId>com.sensor</groupId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
-    <groupId>com.sensor</groupId>
+
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
     <artifactId>sensor-mcp-server</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>sensor-mcp-server</name>
-    <description>sensor-mcp-server</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
-    <properties>
-        <java.version>21</java.version>
-        <spring-ai.version>1.1.2</spring-ai.version>
-    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.ai</groupId>
@@ -64,17 +45,6 @@
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
     </dependencies>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.ai</groupId>
-                <artifactId>spring-ai-bom</artifactId>
-                <version>${spring-ai.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <plugins>
