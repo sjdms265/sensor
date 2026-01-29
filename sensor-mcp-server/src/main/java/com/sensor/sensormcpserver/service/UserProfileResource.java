@@ -28,7 +28,7 @@ public class UserProfileResource {
         ObjectMapper objectMapper = new ObjectMapper();
 
         List<McpSchema.ResourceContents> resourceContents = new ArrayList<>();
-        McpSchema.ResourceContents resourceContent = new McpSchema.TextResourceContents("/user/profile/123",
+        McpSchema.ResourceContents resourceContent = new McpSchema.TextResourceContents("/user/profile/" + username,
                 "application/json", objectMapper.writeValueAsString(tokenResponseDTO));
         resourceContents.add(resourceContent);
 
