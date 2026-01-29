@@ -89,6 +89,8 @@ camel:
             broker-url: 'tcp://192.168.50.11:1883'
             user-name: mosquito
             password: mosquito123
+            connectionTimeout: 5000
+            keepAliveInterval: 20
 
 logging:
     level:

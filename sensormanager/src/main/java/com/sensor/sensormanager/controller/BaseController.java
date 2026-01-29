@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 
 @RestController
@@ -56,6 +57,6 @@ public class BaseController {
     @GetMapping(BASE_PATH + "/echoSensorEndpoint")
     public String echoEndpoint() {
         log.info("hello echoEndpoint ");
-        return "hello echoEndpoint";
+        return String.format("hello echoEndpoint %s", new Date());
     }
 }

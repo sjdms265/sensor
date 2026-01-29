@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sensor.sensormcpserver.dto.GraphSensorEndpoint;
+import com.sensor.sensormcpserver.dto.LoginSensorUserDTO;
+import com.sensor.sensormcpserver.dto.TokenResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,8 +27,12 @@ import java.util.Map;
 @Slf4j
 public class SensorService {
 
+    public static final String API_TOKEN = "/api/auth/token";
     @Value("${temperature-sensor.url}")
-    private String url;
+    private String temperatureSensorUrl;
+
+    @Value("${sensor-manager.url}")
+    private String sensorManagerUrl;
 
     private final RestTemplate restTemplate;
 
@@ -40,9 +46,9 @@ public class SensorService {
 
         HttpEntity<Object> entity = new HttpEntity<>(requestBody, headers);
 
-        log.info("calling {} with requestBody: {}", url, requestBody);
+        log.info("calling {} with requestBody: {}", temperatureSensorUrl, requestBody);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+        ResponseEntity<String> response = restTemplate.postForEntity(temperatureSensorUrl, entity, String.class);
 
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -56,13 +62,27 @@ public class SensorService {
 
             graphSensorEndpoints.sort(Comparator.comparing(GraphSensorEndpoint::parsedDateTime));
 
-            log.info("response {} with graphSensorEndpoints: {}", url, graphSensorEndpoints);
+            log.info("response {} with graphSensorEndpoints: {}", temperatureSensorUrl, graphSensorEndpoints);
 
             return graphSensorEndpoints;
         } catch (Exception e) {
             log.error("Failed to parse GraphSensorEndpoint array", e);
             return new ArrayList<>();
         }
+
+    }
+
+    public TokenResponseDTO getUserToken(LoginSensorUserDTO loginSensorUserDTO){
+
+        //setting up headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Object> entity = new HttpEntity<>(loginSensorUserDTO, headers);
+
+        log.info("calling {} with requestBody: {}", sensorManagerUrl + "/api/auth/token", loginSensorUserDTO);
+
+        return restTemplate.postForEntity(sensorManagerUrl + API_TOKEN, entity, TokenResponseDTO.class).getBody();
 
     }
 
