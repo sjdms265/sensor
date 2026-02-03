@@ -1,6 +1,6 @@
 package com.sensor.sensormanager.controller;
 
-import com.sensor.sensormanager.dto.SensorUserDTO;
+import com.sensor.sensorcommon.dto.SensorUserDTO;
 import com.sensor.sensormanager.model.SensorUser;
 import com.sensor.sensormanager.service.UserService;
 import jakarta.validation.Valid;

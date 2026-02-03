@@ -1,4 +1,4 @@
-package com.sensor.sensormanager.dto;
+package com.sensor.sensorcommon.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;

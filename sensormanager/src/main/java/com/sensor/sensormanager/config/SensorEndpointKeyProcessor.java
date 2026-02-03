@@ -1,7 +1,7 @@
 package com.sensor.sensormanager.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sensor.sensormanager.dto.SensorEndpointDTO;
+import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import com.sensor.sensormanager.model.SensorUser;
 import com.sensor.sensormanager.service.UserService;
 import lombok.RequiredArgsConstructor;

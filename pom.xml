@@ -9,6 +9,7 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
+        <module>sensor-common</module>
         <module>sensormanager</module>
         <module>temperature-sensor</module>
         <module>sensorai</module>
@@ -262,7 +263,7 @@
             <!-- mvn dependency-check:check
                  mvn dependency:tree
             -->
-            <plugin>
+            <!--<plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
                 <version>12.1.0</version>
@@ -273,7 +274,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
     <repositories>

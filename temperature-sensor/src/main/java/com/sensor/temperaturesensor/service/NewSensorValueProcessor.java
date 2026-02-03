@@ -1,6 +1,6 @@
 package com.sensor.temperaturesensor.service;
 
-import com.sensor.temperaturesensor.dto.SensorEndpointDTO;
+import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import io.micrometer.observation.annotation.Observed;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serde;

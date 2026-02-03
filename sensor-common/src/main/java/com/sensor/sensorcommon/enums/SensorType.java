@@ -1,4 +1,4 @@
-package com.sensor.sensormanager.enums;
+package com.sensor.sensorcommon.enums;
 
 public enum SensorType {
 

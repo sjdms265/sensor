@@ -1,6 +1,6 @@
 package com.sensor.sensormanager.config;
 
-import com.sensor.sensormanager.dto.SensorEndpointDTO;
+import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +11,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 class SensorValueWebSocketHandlerTest {
@@ -60,7 +61,7 @@ class SensorValueWebSocketHandlerTest {
         Assertions.assertFalse(sensorValueWebSocketHandler.getSessions().isEmpty());
 
         Date now = new Date();
-        SensorEndpointDTO sensorEndpointDTO = new SensorEndpointDTO("hello", "dummySensor", (float) now.getTime(),now);
+        SensorEndpointDTO sensorEndpointDTO = new SensorEndpointDTO("hello", "dummySensor", (float) now.getTime(),now, OffsetDateTime.now());
         TextMessage textMessage = sensorValueWebSocketHandler.sendMessage(sensorEndpointDTO);
 
         Assertions.assertNotNull(textMessage);
@@ -70,7 +71,7 @@ class SensorValueWebSocketHandlerTest {
     void sendMessageNoSession() throws Exception {
 
         Date now = new Date();
-        SensorEndpointDTO sensorEndpointDTO = new SensorEndpointDTO("hello", "dummySensor", (float) now.getTime(),now);
+        SensorEndpointDTO sensorEndpointDTO = new SensorEndpointDTO("hello", "dummySensor", (float) now.getTime(),now,OffsetDateTime.now());
         TextMessage textMessage = sensorValueWebSocketHandler.sendMessage(sensorEndpointDTO);
 
         Assertions.assertNull(textMessage);

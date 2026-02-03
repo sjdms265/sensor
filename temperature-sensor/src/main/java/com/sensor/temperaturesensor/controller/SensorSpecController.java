@@ -1,7 +1,7 @@
 package com.sensor.temperaturesensor.controller;
 
 
-import com.sensor.temperaturesensor.dto.SensorSpecDTO;
+import com.sensor.sensorcommon.dto.SensorSpecDTO;
 import com.sensor.temperaturesensor.service.SensorSpecService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

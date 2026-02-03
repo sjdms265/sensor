@@ -1,6 +1,6 @@
 package com.sensor.temperaturesensor.service;
 
-import com.sensor.temperaturesensor.dto.SensorEndpointDTO;
+import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import com.sensor.temperaturesensor.model.SensorEndpoint;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

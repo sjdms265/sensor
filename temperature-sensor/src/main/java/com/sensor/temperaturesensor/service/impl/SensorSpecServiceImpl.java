@@ -1,6 +1,6 @@
 package com.sensor.temperaturesensor.service.impl;
 
-import com.sensor.temperaturesensor.dto.SensorSpecDTO;
+import com.sensor.sensorcommon.dto.SensorSpecDTO;
 import com.sensor.temperaturesensor.model.SensorSpec;
 import com.sensor.temperaturesensor.repository.SensorSpecRepository;
 import com.sensor.temperaturesensor.service.SensorSpecService;

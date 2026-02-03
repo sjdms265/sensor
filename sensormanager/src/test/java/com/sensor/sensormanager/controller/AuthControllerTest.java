@@ -3,7 +3,7 @@ package com.sensor.sensormanager.controller;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.sensor.sensormanager.dto.LoginSensorUserDTO;
+import com.sensor.sensorcommon.dto.LoginSensorUserDTO;
 import com.sensor.sensormanager.model.SensorUser;
 import com.sensor.sensormanager.service.UserService;
 import com.sensor.sensormanager.util.SensorManagerUtil;

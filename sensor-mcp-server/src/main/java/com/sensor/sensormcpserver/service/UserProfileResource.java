@@ -2,7 +2,7 @@ package com.sensor.sensormcpserver.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sensor.sensormcpserver.dto.LoginSensorUserDTO;
+import com.sensor.sensorcommon.dto.LoginSensorUserDTO;
 import com.sensor.sensormcpserver.dto.TokenResponseDTO;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.RequiredArgsConstructor;

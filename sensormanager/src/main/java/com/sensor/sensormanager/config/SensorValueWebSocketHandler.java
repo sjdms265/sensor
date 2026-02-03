@@ -1,7 +1,7 @@
 package com.sensor.sensormanager.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sensor.sensormanager.dto.SensorEndpointDTO;
+import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +34,8 @@ public class SensorValueWebSocketHandler extends TextWebSocketHandler {
         Date now = new Date();
 
         //Creating a SensorEndpointDTO Object
-        SensorEndpointDTO sensorEndpointDTO = new SensorEndpointDTO("hello " + session.getId(), "dummySensor", (float) now.getTime(),now);
+        SensorEndpointDTO sensorEndpointDTO = new SensorEndpointDTO("hello " + session.getId(), "dummySensor",
+                (float) now.getTime(), now, null);
 
         //Sending SensorEndpointDTO
         TextMessage message = new TextMessage(objectMapper.writeValueAsString(sensorEndpointDTO));

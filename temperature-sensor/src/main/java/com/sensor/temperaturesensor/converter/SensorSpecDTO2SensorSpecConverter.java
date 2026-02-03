@@ -1,6 +1,6 @@
 package com.sensor.temperaturesensor.converter;
 
-import com.sensor.temperaturesensor.dto.SensorSpecDTO;
+import com.sensor.sensorcommon.dto.SensorSpecDTO;
 import com.sensor.temperaturesensor.model.SensorSpec;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;

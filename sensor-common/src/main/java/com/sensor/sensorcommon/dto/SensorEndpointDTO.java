@@ -1,4 +1,4 @@
-package com.sensor.temperaturesensor.dto;
+package com.sensor.sensorcommon.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
@@ -30,7 +30,5 @@ public class SensorEndpointDTO {
     private Date date;
 
     private OffsetDateTime parsedDateTime;
-
-    private SensorUserDTO sensorUser;
 
 }

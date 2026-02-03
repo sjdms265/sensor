@@ -1,6 +1,6 @@
 package com.sensor.temperaturesensor.model;
 
-import com.sensor.temperaturesensor.enums.SensorType;
+import com.sensor.sensorcommon.enums.SensorType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

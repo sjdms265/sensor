@@ -1,4 +1,4 @@
-package com.sensor.sensormcpserver.dto;
+package com.sensor.sensorcommon.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

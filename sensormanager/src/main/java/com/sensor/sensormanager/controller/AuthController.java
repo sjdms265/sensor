@@ -2,7 +2,7 @@ package com.sensor.sensormanager.controller;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.sensor.sensormanager.dto.LoginSensorUserDTO;
+import com.sensor.sensorcommon.dto.LoginSensorUserDTO;
 import com.sensor.sensormanager.model.Role;
 import com.sensor.sensormanager.model.SensorUser;
 import com.sensor.sensormanager.service.UserService;

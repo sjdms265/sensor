@@ -1,6 +1,6 @@
 package com.sensor.temperaturesensor.service;
 
-import com.sensor.temperaturesensor.dto.SensorSpecDTO;
+import com.sensor.sensorcommon.dto.SensorSpecDTO;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
 package com.sensor.sensormcpserver.service;
 
-import com.sensor.sensormcpserver.dto.GraphSensorEndpoint;
-import com.sensor.sensormcpserver.dto.SensorEndpointDTO;
-import com.sensor.sensormcpserver.dto.SensorSpecDTO;
-import com.sensor.sensormcpserver.enums.SensorType;
+import com.sensor.sensorcommon.dto.GraphSensorEndpoint;
+import com.sensor.sensorcommon.dto.SensorEndpointDTO;
+import com.sensor.sensorcommon.dto.SensorSpecDTO;
+import com.sensor.sensorcommon.enums.SensorType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;

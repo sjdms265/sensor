@@ -1,6 +1,6 @@
 package com.sensor.sensormanager.controller;
 
-import com.sensor.sensormanager.dto.SensorEndpointDTO;
+import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import com.sensor.sensormanager.util.SensorManagerUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

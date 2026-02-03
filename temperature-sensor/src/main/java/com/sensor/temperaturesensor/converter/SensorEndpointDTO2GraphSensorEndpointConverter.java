@@ -1,7 +1,7 @@
 package com.sensor.temperaturesensor.converter;
 
-import com.sensor.temperaturesensor.dto.GraphSensorEndpoint;
-import com.sensor.temperaturesensor.dto.SensorEndpointDTO;
+import com.sensor.sensorcommon.dto.GraphSensorEndpoint;
+import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.convert.converter.Converter;

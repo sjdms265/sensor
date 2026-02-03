@@ -1,6 +1,6 @@
 package com.sensor.sensormanager.conveter;
 
-import com.sensor.sensormanager.dto.SensorUserDTO;
+import com.sensor.sensorcommon.dto.SensorUserDTO;
 import com.sensor.sensormanager.model.Role;
 import com.sensor.sensormanager.model.SensorUser;
 import lombok.RequiredArgsConstructor;

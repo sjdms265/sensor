@@ -1,12 +1,11 @@
 package com.sensor.sensormanager.conveter;
 
-import com.sensor.sensormanager.dto.SensorUserDTO;
+import com.sensor.sensorcommon.dto.SensorUserDTO;
 import com.sensor.sensormanager.model.SensorUser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
-
 
 import java.util.Collection;
 import java.util.List;

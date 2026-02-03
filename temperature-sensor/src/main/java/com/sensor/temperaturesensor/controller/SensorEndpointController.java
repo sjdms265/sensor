@@ -1,9 +1,9 @@
 package com.sensor.temperaturesensor.controller;
 
+import com.sensor.sensorcommon.dto.GraphSensorEndpoint;
+import com.sensor.sensorcommon.dto.SensorEndpointDTO;
+import com.sensor.sensorcommon.dto.SensorUserDTO;
 import com.sensor.temperaturesensor.converter.SensorEndpointDTO2GraphSensorEndpointConverter;
-import com.sensor.temperaturesensor.dto.GraphSensorEndpoint;
-import com.sensor.temperaturesensor.dto.SensorEndpointDTO;
-import com.sensor.temperaturesensor.dto.SensorUserDTO;
 import com.sensor.temperaturesensor.model.SensorEndpoint;
 import com.sensor.temperaturesensor.service.SensorEndpointService;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ public class SensorEndpointController {
         batchLoaderRegistry.forTypePair(String.class, SensorUserDTO.class).registerBatchLoader(
                 (List<String> keys, BatchLoaderEnvironment env) -> {
                     log.debug("Loading sensor users {}", keys);
-                    return Flux.just(new SensorUserDTO("name", "username", "password"));
+                    return Flux.just(new SensorUserDTO("name", "username", "password", null));
                 }
         );
     }

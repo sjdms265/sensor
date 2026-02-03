@@ -3,7 +3,7 @@ package com.sensor.sensorai.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sensor.sensorai.dto.GraphSensorEndpoint;
+import com.sensor.sensorcommon.dto.GraphSensorEndpoint;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

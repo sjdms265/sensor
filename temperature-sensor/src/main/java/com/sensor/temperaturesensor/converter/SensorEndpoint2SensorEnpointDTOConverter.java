@@ -1,6 +1,6 @@
 package com.sensor.temperaturesensor.converter;
 
-import com.sensor.temperaturesensor.dto.SensorEndpointDTO;
+import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import com.sensor.temperaturesensor.model.SensorEndpoint;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;

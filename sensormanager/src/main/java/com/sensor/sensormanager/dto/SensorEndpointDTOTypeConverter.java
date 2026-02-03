@@ -2,6 +2,7 @@ package com.sensor.sensormanager.dto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.Converter;
 import org.apache.camel.TypeConverters;
