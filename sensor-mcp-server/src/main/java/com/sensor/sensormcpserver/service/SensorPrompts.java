@@ -1,10 +1,8 @@
 package com.sensor.sensormcpserver.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import com.sensor.sensormcpserver.dto.TemperatureResults;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.springaicommunity.mcp.annotation.McpArg;
@@ -12,9 +10,6 @@ import org.springaicommunity.mcp.annotation.McpPrompt;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -25,17 +20,11 @@ public class SensorPrompts {
             description = "Get basic stats for a sensor id"
     )
     public McpSchema.GetPromptResult generateStatsPrompt(
-            @McpArg(name = "sensorId", description = "The programming language", required = true) String sensorId
-      ) throws JsonProcessingException {
+            @McpArg(name = "userId", description = "The userId looked up when filtering", required = true) String userId,
+            @McpArg(name = "sensorId", description = "The sensorId looked up when filtering", required = true) String sensorId) {
 
         BeanOutputConverter<TemperatureResults> beanOutputTemperatureConverter = new BeanOutputConverter<>(TemperatureResults.class);
         String jsonRepresentation = escapeStBraces(beanOutputTemperatureConverter.getFormat());
-
-        List<SensorEndpointDTO> sensorEndpointDTOS = new ArrayList<>();
-        SensorEndpointDTO sensorEndpointDTO = new SensorEndpointDTO();
-        sensorEndpointDTO.setSensorId(sensorId);
-        sensorEndpointDTO.setParsedDateTime(new Date().toInstant().atOffset(ZoneOffset.UTC));
-        sensorEndpointDTOS.add(sensorEndpointDTO);
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -43,25 +32,10 @@ public class SensorPrompts {
         // By default, Jackson writes dates as timestamps (numbers). Turn that off
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        //FIXME parse json
-        String sensorEndpoints = """
-            {
-                [
-                    0:{
-                        value:25
-                        parsedDateTime: "2026-01-28T19:42:20.000Z"
-                    }
-                    ...
-                ]
+        String contents = "Calculate average value, highest value and lowest value for the user %s? and sensor %s, use {token} "
+                + responseFormat(jsonRepresentation);
 
-            }
-        """;
-
-        String contents = "Analyze this json data and calculate the average temperature, highest temperature and lowest temperature: "
-                + sensorEndpoints + "\n" + responseFormat(jsonRepresentation)
-                + " for the sensor with id: " + sensorId;
-
-        String content = String.format(contents, sensorId);
+        String content = String.format(contents, userId, sensorId);
 
         return new McpSchema.GetPromptResult(
                 "Sensor Stats",

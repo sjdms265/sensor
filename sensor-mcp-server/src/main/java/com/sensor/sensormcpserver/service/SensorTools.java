@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -21,6 +22,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 public class SensorTools {
+
+    @Value("${sensor-mcp-server.pageSize:50}")
+    private int pageSize;
 
     private final SensorService sensorService;
 
@@ -46,7 +50,7 @@ public class SensorTools {
                     SensorSpecDTO sensorSpec = sensorService.getSensorSpec(sensorEndpointDTO.getSensorId(), token);
 
                     if(!sensorIdsProcessed.contains(sensorSpec.id()) && sensorSpec.sensorCategory() == sensorTypeEnum) {
-                        sensorEndpoints.put(sensorType, sensorService.getSensorEndpointsList(token, userId, sensorSpec.id(), 50));
+                        sensorEndpoints.put(sensorType, sensorService.getSensorEndpointsList(token, userId, sensorSpec.id(), pageSize));
                         sensorIdsProcessed.add(sensorSpec.id());
                     }
                 });
@@ -60,5 +64,15 @@ public class SensorTools {
         log.info("sensorEndpoints: {}", sensorEndpoints);
 
         return sensorEndpoints;
+    }
+
+    @Tool(name = "get-stats-by-userId-sensorId",
+            description = "Filters sensor endpoints by the provided userId and sensorId")
+    public List<GraphSensorEndpoint> sensorStatsEndpointsBy(@ToolParam(description = "The userId looked up when filtering") String userId,
+            @ToolParam(description = "The sensorId looked up when filtering") String sensorId,
+            @ToolParam(description = "JWT token") String token) {
+
+        return  sensorService.getSensorEndpointsList(token, userId, sensorId, pageSize);
+
     }
 }

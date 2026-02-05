@@ -1,8 +1,7 @@
 package com.sensor.sensorai.controller;
 
 import com.sensor.sensorai.dto.Rain;
-import com.sensor.sensorai.dto.TemperatureResults;
-import com.sensor.sensorai.service.GraphqlSensorEndpointService;
+import com.sensor.sensorai.dto.SensorStatsResults;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,25 +21,21 @@ public class ChatController {
 
     private final ChatClient chatClient;
 
-    private final GraphqlSensorEndpointService graphqlSensorEndpointService;
-
-    @GetMapping("/stats/{userId}/{sensorId}/{pageSize}")
-    public ResponseEntity<String> getBasicStats(HttpServletRequest request, final @PathVariable("userId") String userId, final @PathVariable("sensorId") String sensorId, @PathVariable(required = false) Integer pageSize) {
-
-        if(pageSize == null) pageSize = 10;
+    @GetMapping("/stats/{userId}/{sensorId}")
+    public ResponseEntity<String> getBasicStats(HttpServletRequest request, @PathVariable final String userId,
+                                                final @PathVariable String sensorId) {
 
         try{
 
-            String sensorEndpoints = graphqlSensorEndpointService.getSensorEndpoints(request, userId, sensorId, pageSize);
-
-            BeanOutputConverter<TemperatureResults> beanOutputConverter = new BeanOutputConverter<>(TemperatureResults.class);
+            BeanOutputConverter<SensorStatsResults> beanOutputConverter = new BeanOutputConverter<>(SensorStatsResults.class);
             String jsonRepresentation = escapeStBraces(beanOutputConverter.getFormat());
 
-            String contents = "Analyze this json data and calculate the average temperature, highest temperature and lowest temperature: "
-                    + sensorEndpoints + "\n" + responseFormat(jsonRepresentation);
+            String contents = "Calculate average value, highest value and lowest value for the user {userId}? and sensor {sensorId}, use {token} "
+                    + responseFormat(jsonRepresentation);
             log.info("request to ai: {}", contents);
 
-            String answer =  chatClient.prompt().user(contents).call().content();
+            String answer =  chatClient.prompt().user(contents).user(userSpec -> userSpec.text(contents).param("userId", userId).
+                    param("sensorId", sensorId).param("token", request.getHeader("Authorization"))).call().content();
 
             log.info("answer: {}", answer);
 
@@ -89,7 +84,7 @@ public class ChatController {
 
     @GetMapping("/stats/hello")
     public ResponseEntity<String> getChatModel(HttpServletRequest request) {
-        return getBasicStats(request, "sjdms265", "sensor.10000db11e_t", null);
+        return getBasicStats(request, "sjdms265", "sensor.10000db11e_t");
     }
 
     /**

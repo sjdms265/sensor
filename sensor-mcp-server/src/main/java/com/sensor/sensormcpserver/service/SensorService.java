@@ -133,7 +133,7 @@ public class SensorService {
         headers.set("Authorization", "Bearer " + token);
         Map<String, Object> requestBody = getSensorByUserObjectMap(userId);
 
-        log.info("calling {} with requestBody: {}", temperatureSensorUrl + SENSOR_SPEC + "/" + userId);
+        log.info("calling {} with requestBody: {}", temperatureSensorUrl + SENSOR_SPEC + "/" + userId, requestBody);
 
         HttpEntity<Object> entity = new HttpEntity<>(requestBody, headers);
 

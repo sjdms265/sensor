@@ -1,5 +1,6 @@
 package com.sensor.sensormanager.config;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import lombok.Getter;
@@ -22,7 +23,8 @@ import java.util.List;
 @Slf4j
 public class SensorValueWebSocketHandler extends TextWebSocketHandler {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
     @Getter
     private final List<WebSocketSession> sessions = Collections.synchronizedList(new ArrayList<>());
 

@@ -15,7 +15,6 @@ public class SensorSpec2SensorSpecDTOConverter implements Converter<SensorSpec, 
     @Override
     public @Nullable SensorSpecDTO convert(@NonNull SensorSpec sensorSpec) {
 
-        SensorSpecDTO sensorSpecDTO = new SensorSpecDTO(sensorSpec.getId(), sensorSpec.getName(), sensorSpec.getSensorCategory());
-        return sensorSpecDTO;
+        return new SensorSpecDTO(sensorSpec.getId(), sensorSpec.getName(), sensorSpec.getSensorCategory());
     }
 }
