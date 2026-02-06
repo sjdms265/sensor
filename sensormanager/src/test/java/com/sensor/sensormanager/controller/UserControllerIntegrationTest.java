@@ -5,7 +5,11 @@ import com.sensor.sensormanager.dto.RoleToUserForm;
 import com.sensor.sensormanager.model.Role;
 import com.sensor.sensormanager.model.SensorUser;
 import com.sensor.sensormanager.service.UserService;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -182,31 +186,8 @@ class UserControllerIntegrationTest {
                 .andExpect(status().is2xxSuccessful());
     }
 
-/*    @Test
-    @WithMockUser(username="admin", roles = {"ADMIN"})
-    void refreshTokenAdmin() throws Exception {
-        mvc.perform(get(BaseController.BASE_PATH + UserController.REFRESH_TOKEN).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
-    }
-
-    @Test
-    void refreshTokenNoAuthenticated() throws Exception {
-        mvc.perform(get(BaseController.BASE_PATH + UserController.REFRESH_TOKEN).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is4xxClientError());
-    }*/
-
     @AfterAll
     public void tearDown() {
-
-        /*mvc.perform(delete(BaseController.BASE_PATH + UserController.USERS_PATH).contentType(MediaType.APPLICATION_JSON)
-                        .param("userName", "testUser")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
-
-        mvc.perform(delete(BaseController.BASE_PATH + UserController.ROLES_PATH).contentType(MediaType.APPLICATION_JSON)
-                        .param("userName", "testRole")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());*/
 
         userService.deleteUser("testUser");
         userService.deleteRole("testRole");

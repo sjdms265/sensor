@@ -102,7 +102,7 @@ public class AuthController {
     }
 
     @GetMapping(VALIDATE_TOKEN + "/{token}")
-    public Map<String, String> validateToken(@PathVariable(value = "token") String token) {
+    public Map<String, String> validateToken(@PathVariable String token) {
 
         Map<String, String> model = new HashMap<>();
 

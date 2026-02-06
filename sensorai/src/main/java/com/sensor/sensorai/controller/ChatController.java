@@ -30,12 +30,12 @@ public class ChatController {
             BeanOutputConverter<SensorStatsResults> beanOutputConverter = new BeanOutputConverter<>(SensorStatsResults.class);
             String jsonRepresentation = escapeStBraces(beanOutputConverter.getFormat());
 
-            String contents = "Calculate average value, highest value and lowest value for the user {userId}? and sensor {sensorId}, use {token} "
+            String contents = "Calculate average value, highest value and lowest value for the user {userId} and sensor {sensorId}. Use a list size of {pageSize} SensorEndpoints and use {token} "
                     + responseFormat(jsonRepresentation);
             log.info("request to ai: {}", contents);
 
             String answer =  chatClient.prompt().user(contents).user(userSpec -> userSpec.text(contents).param("userId", userId).
-                    param("sensorId", sensorId).param("token", request.getHeader("Authorization"))).call().content();
+                    param("sensorId", sensorId).param("pageSize", 50).param("token", request.getHeader("Authorization"))).call().content();
 
             log.info("answer: {}", answer);
 

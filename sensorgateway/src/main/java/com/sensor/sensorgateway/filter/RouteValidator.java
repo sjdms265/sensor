@@ -11,6 +11,6 @@ public class RouteValidator {
 
     public static final List<String> noAuthEndpoints = List.of("/auth", "/eureka");
 
-    public Predicate<ServerHttpRequest> isAuth = request -> noAuthEndpoints.stream().noneMatch(uri -> request.getURI().
+    public final Predicate<ServerHttpRequest> isAuth = request -> noAuthEndpoints.stream().noneMatch(uri -> request.getURI().
             getPath().contains(uri));
 }

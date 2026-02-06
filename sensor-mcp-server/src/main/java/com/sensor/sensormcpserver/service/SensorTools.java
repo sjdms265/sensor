@@ -70,6 +70,7 @@ public class SensorTools {
             description = "Filters sensor endpoints by the provided userId and sensorId")
     public List<GraphSensorEndpoint> sensorStatsEndpointsBy(@ToolParam(description = "The userId looked up when filtering") String userId,
             @ToolParam(description = "The sensorId looked up when filtering") String sensorId,
+            @ToolParam(description = "Number of record to analyze") Integer pageSize,
             @ToolParam(description = "JWT token") String token) {
 
         return  sensorService.getSensorEndpointsList(token, userId, sensorId, pageSize);
