@@ -46,6 +46,10 @@ public class SensorSpecServiceImpl implements SensorSpecService {
     public SensorSpecDTO getBySensorSpecById(String id) {
         SensorSpec sensorSpec = sensorSpecRepository.findSensorSpecById(id);
         log.debug("sensorSpec {}", sensorSpec);
+
+        if(sensorSpec == null) {
+            return null;
+        }
         return sensorSpecSensorSpecDTOConverter.convert(sensorSpec);
     }
 

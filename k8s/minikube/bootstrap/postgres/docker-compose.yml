@@ -8,7 +8,7 @@ services:
       POSTGRES_DB: sensormanager
       PGDATA: /data/postgres
     volumes:
-      - postgres-db:/data/postgres
+      - postgres-db:/data/postgres18
     ports:
       - "5432:5432"
 

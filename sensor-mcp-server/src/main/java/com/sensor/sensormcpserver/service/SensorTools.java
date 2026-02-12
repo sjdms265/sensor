@@ -49,7 +49,7 @@ public class SensorTools {
 
                     SensorSpecDTO sensorSpec = sensorService.getSensorSpec(sensorEndpointDTO.getSensorId(), token);
 
-                    if(!sensorIdsProcessed.contains(sensorSpec.id()) && sensorSpec.sensorCategory() == sensorTypeEnum) {
+                    if(sensorSpec != null && !sensorIdsProcessed.contains(sensorSpec.id()) && sensorSpec.sensorCategory() == sensorTypeEnum) {
                         sensorEndpoints.put(sensorType, sensorService.getSensorEndpointsList(token, userId, sensorSpec.id(), pageSize));
                         sensorIdsProcessed.add(sensorSpec.id());
                     }
