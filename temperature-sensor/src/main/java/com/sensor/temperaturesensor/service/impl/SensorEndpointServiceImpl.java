@@ -89,7 +89,8 @@ public class SensorEndpointServiceImpl implements SensorEndpointService {
         if(fromDate == null && toDate == null) {
             sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdOrderByDateDesc(userId, sensorId, pageable);
         } else if (fromDate != null) {
-            sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdAndDateBetweenOrderByDateDesc(userId, sensorId,
+            Float averageValue = sensorEndpointRepository.calculateAverageValueByUserIdAndSensorIdAndDateBetween(userId, sensorId, Date.from(fromDate.toInstant()), Date.from(toDate.toInstant()));
+            sensorEndpoints = sensorEndpointRepository.getByUserIdAndSensorIdAndValueLessThanAndDateBetweenOrderByDateDesc(userId, sensorId, averageValue * 2,
                     Date.from(fromDate.toInstant()),  Date.from(toDate.toInstant()), pageable);
         }
 
