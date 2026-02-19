@@ -129,19 +129,18 @@ public class SensorService {
 
     }
 
-    public SensorSpecDTO getSensorSpec(String userId, String token){
+    public SensorSpecDTO getSensorSpec(String sensorId, String token){
 
         //setting up headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + token);
-        Map<String, Object> requestBody = getSensorByUserObjectMap(userId);
 
-        log.info("calling {} with requestBody: {}", temperatureSensorUrl + SENSOR_SPEC + "/" + userId, requestBody);
+        log.info("calling {}", temperatureSensorUrl + SENSOR_SPEC + "/" + sensorId);
 
-        HttpEntity<Object> entity = new HttpEntity<>(requestBody, headers);
+        HttpEntity<Object> entity = new HttpEntity<>(new HashMap<>(), headers);
 
-        return restTemplate.exchange(temperatureSensorUrl + SENSOR_SPEC + "/" + userId, HttpMethod.GET, entity,
+        return restTemplate.exchange(temperatureSensorUrl + SENSOR_SPEC + "/" + sensorId, HttpMethod.GET, entity,
                 SensorSpecDTO.class).getBody();
 
     }

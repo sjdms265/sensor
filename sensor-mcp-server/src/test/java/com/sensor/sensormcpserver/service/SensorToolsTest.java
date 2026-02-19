@@ -76,8 +76,8 @@ class SensorToolsTest {
         String pattern = "temperature,humidity";
         String humiditySensorId = "sensor-2";
 
-        SensorEndpointDTO tempEndpoint = new SensorEndpointDTO(USER_ID, SENSOR_ID, 0.0F, new Date(), OffsetDateTime.now());
-        SensorEndpointDTO humidityEndpoint = new SensorEndpointDTO(USER_ID, humiditySensorId, 0.0F, new Date(), OffsetDateTime.now());
+        SensorEndpointDTO tempEndpoint = new SensorEndpointDTO(USER_ID, SENSOR_ID, 25.5F, new Date(), OffsetDateTime.now());
+        SensorEndpointDTO humidityEndpoint = new SensorEndpointDTO(USER_ID, humiditySensorId, 60.0F, new Date(), OffsetDateTime.now());
 
         SensorSpecDTO tempSpec = new SensorSpecDTO(SENSOR_ID, "Temperature Sensor", SensorType.TEMPERATURE);
         SensorSpecDTO humiditySpec = new SensorSpecDTO(humiditySensorId, "Humidity Sensor", SensorType.HUMIDITY);

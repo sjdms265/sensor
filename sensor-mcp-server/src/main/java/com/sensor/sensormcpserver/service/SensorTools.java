@@ -4,6 +4,7 @@ import com.sensor.sensorcommon.dto.GraphSensorEndpoint;
 import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import com.sensor.sensorcommon.dto.SensorSpecDTO;
 import com.sensor.sensorcommon.enums.SensorType;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
@@ -30,9 +31,9 @@ public class SensorTools {
 
     @Tool(name = "get-sensor-info-by-userId-and-pattern",
             description = "Filters sensor endpoints by the provided userId and pattern")
-    public Map<String, List<GraphSensorEndpoint>> sensorEndpointsBy(@ToolParam(description = "The userId looked up when filtering") String userId,
-                                                                    @ToolParam(description = "The pattern looked up when filtering, ex: temperature,humidity") String pattern,
-                                                                    @ToolParam(description = "JWT token") String token) {
+    public Map<String, List<GraphSensorEndpoint>> sensorEndpointsBy(@ToolParam(description = "The userId looked up when filtering") @NotEmpty String userId,
+                                                                    @ToolParam(description = "The pattern looked up when filtering, ex: temperature,humidity") @NotEmpty String pattern,
+                                                                    @ToolParam(description = "JWT token") @NotEmpty String token) {
 
         Map<String, List<GraphSensorEndpoint>> sensorEndpoints = new HashMap<>();
         Set<String> sensorIdsProcessed = new HashSet<>();
