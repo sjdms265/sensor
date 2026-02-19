@@ -101,6 +101,10 @@ public class SensorService {
             List<SensorEndpointDTO> sensorEndpoints = mapper.treeToValue(dataNode, new TypeReference<>() {
             });
 
+            if(sensorEndpoints == null) {
+                sensorEndpoints = new ArrayList<>();
+            }
+
             log.info("response {} with sensorsByUser: {}", temperatureSensorUrl + GRAPH_QL, sensorEndpoints);
 
             return sensorEndpoints;

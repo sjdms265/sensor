@@ -57,6 +57,8 @@ public class SensorTools {
 
             } catch (IllegalArgumentException iae) {
                 log.error("Invalid sensor type: {}", sensorType);
+            } catch (Exception e) {
+                log.error("Error getting sensor endpoints {}", e.getMessage());
             }
 
         });
