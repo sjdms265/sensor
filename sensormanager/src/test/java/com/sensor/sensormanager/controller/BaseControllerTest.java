@@ -1,5 +1,6 @@
 package com.sensor.sensormanager.controller;
 
+import com.sensor.sensormanager.config.SensorValueWebSocketHandler;
 import com.sensor.sensormanager.util.SensorManagerUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,10 +29,12 @@ class BaseControllerTest {
 
     private BaseController baseController;
 
+    private SensorValueWebSocketHandler sensorValueWebSocketHandler;
+
     @BeforeEach
     void setUp() throws Exception {
         try (final AutoCloseable autoCloseable = MockitoAnnotations.openMocks(this)) {
-            baseController = new BaseController(sensorManagerUtil, streamBridge);
+            baseController = new BaseController(sensorManagerUtil, streamBridge, sensorValueWebSocketHandler);
         }
     }
 

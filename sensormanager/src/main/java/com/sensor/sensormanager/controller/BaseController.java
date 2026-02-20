@@ -1,6 +1,7 @@
 package com.sensor.sensormanager.controller;
 
 import com.sensor.sensorcommon.dto.SensorEndpointDTO;
+import com.sensor.sensormanager.config.SensorValueWebSocketHandler;
 import com.sensor.sensormanager.util.SensorManagerUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +11,7 @@ import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 
@@ -34,6 +37,8 @@ public class BaseController {
 
     private final StreamBridge streamBridge;
 
+    private final SensorValueWebSocketHandler sensorValueWebSocketHandler;
+
     @GetMapping()
     public Map<String, String> home(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal User user) throws IOException {
 
@@ -45,18 +50,20 @@ public class BaseController {
     }
 
     @PostMapping(BASE_PATH + "/echoSensorEndpoint")
-    public SensorEndpointDTO echoEndpoint(@RequestBody SensorEndpointDTO sensorEndpointDTO) {
+    public SensorEndpointDTO echoEndpoint(@RequestBody SensorEndpointDTO sensorEndpointDTO) throws Exception {
 
         log.info("echoEndpoint {}", sensorEndpointDTO);
 
         streamBridge.send("sensorEcho", sensorEndpointDTO);
 
+        sensorValueWebSocketHandler.sendMessage(sensorEndpointDTO);
+
         return sensorEndpointDTO;
     }
 
     @GetMapping(BASE_PATH + "/echoSensorEndpoint")
-    public String echoEndpoint() {
-        log.info("hello echoEndpoint ");
+    public String echoEndpoint(HttpServletRequest request) throws IOException {
+        log.info("hello echoEndpoint {}", StreamUtils.copyToString(request.getInputStream(), StandardCharsets.UTF_8));
         return String.format("hello echoEndpoint %s", new Date());
     }
 }
