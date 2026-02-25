@@ -86,7 +86,7 @@ public class SensorEndpointController {
 
             List<SensorEndpointDTO> sensorEndpointDTOS = sensorEndpointService.getByUserIdAndSensorIdAndDate(userId, sensorId,
                     now.minusMonths(1), now, 0, 50);
-            log.info("answer: {}", sensorEndpointDTOS);
+            log.debug("answer: {}", sensorEndpointDTOS);
 
             List<GraphSensorEndpoint> graphSensorEndpoints = sensorEndpointDTOS.stream().
                     sorted(Comparator.comparing(SensorEndpointDTO::getDate))

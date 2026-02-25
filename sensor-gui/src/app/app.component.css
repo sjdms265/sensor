@@ -1,0 +1,19 @@
+.refresh-button {
+  background: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.refresh-button:hover:not(:disabled) {
+  background-color: #f0f0f0;
+  border-color: #999;
+}
+
+.refresh-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

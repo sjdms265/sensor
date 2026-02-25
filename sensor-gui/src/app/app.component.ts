@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
     this.webSocket = new WebSocket('ws://localhost:8081/sensormanager/sensor-gui');
     this.webSocket.onmessage = (event) => {
       this.sensorValue = JSON.parse(event.data);
-      this.sensorValues.push(this.sensorValue);
+      this.sensorValues.unshift(this.sensorValue);
     };
 
     this.webSocket.onerror = (error) => {
@@ -50,6 +50,10 @@ export class AppComponent implements OnInit {
     console.log('Selected sensor:', sensorId);
     this.selectedSensorId = sensorId;
     // Do something with the selected sensor ID
+  }
+
+  clearSensorValues(): void {
+    this.sensorValues = [];
   }
 
   logout(): void {

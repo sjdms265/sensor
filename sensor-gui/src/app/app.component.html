@@ -1,7 +1,7 @@
 <div *ngIf="authService.isAuthenticated()">
   <nav class="navbar">
     <h1>Sensor Manager</h1>
-    <button (click)="logout()" class="login-button">Logout</button>
+    <button (click)="logout()" class="refresh-button">Logout</button>
   </nav>
 
   <app-sensor-graph
@@ -13,6 +13,7 @@
   </app-sensor-list>
 
   <h2>Sensor Values Real time</h2>
+  <button (click)="clearSensorValues()" class="refresh-button">Clear</button>
   <ul><li *ngFor="let sensorValue of sensorValues; index as i;">{{sensorValue | json}}</li></ul>
 
   <router-outlet></router-outlet>

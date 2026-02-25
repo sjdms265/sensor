@@ -7,7 +7,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -39,6 +42,9 @@ public class BaseController {
 
     private final SensorValueWebSocketHandler sensorValueWebSocketHandler;
 
+    @Value(value = "${sensor-manager.topic.sensor-value}")
+    private String topic;
+
     @GetMapping()
     public Map<String, String> home(HttpServletRequest request, HttpServletResponse response, @AuthenticationPrincipal User user) throws IOException {
 
@@ -52,9 +58,11 @@ public class BaseController {
     @PostMapping(BASE_PATH + "/echoSensorEndpoint")
     public SensorEndpointDTO echoEndpoint(@RequestBody SensorEndpointDTO sensorEndpointDTO) throws Exception {
 
-        log.info("echoEndpoint {}", sensorEndpointDTO);
+        log.debug("echoEndpoint {}", sensorEndpointDTO);
 
-        streamBridge.send("sensorEcho", sensorEndpointDTO);
+        streamBridge.send(topic, MessageBuilder.withPayload(sensorEndpointDTO)
+                .setHeader(KafkaHeaders.KEY, sensorEndpointDTO.getUserId() + "-" + sensorEndpointDTO.getSensorId())
+                .build());
 
         sensorValueWebSocketHandler.sendMessage(sensorEndpointDTO);
 

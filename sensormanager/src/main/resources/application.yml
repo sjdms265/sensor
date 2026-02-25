@@ -42,6 +42,9 @@ spring:
             bindings:
                 sensorEcho-out-0:
                     destination: sensor-echo-topic
+                sensor-value:
+                    producer:
+                        useNativeEncoding: true
             kafka:
                 binder:
                     brokers: localhost:9092
