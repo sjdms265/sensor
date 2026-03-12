@@ -2,6 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Memory
+
+Auto memory is always enabled for this project. At the start of every conversation:
+- Read `/home/barnowl/.claude/projects/-home-barnowl-Documents-java-sensor/memory/MEMORY.md` to load saved context.
+- Save new memories throughout the conversation (user preferences, feedback, project decisions).
+- Project tasks are tracked in `.ai/tasks.md`. This file is the single source of truth for all project tasks — always read it for current work status and update it when tasks are created, started, or completed.
+
 ## Build & Run
 
 **Build all modules:**
