@@ -11,13 +11,9 @@ import com.sensor.sensormcpserver.dto.TokenResponseDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,116 +29,103 @@ public class SensorService {
     public static final String API_TOKEN = "/api/auth/token";
     public static final String SENSOR_SPEC = "/sensorSpecs";
     public static final String GRAPH_QL = "/graphql";
+
     @Value("${temperature-sensor.url}")
     private String temperatureSensorUrl;
 
     @Value("${sensor-manager.url}")
     private String sensorManagerUrl;
 
-    private final RestTemplate restTemplate;
+    private final WebClient webClient;
+    private final ObjectMapper objectMapper;
 
-    public List<GraphSensorEndpoint> getSensorEndpointsList(String token, String userId, String sensorId, Integer pageSize){
-
-        //setting up headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + token);
+    public List<GraphSensorEndpoint> getSensorEndpointsList(String token, String userId, String sensorId, Integer pageSize) {
         Map<String, Object> requestBody = getStringObjectMap(userId, sensorId, pageSize);
+        String url = temperatureSensorUrl + GRAPH_QL;
 
-        HttpEntity<Object> entity = new HttpEntity<>(requestBody, headers);
+        log.info("calling {} with requestBody: {}", url, requestBody);
 
-        log.info("calling {} with requestBody: {}", temperatureSensorUrl + GRAPH_QL, requestBody);
-
-        ResponseEntity<String> response = restTemplate.postForEntity(temperatureSensorUrl + GRAPH_QL, entity, String.class);
+        String responseBody = webClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
 
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(response.getBody());
-
-            // Navigate to the array - adjust the path based on your actual response
+            JsonNode root = objectMapper.readTree(responseBody);
             JsonNode dataNode = root.path("data").path("sensorEndpoints");
 
-            List<GraphSensorEndpoint> graphSensorEndpoints = mapper.treeToValue(dataNode, new TypeReference<>() {
-            });
-
+            List<GraphSensorEndpoint> graphSensorEndpoints = objectMapper.treeToValue(dataNode, new TypeReference<>() {});
             graphSensorEndpoints.sort(Comparator.comparing(GraphSensorEndpoint::parsedDateTime));
 
-            log.info("response {} with graphSensorEndpoints: {}", temperatureSensorUrl + GRAPH_QL, graphSensorEndpoints);
-
+            log.info("response {} with graphSensorEndpoints: {}", url, graphSensorEndpoints);
             return graphSensorEndpoints;
         } catch (Exception e) {
             log.error("Failed to parse GraphSensorEndpoint array", e);
             return new ArrayList<>();
         }
-
     }
 
-    public List<SensorEndpointDTO> sensorsByUser(String token, String userId){
-
-        //setting up headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + token);
+    public List<SensorEndpointDTO> sensorsByUser(String token, String userId) {
         Map<String, Object> requestBody = getSensorByUserObjectMap(userId);
+        String url = temperatureSensorUrl + GRAPH_QL;
 
-        HttpEntity<Object> entity = new HttpEntity<>(requestBody, headers);
+        log.info("calling {} with requestBody: {}", url, requestBody);
 
-        log.info("calling {} with requestBody: {}", temperatureSensorUrl + GRAPH_QL, requestBody);
-
-        ResponseEntity<String> response = restTemplate.postForEntity(temperatureSensorUrl + GRAPH_QL, entity, String.class);
+        String responseBody = webClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + token)
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
 
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(response.getBody());
-
-            // Navigate to the array - adjust the path based on your actual response
+            JsonNode root = objectMapper.readTree(responseBody);
             JsonNode dataNode = root.path("data").path("sensorsByUser");
 
-            List<SensorEndpointDTO> sensorEndpoints = mapper.treeToValue(dataNode, new TypeReference<>() {
-            });
-
-            if(sensorEndpoints == null) {
+            List<SensorEndpointDTO> sensorEndpoints = objectMapper.treeToValue(dataNode, new TypeReference<>() {});
+            if (sensorEndpoints == null) {
                 sensorEndpoints = new ArrayList<>();
             }
 
-            log.info("response {} with sensorsByUser: {}", temperatureSensorUrl + GRAPH_QL, sensorEndpoints);
-
+            log.info("response {} with sensorsByUser: {}", url, sensorEndpoints);
             return sensorEndpoints;
         } catch (Exception e) {
             log.error("Failed to parse sensorEndpoint array", e);
             return new ArrayList<>();
         }
-
     }
 
-    public TokenResponseDTO getUserToken(LoginSensorUserDTO loginSensorUserDTO){
+    public TokenResponseDTO getUserToken(LoginSensorUserDTO loginSensorUserDTO) {
+        String url = sensorManagerUrl + API_TOKEN;
 
-        //setting up headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        log.info("calling {} with requestBody: {}", url, loginSensorUserDTO);
 
-        HttpEntity<Object> entity = new HttpEntity<>(loginSensorUserDTO, headers);
-
-        log.info("calling {} with requestBody: {}", sensorManagerUrl + API_TOKEN, loginSensorUserDTO);
-
-        return restTemplate.postForEntity(sensorManagerUrl + API_TOKEN, entity, TokenResponseDTO.class).getBody();
-
+        return webClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(loginSensorUserDTO)
+                .retrieve()
+                .bodyToMono(TokenResponseDTO.class)
+                .block();
     }
 
-    public SensorSpecDTO getSensorSpec(String sensorId, String token){
+    public SensorSpecDTO getSensorSpec(String sensorId, String token) {
+        String url = temperatureSensorUrl + SENSOR_SPEC + "/" + sensorId;
 
-        //setting up headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + token);
+        log.info("calling {}", url);
 
-        log.info("calling {}", temperatureSensorUrl + SENSOR_SPEC + "/" + sensorId);
-
-        HttpEntity<Object> entity = new HttpEntity<>(new HashMap<>(), headers);
-
-        return restTemplate.exchange(temperatureSensorUrl + SENSOR_SPEC + "/" + sensorId, HttpMethod.GET, entity,
-                SensorSpecDTO.class).getBody();
-
+        return webClient.get()
+                .uri(url)
+                .header("Authorization", "Bearer " + token)
+                .retrieve()
+                .bodyToMono(SensorSpecDTO.class)
+                .block();
     }
 
     private static Map<String, Object> getStringObjectMap(String userId, String sensorId, Integer pageSize) {
@@ -155,7 +138,6 @@ public class SensorService {
                 }
                 """.replace("$userId", userId).replace("$sensorId", sensorId).replace("$pageSize", pageSize.toString());
 
-        //create a requestBody with a query
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("query", query);
         return requestBody;
@@ -170,7 +152,6 @@ public class SensorService {
                 }
                 """.replace("$userId", userId);
 
-        //create a requestBody with a query
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("query", query);
         return requestBody;

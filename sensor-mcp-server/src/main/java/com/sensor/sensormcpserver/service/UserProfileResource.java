@@ -17,6 +17,7 @@ import java.util.List;
 public class UserProfileResource {
 
     private final SensorService sensorService;
+    private final ObjectMapper objectMapper;
 
     // This method is exposed as an MCP resource with the URI pattern "/user/profile/{userId}"
     @McpResource(uri = "/user/profile/{username}/{password}")
@@ -24,8 +25,6 @@ public class UserProfileResource {
 
         LoginSensorUserDTO loginSensorUserDTO = new LoginSensorUserDTO(username, password);
         TokenResponseDTO tokenResponseDTO = sensorService.getUserToken(loginSensorUserDTO);
-
-        ObjectMapper objectMapper = new ObjectMapper();
 
         List<McpSchema.ResourceContents> resourceContents = new ArrayList<>();
         McpSchema.ResourceContents resourceContent = new McpSchema.TextResourceContents("/user/profile/" + username,
