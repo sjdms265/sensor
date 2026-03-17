@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -24,6 +25,9 @@ class UserProfileResourceTest {
 
     @Mock
     private SensorService sensorService;
+
+    @Spy
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @InjectMocks
     private UserProfileResource userProfileResource;
@@ -73,12 +77,11 @@ class UserProfileResourceTest {
         List<McpSchema.ResourceContents> result = userProfileResource.getToken(USERNAME, PASSWORD);
 
         // Then
-        McpSchema.TextResourceContents textContent = (McpSchema.TextResourceContents) result.get(0);
+        McpSchema.TextResourceContents textContent = (McpSchema.TextResourceContents) result.getFirst();
         String jsonContent = textContent.text();
 
         // Verify that the JSON can be deserialized back to TokenResponseDTO
-        ObjectMapper mapper = new ObjectMapper();
-        TokenResponseDTO deserializedToken = mapper.readValue(jsonContent, TokenResponseDTO.class);
+        TokenResponseDTO deserializedToken = objectMapper.readValue(jsonContent, TokenResponseDTO.class);
 
         assertThat(deserializedToken.access_token()).isEqualTo(ACCESS_TOKEN);
         assertThat(deserializedToken.refresh_token()).isEqualTo(REFRESH_TOKEN);
@@ -94,7 +97,7 @@ class UserProfileResourceTest {
         List<McpSchema.ResourceContents> result = userProfileResource.getToken(customUsername, PASSWORD);
 
         // Then
-        McpSchema.TextResourceContents textContent = (McpSchema.TextResourceContents) result.get(0);
+        McpSchema.TextResourceContents textContent = (McpSchema.TextResourceContents) result.getFirst();
         assertThat(textContent.uri()).isEqualTo("/user/profile/" + customUsername);
     }
 
@@ -121,7 +124,7 @@ class UserProfileResourceTest {
 
         // Then
         assertThat(result).hasSize(1);
-        McpSchema.TextResourceContents textContent = (McpSchema.TextResourceContents) result.get(0);
+        McpSchema.TextResourceContents textContent = (McpSchema.TextResourceContents) result.getFirst();
         assertThat(textContent.uri()).contains(usernameWithSpecialChars);
     }
 
@@ -134,7 +137,7 @@ class UserProfileResourceTest {
         List<McpSchema.ResourceContents> result = userProfileResource.getToken(USERNAME, PASSWORD);
 
         // Then
-        McpSchema.TextResourceContents textContent = (McpSchema.TextResourceContents) result.get(0);
+        McpSchema.TextResourceContents textContent = (McpSchema.TextResourceContents) result.getFirst();
         assertThat(textContent.mimeType()).isEqualTo("application/json");
     }
 }

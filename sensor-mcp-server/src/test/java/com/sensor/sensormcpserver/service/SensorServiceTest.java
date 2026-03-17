@@ -1,5 +1,6 @@
 package com.sensor.sensormcpserver.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sensor.sensorcommon.dto.GraphSensorEndpoint;
 import com.sensor.sensorcommon.dto.LoginSensorUserDTO;
 import com.sensor.sensorcommon.dto.SensorEndpointDTO;
@@ -11,12 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -24,15 +25,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatRuntimeException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings({"rawtypes", "unchecked"})
 class SensorServiceTest {
 
     @Mock
-    private RestTemplate restTemplate;
+    private WebClient webClient;
+    @Mock
+    private WebClient.RequestBodyUriSpec requestBodyUriSpec;
+    @Mock
+    private WebClient.RequestBodySpec requestBodySpec;
+    @Mock
+    @SuppressWarnings("rawtypes")
+    private WebClient.RequestHeadersUriSpec requestHeadersUriSpec;
+    @Mock
+    @SuppressWarnings("rawtypes")
+    private WebClient.RequestHeadersSpec requestHeadersSpec;
+    @Mock
+    private WebClient.ResponseSpec responseSpec;
+    @Spy
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @InjectMocks
     private SensorService sensorService;
@@ -50,9 +65,19 @@ class SensorServiceTest {
         ReflectionTestUtils.setField(sensorService, "sensorManagerUrl", SENSOR_MANAGER_URL);
     }
 
+    @SuppressWarnings("unchecked")
+    private void stubPostWithAuthChain(Mono<?> responseMono) {
+        when(webClient.post()).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodySpec);
+        when(requestBodySpec.contentType(any(MediaType.class))).thenReturn(requestBodySpec);
+        when(requestBodySpec.header(anyString(), anyString())).thenReturn(requestBodySpec);
+        when(requestBodySpec.bodyValue(any())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(any(Class.class))).thenReturn(responseMono);
+    }
+
     @Test
     void getSensorEndpointsList_shouldReturnSortedGraphEndpoints_whenValidResponse() {
-        // Given
         String responseBody = """
                 {
                   "data": {
@@ -70,215 +95,220 @@ class SensorServiceTest {
                 }
                 """;
 
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
-                .thenReturn(ResponseEntity.ok(responseBody));
+        stubPostWithAuthChain(Mono.just(responseBody));
 
-        // When
         List<GraphSensorEndpoint> result = sensorService.getSensorEndpointsList(TOKEN, USER_ID, SENSOR_ID, PAGE_SIZE);
 
-        // Then
         assertThat(result).hasSize(2);
         assertThat(result.get(0).value()).isEqualTo(24.0F);
         assertThat(result.get(1).value()).isEqualTo(25.5F);
-
-        verify(restTemplate).postForEntity(eq(TEMPERATURE_SENSOR_URL + SensorService.GRAPH_QL), any(HttpEntity.class), eq(String.class));
+        verify(requestBodyUriSpec).uri(TEMPERATURE_SENSOR_URL + SensorService.GRAPH_QL);
     }
 
     @Test
     void getSensorEndpointsList_shouldReturnEmptyList_whenInvalidJsonResponse() {
-        // Given
-        String invalidJson = "invalid json";
+        stubPostWithAuthChain(Mono.just("invalid json"));
 
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
-                .thenReturn(ResponseEntity.ok(invalidJson));
-
-        // When
         List<GraphSensorEndpoint> result = sensorService.getSensorEndpointsList(TOKEN, USER_ID, SENSOR_ID, PAGE_SIZE);
 
-        // Then
         assertThat(result).isEmpty();
     }
 
     @Test
     void getSensorEndpointsList_shouldReturnEmptyList_whenDataNodeMissing() {
-        // Given
-        String responseBody = """
+        stubPostWithAuthChain(Mono.just("""
                 {
                   "errors": ["Some error"]
                 }
-                """;
+                """));
 
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
-                .thenReturn(ResponseEntity.ok(responseBody));
-
-        // When
         List<GraphSensorEndpoint> result = sensorService.getSensorEndpointsList(TOKEN, USER_ID, SENSOR_ID, PAGE_SIZE);
 
-        // Then
         assertThat(result).isEmpty();
     }
 
     @Test
-    void getSensorEndpointsList_shouldReturnEmptyList_whenExceptionThrown() {
-        // Given
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
-                .thenThrow(new RuntimeException("Connection error"));
+    void getSensorEndpointsList_shouldPropagateException_whenWebClientThrows() {
+        when(webClient.post()).thenThrow(new RuntimeException("Connection error"));
 
-        // When and Then
         assertThatRuntimeException().isThrownBy(() -> sensorService.getSensorEndpointsList(TOKEN, USER_ID, SENSOR_ID, PAGE_SIZE));
     }
 
     @Test
     void sensorsByUser_shouldReturnSensorEndpoints_whenValidResponse() {
-        // Given
-        String responseBody = """
+        stubPostWithAuthChain(Mono.just("""
                 {
                   "data": {
                     "sensorsByUser": [
-                      {
-                        "sensorId": "sensor-1"
-                      },
-                      {
-                        "sensorId": "sensor-2"
-                      }
+                      { "sensorId": "sensor-1" },
+                      { "sensorId": "sensor-2" }
                     ]
                   }
                 }
-                """;
+                """));
 
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
-                .thenReturn(ResponseEntity.ok(responseBody));
-
-        // When
         List<SensorEndpointDTO> result = sensorService.sensorsByUser(TOKEN, USER_ID);
 
-        // Then
         assertThat(result).hasSize(2);
-
-        verify(restTemplate).postForEntity(eq(TEMPERATURE_SENSOR_URL + SensorService.GRAPH_QL), any(HttpEntity.class), eq(String.class));
+        verify(requestBodyUriSpec).uri(TEMPERATURE_SENSOR_URL + SensorService.GRAPH_QL);
     }
 
     @Test
     void sensorsByUser_shouldReturnEmptyList_whenInvalidJsonResponse() {
-        // Given
-        String invalidJson = "not valid json";
+        stubPostWithAuthChain(Mono.just("not valid json"));
 
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
-                .thenReturn(ResponseEntity.ok(invalidJson));
-
-        // When
         List<SensorEndpointDTO> result = sensorService.sensorsByUser(TOKEN, USER_ID);
 
-        // Then
         assertThat(result).isEmpty();
     }
 
     @Test
     void sensorsByUser_shouldReturnEmptyList_whenDataNodeMissing() {
-        // Given
-        String responseBody = """
+        stubPostWithAuthChain(Mono.just("""
                 {
                   "data": {}
                 }
-                """;
+                """));
 
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
-                .thenReturn(ResponseEntity.ok(responseBody));
-
-        // When
         List<SensorEndpointDTO> result = sensorService.sensorsByUser(TOKEN, USER_ID);
 
-        // Then
         assertThat(result).isEmpty();
     }
 
     @Test
-    void sensorsByUser_shouldReturnEmptyList_whenExceptionThrown() {
-        // Given
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
-                .thenThrow(new RuntimeException("Network error"));
+    void sensorsByUser_shouldPropagateException_whenWebClientThrows() {
+        when(webClient.post()).thenThrow(new RuntimeException("Network error"));
 
-        // When and Then
         assertThatRuntimeException().isThrownBy(() -> sensorService.sensorsByUser(TOKEN, USER_ID));
     }
 
     @Test
     void getUserToken_shouldReturnTokenResponse_whenValidCredentials() {
-        // Given
         LoginSensorUserDTO loginDTO = new LoginSensorUserDTO("username", "password");
         TokenResponseDTO expectedToken = new TokenResponseDTO("access_token", "refresh_token");
 
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(TokenResponseDTO.class)))
-                .thenReturn(ResponseEntity.ok(expectedToken));
+        when(webClient.post()).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodySpec);
+        when(requestBodySpec.contentType(any(MediaType.class))).thenReturn(requestBodySpec);
+        when(requestBodySpec.bodyValue(any())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(TokenResponseDTO.class)).thenReturn(Mono.just(expectedToken));
 
-        // When
         TokenResponseDTO result = sensorService.getUserToken(loginDTO);
 
-        // Then
         assertThat(result).isEqualTo(expectedToken);
         assertThat(result.access_token()).isEqualTo("access_token");
         assertThat(result.refresh_token()).isEqualTo("refresh_token");
-
-        verify(restTemplate).postForEntity(eq(SENSOR_MANAGER_URL + SensorService.API_TOKEN), any(HttpEntity.class), eq(TokenResponseDTO.class));
+        verify(requestBodyUriSpec).uri(SENSOR_MANAGER_URL + SensorService.API_TOKEN);
     }
 
     @Test
-    void getUserToken_shouldReturnNull_whenAuthenticationFails() {
-        // Given
+    void getUserToken_shouldReturnNull_whenEmptyResponse() {
         LoginSensorUserDTO loginDTO = new LoginSensorUserDTO("username", "wrong-password");
 
-        when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(TokenResponseDTO.class)))
-                .thenReturn(ResponseEntity.ok(null));
+        when(webClient.post()).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(anyString())).thenReturn(requestBodySpec);
+        when(requestBodySpec.contentType(any(MediaType.class))).thenReturn(requestBodySpec);
+        when(requestBodySpec.bodyValue(any())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(TokenResponseDTO.class)).thenReturn(Mono.empty());
 
-        // When
         TokenResponseDTO result = sensorService.getUserToken(loginDTO);
 
-        // Then
         assertThat(result).isNull();
     }
 
     @Test
     void getSensorSpec_shouldReturnSensorSpec_whenFound() {
-        // Given
         SensorSpecDTO expectedSpec = new SensorSpecDTO(SENSOR_ID, "Temperature Sensor", SensorType.TEMPERATURE);
 
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(SensorSpecDTO.class)))
-                .thenReturn(ResponseEntity.ok(expectedSpec));
+        when(webClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(anyString())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.header(anyString(), anyString())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(SensorSpecDTO.class)).thenReturn(Mono.just(expectedSpec));
 
-        // When
         SensorSpecDTO result = sensorService.getSensorSpec(USER_ID, TOKEN);
 
-        // Then
         assertThat(result).isEqualTo(expectedSpec);
         assertThat(result.sensorCategory()).isEqualTo(SensorType.TEMPERATURE);
-
-        verify(restTemplate).exchange(eq(TEMPERATURE_SENSOR_URL + SensorService.SENSOR_SPEC + "/" + USER_ID), eq(HttpMethod.GET), any(HttpEntity.class), eq(SensorSpecDTO.class));
+        verify(requestHeadersUriSpec).uri(TEMPERATURE_SENSOR_URL + SensorService.SENSOR_SPEC + "/" + USER_ID);
     }
 
     @Test
     void getSensorSpec_shouldReturnNull_whenNotFound() {
-        // Given
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(SensorSpecDTO.class)))
-                .thenReturn(ResponseEntity.ok(null));
+        when(webClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(anyString())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.header(anyString(), anyString())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(SensorSpecDTO.class)).thenReturn(Mono.empty());
 
-        // When
         SensorSpecDTO result = sensorService.getSensorSpec(USER_ID, TOKEN);
 
-        // Then
         assertThat(result).isNull();
     }
 
     @Test
-    void getSensorSpec_shouldReturnNull_whenExceptionThrown() {
-        // Given
-        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(SensorSpecDTO.class)))
-                .thenThrow(new RuntimeException("Service unavailable"));
+    void getSensorSpec_shouldPropagateException_whenWebClientThrows() {
+        when(webClient.get()).thenThrow(new RuntimeException("Service unavailable"));
 
-        // When/Then
-        try {
-            sensorService.getSensorSpec(USER_ID, TOKEN);
-        } catch (RuntimeException e) {
-            assertThat(e.getMessage()).isEqualTo("Service unavailable");
-        }
+        assertThatRuntimeException()
+                .isThrownBy(() -> sensorService.getSensorSpec(USER_ID, TOKEN))
+                .withMessage("Service unavailable");
+    }
+
+    @Test
+    void getSensorEndpointsList_shouldSendBearerToken() {
+        stubPostWithAuthChain(Mono.just("""
+                { "data": { "sensorEndpoints": [] } }
+                """));
+
+        sensorService.getSensorEndpointsList(TOKEN, USER_ID, SENSOR_ID, PAGE_SIZE);
+
+        verify(requestBodySpec).header("Authorization", "Bearer " + TOKEN);
+    }
+
+    @Test
+    void sensorsByUser_shouldSendBearerToken() {
+        stubPostWithAuthChain(Mono.just("""
+                { "data": { "sensorsByUser": [] } }
+                """));
+
+        sensorService.sensorsByUser(TOKEN, USER_ID);
+
+        verify(requestBodySpec).header("Authorization", "Bearer " + TOKEN);
+    }
+
+    @Test
+    void sensorsByUser_shouldReturnEmptyList_whenNullSensorArray() {
+        stubPostWithAuthChain(Mono.just("""
+                { "data": { "sensorsByUser": null } }
+                """));
+
+        List<SensorEndpointDTO> result = sensorService.sensorsByUser(TOKEN, USER_ID);
+
+        assertThat(result).isEmpty();
+    }
+
+    @Test
+    void getUserToken_shouldPropagateException_whenWebClientThrows() {
+        when(webClient.post()).thenThrow(new RuntimeException("Auth service unavailable"));
+
+        assertThatRuntimeException()
+                .isThrownBy(() -> sensorService.getUserToken(new LoginSensorUserDTO("u", "p")))
+                .withMessage("Auth service unavailable");
+    }
+
+    @Test
+    void getSensorSpec_shouldSendBearerToken() {
+        when(webClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(anyString())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.header(anyString(), anyString())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(SensorSpecDTO.class)).thenReturn(Mono.empty());
+
+        sensorService.getSensorSpec(SENSOR_ID, TOKEN);
+
+        verify(requestHeadersSpec).header("Authorization", "Bearer " + TOKEN);
     }
 }
