@@ -11,9 +11,6 @@
 - [ ] **#3** Implement dead-letter fallback in `SpringCloudMqtt2Kafka` — replace stub `handleFallback()` with a real DLQ Kafka topic via Spring Cloud Stream error channels or DB table for replay
 - [ ] **#4** Add unit tests for `SpringCloudMqtt2Kafka` — cover valid message, unknown userId, malformed JSON, and WebSocket call using Mockito
 
-### MCP Server (sensor-mcp-server)
-- [ ] **#5** Replace `RestTemplate` with `WebClient` in `SensorService` — migrate blocking HTTP calls to non-blocking WebClient or RestClient; extract duplicated `ObjectMapper` instantiation into a shared bean
-
 ### Kubernetes (k8s)
 - [ ] **#6** Add K8s deployment manifests for all services — create Deployment + Service YAMLs for `sensoreureka`, `sensorgateway`, `temperature-sensor`, `sensorai`, `sensor-mcp-server`, `sensor-gui`, and `ollama` using `kube` profile and K8s DNS names
 
@@ -21,4 +18,4 @@
 - [ ] **#7** Add Angular chat UI for `sensorai` — add `/chat` route component that calls `/sensorai/stats` and `/sensorai/rain` via gateway and renders structured JSON responses
 
 ## Done
-<!-- Completed tasks -->
+- [x] **#5** Replace `RestTemplate` with `WebClient` in `SensorService` — migrated blocking HTTP calls to WebClient; extracted shared `ObjectMapper` bean; updated `UserProfileResource`; updated tests
