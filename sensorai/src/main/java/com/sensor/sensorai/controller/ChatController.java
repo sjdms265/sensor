@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.metadata.Usage;
+import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,9 +36,12 @@ public class ChatController {
                     + responseFormat(jsonRepresentation);
             log.info("request to ai: {}", contents);
 
-            String answer =  chatClient.prompt().user(contents).user(userSpec -> userSpec.text(contents).param("userId", userId).
-                    param("sensorId", sensorId).param("pageSize", 50).param("token", request.getHeader("Authorization"))).call().content();
+            ChatResponse response =  chatClient.prompt().user(contents).user(userSpec -> userSpec.text(contents).param("userId", userId).
+                    param("sensorId", sensorId).param("pageSize", 50).param("token", request.getHeader("Authorization"))).call().chatResponse();
 
+            logCacheStats(response);
+
+            String answer = response.getResult().getOutput().getText();
             log.info("answer: {}", answer);
 
             return ResponseEntity.ok(answer);
@@ -45,6 +50,13 @@ public class ChatController {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private void logCacheStats(ChatResponse response) {
+        Usage usage = response.getMetadata().getUsage();
+        if (usage != null) {
+            log.info("usage: {}", usage);
+        }
     }
 
     @GetMapping("/rain/{userId}")
@@ -59,9 +71,12 @@ public class ChatController {
                     +  responseFormat(jsonRepresentation);
             log.info("request to ai: {}", contents);
 
-            String answer =  chatClient.prompt().user(userSpec -> userSpec.text(contents).param("userId", userId).
-                    param("pattern", "temperature,humidity").param("token", request.getHeader("Authorization"))).call().content();
+            ChatResponse response =  chatClient.prompt().user(userSpec -> userSpec.text(contents).param("userId", userId).
+                    param("pattern", "temperature,humidity").param("token", request.getHeader("Authorization"))).call().chatResponse();
 
+            logCacheStats(response);
+
+            String answer = response.getResult().getOutput().getText();
             log.info("answer: {}", answer);
 
             return ResponseEntity.ok(answer);
