@@ -12,8 +12,10 @@ spring:
       chat:
         options:
           model: claude-sonnet-4-6
-      cache-options:
-        strategy: SYSTEM_ONLY
+          # SYSTEM_AND_TOOLS is bound directly to AnthropicChatModel by Spring Boot auto-config,
+          # ensuring cache_control is applied even if ChatClient option-merging drops AnthropicChatOptions.
+          cache-options:
+            strategy: SYSTEM_AND_TOOLS
     chat:
       client:
         enabled: false
@@ -38,3 +40,10 @@ eureka:
     hostname: localhost
 
 mcp.sensor-mcp-server.base-url: http://localhost:8084
+
+# Log raw Anthropic HTTP requests/responses (includes cache_creation_input_tokens / cache_read_input_tokens).
+# Spring AI 1.1.2 does not expose getNativeUsage() for Anthropic, so this is the only reliable way
+# to observe whether prompt caching is active.
+logging:
+  level:
+    org.springframework.ai.anthropic: DEBUG

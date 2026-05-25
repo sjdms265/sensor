@@ -27,6 +27,7 @@ import java.util.function.Function;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
+//FIXME THIS ONE IS NEW WITH CLAUDE
 public class SpringCloudMqtt2Kafka {
 
     private final ObjectMapper objectMapper;

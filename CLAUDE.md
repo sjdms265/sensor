@@ -100,6 +100,10 @@ StreamBridge bindings that send `SensorEndpointDTO` directly must have `useNativ
 
 Both sensormanager and temperature-sensor expose GraphQL endpoints. GraphiQL UI is enabled at `/graphiql` in local profiles. Schema files live in `src/main/resources/graphql/`.
 
+## Code Style
+
+- **Always add a comment explaining why** when adding or modifying code. The comment should explain the reason/intent, not restate what the code does.
+
 ## Observability
 
 All services use Micrometer + OpenTelemetry tracing with Zipkin export (`management.tracing.sampling.probability: 1.0`). Zipkin runs via Docker Compose at the default port.

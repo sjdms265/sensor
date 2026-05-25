@@ -8,11 +8,13 @@ import org.springframework.ai.chat.model.ChatResponse;
 public class AnthropicCacheUsageAdvisor {
 
     public void logUsage(ChatResponse response) {
-        if (response == null || response.getMetadata() == null) return;
+        if (response == null) return;
 
         var usage = response.getMetadata().getUsage();
         if (usage == null) return;
 
+        // AnthropicChatModel in Spring AI 1.1.2 passes AnthropicApi.Usage as the native usage object
+        // (confirmed via bytecode analysis of spring-ai-anthropic-1.1.2.jar).
         if (usage.getNativeUsage() instanceof AnthropicApi.Usage anthropicUsage) {
             log.info("Anthropic usage — input: {}, output: {}, cache_creation: {}, cache_read: {}",
                     anthropicUsage.inputTokens(),
@@ -20,8 +22,11 @@ public class AnthropicCacheUsageAdvisor {
                     anthropicUsage.cacheCreationInputTokens(),
                     anthropicUsage.cacheReadInputTokens());
         } else {
-            log.warn("Native Anthropic usage not available (class={})",
-                    usage.getNativeUsage() == null ? "null" : usage.getNativeUsage().getClass().getName());
+            // Fallback: log standard usage if native object is unexpectedly absent.
+            log.info("usage — prompt tokens: {}, completion tokens: {}, total: {}",
+                    usage.getPromptTokens(),
+                    usage.getCompletionTokens(),
+                    usage.getTotalTokens());
         }
     }
 }
