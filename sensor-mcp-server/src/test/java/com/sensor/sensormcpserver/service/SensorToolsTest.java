@@ -1,5 +1,7 @@
 package com.sensor.sensormcpserver.service;
 
+import com.sensor.sensorcommon.dto.HumidexResultDTO;
+import com.sensor.sensorcommon.enums.HumidexLevel;
 import com.sensor.sensorcommon.dto.GraphSensorEndpoint;
 import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import com.sensor.sensorcommon.dto.SensorSpecDTO;
@@ -211,5 +213,82 @@ class SensorToolsTest {
         assertThat(result).isEmpty();
 
         verify(sensorService).getSensorEndpointsList(TOKEN, USER_ID, SENSOR_ID, customPageSize);
+    }
+
+    // -----------------------------------------------------------------------
+    // computeHumidex tests
+    // -----------------------------------------------------------------------
+
+    @Test
+    void computeHumidex_shouldReturnHumidexResult_whenBothSensorsPresent() {
+        // Given
+        String humiditySensorId = "sensor-humidity";
+        SensorEndpointDTO tempEndpoint = new SensorEndpointDTO(USER_ID, SENSOR_ID, 30.0F, new Date(), OffsetDateTime.now());
+        SensorEndpointDTO humidityEndpoint = new SensorEndpointDTO(USER_ID, humiditySensorId, 60.0F, new Date(), OffsetDateTime.now());
+
+        SensorSpecDTO tempSpec = new SensorSpecDTO(SENSOR_ID, "Temperature Sensor", SensorType.TEMPERATURE);
+        SensorSpecDTO humiditySpec = new SensorSpecDTO(humiditySensorId, "Humidity Sensor", SensorType.HUMIDITY);
+
+        when(sensorService.sensorsByUser(TOKEN, USER_ID)).thenReturn(List.of(tempEndpoint, humidityEndpoint));
+        when(sensorService.getSensorSpec(SENSOR_ID, TOKEN)).thenReturn(tempSpec);
+        when(sensorService.getSensorSpec(humiditySensorId, TOKEN)).thenReturn(humiditySpec);
+
+        // When
+        HumidexResultDTO result = sensorTools.computeHumidex(USER_ID, TOKEN);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.level()).isNotNull();
+        assertThat(result.description()).isNotBlank();
+        assertThat(result.humidexIndex()).isGreaterThan(0.0);
+    }
+
+    @Test
+    void computeHumidex_shouldReturnNoDiscomfort_whenCoolAndDryConditions() {
+        // Given — 15 °C, 40 % RH → Humidex well below 29
+        String humiditySensorId = "sensor-humidity";
+        SensorEndpointDTO tempEndpoint = new SensorEndpointDTO(USER_ID, SENSOR_ID, 15.0F, new Date(), OffsetDateTime.now());
+        SensorEndpointDTO humidityEndpoint = new SensorEndpointDTO(USER_ID, humiditySensorId, 40.0F, new Date(), OffsetDateTime.now());
+
+        SensorSpecDTO tempSpec = new SensorSpecDTO(SENSOR_ID, "Temperature Sensor", SensorType.TEMPERATURE);
+        SensorSpecDTO humiditySpec = new SensorSpecDTO(humiditySensorId, "Humidity Sensor", SensorType.HUMIDITY);
+
+        when(sensorService.sensorsByUser(TOKEN, USER_ID)).thenReturn(List.of(tempEndpoint, humidityEndpoint));
+        when(sensorService.getSensorSpec(SENSOR_ID, TOKEN)).thenReturn(tempSpec);
+        when(sensorService.getSensorSpec(humiditySensorId, TOKEN)).thenReturn(humiditySpec);
+
+        // When
+        HumidexResultDTO result = sensorTools.computeHumidex(USER_ID, TOKEN);
+
+        // Then
+        assertThat(result.level()).isEqualTo(HumidexLevel.NO_DISCOMFORT);
+    }
+
+    @Test
+    void computeHumidex_shouldThrowIllegalStateException_whenNoSensorsFound() {
+        // Given
+        when(sensorService.sensorsByUser(TOKEN, USER_ID)).thenReturn(List.of());
+
+        // When / Then
+        org.junit.jupiter.api.Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> sensorTools.computeHumidex(USER_ID, TOKEN)
+        );
+    }
+
+    @Test
+    void computeHumidex_shouldThrowIllegalStateException_whenOnlyTemperatureSensorPresent() {
+        // Given — no humidity sensor
+        SensorEndpointDTO tempEndpoint = new SensorEndpointDTO(USER_ID, SENSOR_ID, 30.0F, new Date(), OffsetDateTime.now());
+        SensorSpecDTO tempSpec = new SensorSpecDTO(SENSOR_ID, "Temperature Sensor", SensorType.TEMPERATURE);
+
+        when(sensorService.sensorsByUser(TOKEN, USER_ID)).thenReturn(List.of(tempEndpoint));
+        when(sensorService.getSensorSpec(SENSOR_ID, TOKEN)).thenReturn(tempSpec);
+
+        // When / Then
+        org.junit.jupiter.api.Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> sensorTools.computeHumidex(USER_ID, TOKEN)
+        );
     }
 }

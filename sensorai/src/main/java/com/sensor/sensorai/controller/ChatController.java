@@ -91,7 +91,7 @@ public class ChatController {
             * Spring AI's ST (StringTemplate) renderer treats { ... } as template syntax.
             * JSON/JSON-Schema contains lots of braces, so we must escape them when passing as parameters.
      */
-    private static String escapeStBraces(String input) {
+    public static String escapeStBraces(String input) {
         if (input == null) return null;
         return input
                 .replace("\\", "\\\\")

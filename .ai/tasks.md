@@ -2,6 +2,7 @@
 
 ## In Progress
 <!-- Tasks currently being worked on -->
+- [ ] **#8** Implement Humidex index calculation endpoint
 
 ## Backlog
 
@@ -16,6 +17,21 @@
 
 ### Frontend (sensor-gui)
 - [ ] **#7** Add Angular chat UI for `sensorai` — add `/chat` route component that calls `/sensorai/stats` and `/sensorai/rain` via gateway and renders structured JSON responses
+
+### AI / Sensor Analysis (sensorai + sensor-mcp-server)
+- [ ] **#8** Implement Humidex index calculation endpoint — add `GET /sensorai/humidex/{userId}/{sensorId}` that accepts temperature (°C) and humidity (%) parameters, computes the Humidex index, and returns a structured JSON response with the numeric value and a `HumidexLevel` enum:
+  - `NO_DISCOMFORT` — index < 29
+  - `SOME_DISCOMFORT` — index 30–39
+  - `GREAT_DISCOMFORT` — index 40–45
+  - `DANGEROUS` — index 45–54
+  - `HEAT_STROKE` — index > 54
+  
+  **Scope:**
+  - Add `HumidexLevel` enum to `sensor-common`
+  - Add `HumidexResultDTO` (value, level) to `sensor-common`
+  - Add MCP tool `get-humidex-by-userId-sensorId` in `sensor-mcp-server` that fetches the latest temperature + humidity readings for the user/sensor and computes the index using the formula: `H = T + 0.5555 × (6.11 × e^(5417.7530 × (1/273.16 − 1/(273.15 + Td))) − 10)` where `Td` is the dew point derived from relative humidity
+  - Add `HumidexController` in `sensorai` that calls the MCP tool via `ChatClient` and returns `HumidexResultDTO`
+  - Add unit tests for the Humidex calculation logic
 
 ## Done
 - [x] **#5** Replace `RestTemplate` with `WebClient` in `SensorService` — migrated blocking HTTP calls to WebClient; extracted shared `ObjectMapper` bean; updated `UserProfileResource`; updated tests

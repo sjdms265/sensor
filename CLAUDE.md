@@ -103,3 +103,22 @@ Both sensormanager and temperature-sensor expose GraphQL endpoints. GraphiQL UI 
 ## Observability
 
 All services use Micrometer + OpenTelemetry tracing with Zipkin export (`management.tracing.sampling.probability: 1.0`). Zipkin runs via Docker Compose at the default port.
+
+## Coding Conventions
+
+### Java
+
+- **Prefer `record` over class for DTOs** — use Java records for all data-transfer objects and value types (e.g. `SensorStatsResults`, `Rain`, `HumidexResultDTO`). Only use a `@Data`/`@Builder` class when mutability or JPA mapping is required.
+- **Prefer `record` over class for simple result types** — MCP tool result types (e.g. `TemperatureResults`) should also be records.
+- **Lombok on entities/mutable classes only** — use `@Data`, `@Builder`, `@NoArgsConstructor`, `@AllArgsConstructor` only where a plain record cannot be used (JPA entities, Spring-managed beans that need mutation).
+- **Utility classes are `final` with a private constructor** — stateless helpers (e.g. `HumidexCalculator`) must not be instantiable.
+- **Static helper methods shared across controllers** — make them `public static` so sibling classes in the same package can reuse them without duplication (see `ChatController.escapeStBraces`).
+- **Use `@Slf4j` + `log.info/warn/error`** — no `System.out.println` anywhere.
+- **Enums carry behaviour** — add factory/lookup methods directly on the enum (e.g. `HumidexLevel.fromIndex(double)`) rather than scattering switch statements across callers.
+
+### Testing
+
+- **Use AssertJ** (`assertThat`) for all assertions — no JUnit `assertEquals`.
+- **Use `@ExtendWith(MockitoExtension.class)` + `@InjectMocks`/`@Mock`** for unit tests; avoid Spring context loading unless integration testing.
+- **Parameterized tests with `@CsvSource`** for boundary/range checks.
+- **Test method naming:** `methodName_shouldDoX_whenConditionY`.
