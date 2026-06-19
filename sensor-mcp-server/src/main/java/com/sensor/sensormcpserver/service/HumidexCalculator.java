@@ -38,7 +38,7 @@ public final class HumidexCalculator {
         double rounded = Math.round(humidex * 100.0) / 100.0;
 
         HumidexLevel level = HumidexLevel.fromIndex(rounded);
-        return new HumidexResultDTO(rounded, level, level.getDescription());
+        return new HumidexResultDTO(temperatureCelsius, relativeHumidity, rounded, level, level.getDescription());
     }
 
     /**

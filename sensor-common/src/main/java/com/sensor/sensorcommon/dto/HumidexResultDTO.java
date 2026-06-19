@@ -9,5 +9,5 @@ import com.sensor.sensorcommon.enums.HumidexLevel;
  * @param level        the comfort level derived from the index
  * @param description  human-readable description of the comfort level
  */
-public record HumidexResultDTO(double humidexIndex, HumidexLevel level, String description) {
+public record HumidexResultDTO(double temperatureCelsius, double relativeHumidity, double humidexIndex, HumidexLevel level, String description) {
 }

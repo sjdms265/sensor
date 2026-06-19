@@ -92,31 +92,34 @@ public class SensorTools {
 
         List<SensorEndpointDTO> allSensors = sensorService.sensorsByUser(token, userId);
 
-        OptionalDouble temperature = allSensors.stream()
+        List<SensorEndpointDTO> temperatureSensors = allSensors.stream()
                 .filter(s -> {
                     SensorSpecDTO spec = sensorService.getSensorSpec(s.getSensorId(), token);
                     return spec != null && spec.sensorCategory() == SensorType.TEMPERATURE;
                 })
-                .mapToDouble(s -> s.getValue())
-                .average();
+                .toList();
 
-        OptionalDouble humidity = allSensors.stream()
+        List<SensorEndpointDTO> humiditySensors = allSensors.stream()
                 .filter(s -> {
                     SensorSpecDTO spec = sensorService.getSensorSpec(s.getSensorId(), token);
                     return spec != null && spec.sensorCategory() == SensorType.HUMIDITY;
                 })
-                .mapToDouble(s -> s.getValue())
-                .average();
+                .toList();
+                
 
-        if (temperature.isEmpty() || humidity.isEmpty()) {
+        if (temperatureSensors.isEmpty() || humiditySensors.isEmpty()) {
             log.warn("Could not find temperature or humidity sensors for userId={}", userId);
             throw new IllegalStateException(
                     "No temperature or humidity sensor data found for userId: " + userId);
         }
 
-        log.info("Computing Humidex for userId={} temperature={} humidity={}", userId,
-                temperature.getAsDouble(), humidity.getAsDouble());
+        // Fetch the latest reading for the first temperature and humidity sensor found
+        List<GraphSensorEndpoint> temperatureGraphSensors = sensorService.getSensorEndpointsList(token, userId, temperatureSensors.get(0).getSensorId(), 1);
+        List<GraphSensorEndpoint> humidityGraphSensors = sensorService.getSensorEndpointsList(token, userId, humiditySensors.get(0).getSensorId(), 1);
 
-        return HumidexCalculator.calculate(temperature.getAsDouble(), humidity.getAsDouble());
+        log.info("Computing Humidex for userId={} temperature={} humidity={}", userId,
+                temperatureGraphSensors.get(0).value(), humidityGraphSensors.get(0).value());
+
+        return HumidexCalculator.calculate(temperatureGraphSensors.get(0).value(), humidityGraphSensors.get(0).value());
     }
 }
