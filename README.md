@@ -17,6 +17,10 @@ docker-compose -f /home/barnowl/Documents/java/sensor/k8s/minikube/bootstrap/zip
 
 # kill port
 
+## linux
 sudo lsof -i :8090
 kill PID
 
+## windows
+netstat -ano | findstr :PORT
+taskkill /PID PID_FROM_STEP1 /F

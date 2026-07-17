@@ -6,7 +6,7 @@ spring:
       base-url: http://localhost:11434
       chat.options:
         model: llama3.2
-        temperature: 0.4
+        temperature: 0.2
     anthropic:
       api-key: ${ANTHROPIC_API_KEY}
     chat:
