@@ -1,6 +1,7 @@
 package com.sensor.sensormcpserver.service;
 
 import com.sensor.sensorcommon.dto.GraphSensorEndpoint;
+import com.sensor.sensorcommon.dto.HumidexResultDTO;
 import com.sensor.sensorcommon.dto.SensorEndpointDTO;
 import com.sensor.sensorcommon.dto.SensorSpecDTO;
 import com.sensor.sensorcommon.enums.SensorType;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalDouble;
 import java.util.Set;
 
 @Component
@@ -78,5 +80,46 @@ public class SensorTools {
 
         return  sensorService.getSensorEndpointsList(token, userId, sensorId, pageSize);
 
+    }
+
+    @Tool(name = "get-humidex-by-userId-sensorId",
+            description = "Computes the Humidex comfort index for a user by fetching the latest temperature and humidity readings. "
+                    + "Returns the numeric Humidex value and a comfort level: "
+                    + "NO_DISCOMFORT (<29), SOME_DISCOMFORT (30-39), GREAT_DISCOMFORT (40-45), DANGEROUS (45-54), HEAT_STROKE (>54).")
+    public HumidexResultDTO computeHumidex(
+            @ToolParam(description = "The userId whose sensors are queried") @NotEmpty String userId,
+            @ToolParam(description = "JWT token") @NotEmpty String token) {
+
+        List<SensorEndpointDTO> allSensors = sensorService.sensorsByUser(token, userId);
+
+        List<SensorEndpointDTO> temperatureSensors = allSensors.stream()
+                .filter(s -> {
+                    SensorSpecDTO spec = sensorService.getSensorSpec(s.getSensorId(), token);
+                    return spec != null && spec.sensorCategory() == SensorType.TEMPERATURE;
+                })
+                .toList();
+
+        List<SensorEndpointDTO> humiditySensors = allSensors.stream()
+                .filter(s -> {
+                    SensorSpecDTO spec = sensorService.getSensorSpec(s.getSensorId(), token);
+                    return spec != null && spec.sensorCategory() == SensorType.HUMIDITY;
+                })
+                .toList();
+                
+
+        if (temperatureSensors.isEmpty() || humiditySensors.isEmpty()) {
+            log.warn("Could not find temperature or humidity sensors for userId={}", userId);
+            throw new IllegalStateException(
+                    "No temperature or humidity sensor data found for userId: " + userId);
+        }
+
+        // Fetch the latest reading for the first temperature and humidity sensor found
+        List<GraphSensorEndpoint> temperatureGraphSensors = sensorService.getSensorEndpointsList(token, userId, temperatureSensors.get(0).getSensorId(), 1);
+        List<GraphSensorEndpoint> humidityGraphSensors = sensorService.getSensorEndpointsList(token, userId, humiditySensors.get(0).getSensorId(), 1);
+
+        log.info("Computing Humidex for userId={} temperature={} humidity={}", userId,
+                temperatureGraphSensors.get(0).value(), humidityGraphSensors.get(0).value());
+
+        return HumidexCalculator.calculate(temperatureGraphSensors.get(0).value(), humidityGraphSensors.get(0).value());
     }
 }

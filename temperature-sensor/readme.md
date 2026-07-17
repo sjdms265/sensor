@@ -1,4 +1,4 @@
-POSTGRESS K8s
+# POSTGRESS K8s
 
 helm install sensordb bitnami/postgresql
 
@@ -35,8 +35,7 @@ To connect to your database from outside the cluster execute the following comma
     kubectl port-forward --namespace default svc/sensordb-postgresql 5432:5432 &
     PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432
 
----
-KAFKA k8s
+# KAFKA k8s
 
 helm install sensorkafka bitnami/kafka
 
@@ -81,9 +80,7 @@ To create a pod that you can use as a Kafka client run the following commands:
 
 
 
----
-
-TEMPERATURE-SENSOR
+# TEMPERATURE-SENSOR
 
 https://www.section.io/engineering-education/spring-boot-kubernetes/
 https://medium.com/swlh/deploy-a-spring-boot-application-into-kubernetes-661cb07c2c88
@@ -104,16 +101,12 @@ minikube dashboard --url (IN A NEW CONSOLE  TAB)
 - kubectl delete -f deployment.yaml
 - kubectl apply -f deployment.yaml
 
----
-
-POSTGRES DOCKER
+# POSTGRES DOCKER
 
 docker run --name=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres 
 
 
----
-
-KAFKA DOCKER
+# KAFKA DOCKER
 
 https://developer.confluent.io/quickstart/kafka-docker/
 
@@ -130,9 +123,7 @@ kafka-topics --bootstrap-server broker:9092 \
 --create \
 --topic temperaturechange
 
----
-
-ZIPKIN
+# ZIPKIN
 
 http://localhost:9411/zipkin
 http://localhost:8082/actuator/metrics/NewHumidityProcessor
@@ -154,3 +145,7 @@ http://localhost:8082/temperaturesensor/graphiql
             value
     }
 }
+
+
+# kill process associate to a port
+netstat -ano | findstr :<port_number> in Command Prompt. Then, use taskkill /PID <PID> /F
