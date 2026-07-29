@@ -2,7 +2,12 @@
 
 ## In Progress
 <!-- Tasks currently being worked on -->
-- [ ] **#8** Implement Humidex index calculation endpoint
+
+## Backlog
+
+### Migration
+- [ ] **#9** Migrate to Spring Boot 4.1.0 and Spring AI 2.0.0 — update parent POM `spring-boot-starter-parent` to 4.1.0, upgrade Spring Cloud compatibility version, update `spring-ai-bom` to 2.0.0, fix any breaking API changes across all modules, and verify all services compile and tests pass
+  - **Plan:** `.claude/plans/execute-task-9-spring-boot-migration.md`
 
 ## Backlog
 
@@ -34,4 +39,5 @@
   - Add unit tests for the Humidex calculation logic
 
 ## Done
+- [x] **#8** Implement Humidex index calculation endpoint
 - [x] **#5** Replace `RestTemplate` with `WebClient` in `SensorService` — migrated blocking HTTP calls to WebClient; extracted shared `ObjectMapper` bean; updated `UserProfileResource`; updated tests
