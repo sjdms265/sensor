@@ -2,14 +2,13 @@
 
 ## In Progress
 <!-- Tasks currently being worked on -->
+- [ ] **#9** Migrate to Spring Boot 4.1.0 and Spring AI 2.0.0
+  - **Plan:** `.claude/plans/execute-task-9-spring-boot-migration.md`
 
 ## Backlog
 
 ### Migration
 - [ ] **#9** Migrate to Spring Boot 4.1.0 and Spring AI 2.0.0 — update parent POM `spring-boot-starter-parent` to 4.1.0, upgrade Spring Cloud compatibility version, update `spring-ai-bom` to 2.0.0, fix any breaking API changes across all modules, and verify all services compile and tests pass
-  - **Plan:** `.claude/plans/execute-task-9-spring-boot-migration.md`
-
-## Backlog
 
 ### MQTT Bridge (sensormanager)
 - [ ] **#1** Configure `SpringCloudMqtt2Kafka` bindings in `application.yml` — add `sensorValueProcessor-in-0` (MQTT), `sensorValueProcessor-out-0` (Kafka), update `spring.cloud.function.definition`; without this the bean is inactive while the old Camel route continues to run
