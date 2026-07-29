@@ -5,8 +5,8 @@ import com.sensor.sensormanager.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.graphql.GraphQlTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.graphql.test.autoconfigure.GraphQlTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @GraphQlTest(UserGraphController.class)
 class UserGraphControllerTest {
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     @Autowired

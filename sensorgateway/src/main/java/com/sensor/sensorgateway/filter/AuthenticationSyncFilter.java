@@ -37,7 +37,7 @@ public class AuthenticationSyncFilter extends AbstractGatewayFilterFactory<Authe
 
             if(routeValidator.isAuth.test(exchange.getRequest())) {
 
-                if(!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+                if(!exchange.getRequest().getHeaders().containsHeader(HttpHeaders.AUTHORIZATION)) {
                     throw new RuntimeException("Authorization header not present");
                 }
 

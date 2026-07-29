@@ -6,7 +6,7 @@ import com.sensor.sensorcommon.dto.LoginSensorUserDTO;
 import com.sensor.sensormcpserver.dto.TokenResponseDTO;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.RequiredArgsConstructor;
-import org.springaicommunity.mcp.annotation.McpResource;
+import org.springframework.ai.mcp.annotation.McpResource;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
