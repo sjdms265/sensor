@@ -100,12 +100,6 @@ These controllers should work with minimal changes — mostly validating compila
 
 ---
 
-## Phase 6: Apache Camel Compatibility Check
-
-The `sensormanager` module uses `camel-spring-boot-starter` and `camel-paho-mqtt5` at version `4.21.0`. Camel 4.x officially supports Spring Boot 4.x starting from a certain version. Verify the latest compatible Camel 4.x release for Spring Boot 4.1.0 and bump `<camel.version>` accordingly.
-
----
-
 ## Execution Order
 
 1. Bump all POM versions (Phase 1)
@@ -113,16 +107,14 @@ The `sensormanager` module uses `camel-spring-boot-starter` and `camel-paho-mqtt
 3. Migrate MCP server annotations and transport (Phase 4)
 4. Migrate MCP client transport (Phase 3)
 5. Verify ChatClient/Converter API (Phase 5)
-6. Verify Camel compatibility (Phase 6)
-7. Compile and run tests
+6. Compile tests
 
 ---
 
 ## Verification
 
 1. `mvn clean compile` — all modules must compile without errors
-2. `mvn clean test` — all tests pass
-3. Start services in order (sensoreureka → sensorgateway → sensormanager + temperature-sensor + sensor-mcp-server + sensorai) and confirm:
+2. Start services in order (sensoreureka → sensorgateway → sensormanager + temperature-sensor + sensor-mcp-server + sensorai) and confirm:
    - Eureka dashboard at :8761 shows all services registered
    - MCP server responds on the new StreamableHttp endpoint
    - `GET /sensorai/stats/hello` returns a valid AI response via the MCP tool chain

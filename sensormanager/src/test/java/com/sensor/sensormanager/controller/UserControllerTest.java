@@ -8,13 +8,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.mockito.Mockito.*;
 
 class UserControllerTest {
 
@@ -25,7 +26,7 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        try (final AutoCloseable autoCloseable = MockitoAnnotations.openMocks(this)) {
+        try (final var _ = MockitoAnnotations.openMocks(this)) {
             userController = new UserController(userService);
         }
     }
@@ -35,7 +36,7 @@ class UserControllerTest {
 
         List<SensorUser> users = new ArrayList<>();
         users.add(new SensorUser());
-        Mockito.when(userService.getUsers()).thenReturn(users);
+        when(userService.getUsers()).thenReturn(users);
 
         ResponseEntity<List<SensorUser>> responseUsers = userController.getUsers();
 
@@ -47,7 +48,7 @@ class UserControllerTest {
 
     @Test
     void saveUser() {
-        Mockito.when(userService.saveUser(Mockito.any())).thenReturn(new SensorUser());
+        when(userService.saveUser(any())).thenReturn(new SensorUser());
 
         ResponseEntity<SensorUser> responseUser = userController.saveUser(new SensorUser());
 
@@ -59,7 +60,7 @@ class UserControllerTest {
 
     @Test
     void saveRole() {
-        Mockito.when(userService.saveRole(Mockito.any())).thenReturn(new Role());
+        when(userService.saveRole(any())).thenReturn(new Role());
 
         ResponseEntity<Role> responseRole = userController.saveRole(new Role());
 
@@ -70,7 +71,7 @@ class UserControllerTest {
 
     @Test
     void addRoleToUser() {
-        Mockito.when(userService.saveRole(Mockito.any())).thenReturn(new Role());
+        when(userService.saveRole(any())).thenReturn(new Role());
 
         ResponseEntity<Role> responseRole = userController.addRoleToUser(new RoleToUserForm("username", "roleName"));
 

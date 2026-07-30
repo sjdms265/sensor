@@ -10,7 +10,7 @@ spring:
     application:
         name: sensormanager
     datasource:
-        password: postgres
+        password: ${SENOSOR_MANAGER_DB_PASSWORD}
         url: jdbc:postgresql://localhost:5432/sensormanager
         username: postgres
     jpa:
@@ -48,9 +48,6 @@ spring:
             kafka:
                 binder:
                     brokers: localhost:9092
-        loadbalancer:
-            ribbon:
-                enabled: false
     graphql:
         graphiql:
             enabled: true
