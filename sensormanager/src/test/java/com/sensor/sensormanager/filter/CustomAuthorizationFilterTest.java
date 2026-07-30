@@ -102,7 +102,7 @@ class CustomAuthorizationFilterTest {
     void doFilterInternalRefreshToken() throws ServletException, IOException {
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServletPath("/api/refreshToken");
+        request.setServletPath("/api/auth/refreshToken");
         HttpServletResponse response = new MockHttpServletResponse();
         FilterChain filterChain = new MockFilterChain();
 

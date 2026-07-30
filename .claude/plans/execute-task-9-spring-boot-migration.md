@@ -1,5 +1,7 @@
 # Migration Plan: Spring Boot 4.1.0 + Spring AI 2.0.0
 
+> **IMPORTANT:** Never execute tests (`mvn test`) during any phase of this migration. Only run `mvn clean compile` to verify compilation. The user will run tests manually.
+
 ## Context
 
 The project currently runs Spring Boot 3.5.16, Spring Cloud 2025.0.0, and Spring AI 1.1.2. The `sensorai` module is an outlier using `spring-boot-starter-parent:3.5.10` as a direct parent. This migration upgrades to Spring Boot 4.1.0 (Spring Framework 7.0), Spring Cloud 2025.1.2 (the Boot 4.x-compatible train), and Spring AI 2.0.0. Spring AI 2.0 includes significant MCP transport and annotation namespace changes that affect both the `sensorai` client and `sensor-mcp-server`.
