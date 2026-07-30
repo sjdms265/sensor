@@ -12,6 +12,15 @@ spring:
     chat:
       client:
         enabled: false
+    mcp:
+      client:
+        type: SYNC
+        request-timeout: 10s
+        streamable-http:
+          connections:
+            sensor-mcp-server:
+              url: http://localhost:8084
+              endpoint: /mcp/sensor
     active-model: ollama
 #    active-model: anthropic
 
@@ -32,4 +41,3 @@ eureka:
   instance:
     hostname: localhost
 
-mcp.sensor-mcp-server.base-url: http://localhost:8084
