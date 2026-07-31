@@ -40,6 +40,9 @@ public class SensorService {
     private final ObjectMapper objectMapper;
 
     public List<GraphSensorEndpoint> getSensorEndpointsList(String token, String userId, String sensorId, Integer pageSize) {
+
+        if(pageSize == null) pageSize = 50;
+
         Map<String, Object> requestBody = getStringObjectMap(userId, sensorId, pageSize);
         String url = temperatureSensorUrl + GRAPH_QL;
 

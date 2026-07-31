@@ -60,7 +60,7 @@ public class ChatController {
             log.info("request to ai: {}", contents);
 
             String answer =  chatClient.prompt().user(userSpec -> userSpec.text(contents).param("userId", userId).
-                    param("pattern", "temperature,humidity").param("token", request.getHeader("Authorization"))).call().content();
+                    param("pattern", "temperature,humidity").param("pageSize", 50).param("token", request.getHeader("Authorization"))).call().content();
 
             log.info("answer: {}", answer);
 

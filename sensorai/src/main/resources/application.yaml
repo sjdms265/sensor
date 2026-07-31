@@ -4,9 +4,9 @@ spring:
   ai:
     ollama:
       base-url: http://localhost:11434
-      chat.options:
-        model: llama3.2
+      chat:
         temperature: 0.2
+        model: llama3.2
     anthropic:
       api-key: ${ANTHROPIC_API_KEY}
     chat:

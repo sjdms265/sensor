@@ -10,7 +10,7 @@ spring:
     application:
         name: sensormanager
     datasource:
-        password: ${SENOSOR_MANAGER_DB_PASSWORD}
+        password: ${SENSOR_MANAGER_DB_PASSWORD:postgres}
         url: jdbc:postgresql://localhost:5432/sensormanager
         username: postgres
     jpa:
