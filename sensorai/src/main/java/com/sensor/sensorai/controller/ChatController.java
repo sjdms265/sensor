@@ -55,12 +55,13 @@ public class ChatController {
             BeanOutputConverter<Rain> beanOutputConverter = new BeanOutputConverter<>(Rain.class);
             String jsonRepresentation = escapeStBraces(beanOutputConverter.getFormat());
 
-            String contents = "What is the probability of rain for today for the user {userId}?. The last values of temperature and humidity are {pattern}, use {token} "
-                    +  responseFormat(jsonRepresentation);
+            String contents = "What is the probability of rain today for the user {userId}?. " +
+                    "To get the last values of temperature and humidity use the get-sensor-info-by-userId-and-pattern tool with userId={userId}, pattern={pattern} and token={token}."
+                    +  jsonRepresentation;
             log.info("request to ai: {}", contents);
 
             String answer =  chatClient.prompt().user(userSpec -> userSpec.text(contents).param("userId", userId).
-                    param("pattern", "temperature,humidity").param("pageSize", 50).param("token", request.getHeader("Authorization"))).call().content();
+                    param("pattern", "temperature,humidity").param("token", request.getHeader("Authorization"))).call().content();
 
             log.info("answer: {}", answer);
 

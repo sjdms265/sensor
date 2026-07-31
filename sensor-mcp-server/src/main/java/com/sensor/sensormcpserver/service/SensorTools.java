@@ -31,7 +31,12 @@ public class SensorTools {
     private final SensorService sensorService;
 
     @Tool(name = "get-sensor-info-by-userId-and-pattern",
-            description = "Filters sensor endpoints by the provided userId and pattern")
+            description = "Predicts or retrieves general ambient conditions (like rain probability, general temperature, or humidity) for a user by scanning across sensor type patterns. " +
+                    "Use this tool when the user asks about the weather, general environmental conditions, or current status without asking for statistical math calculations." +
+                    "Inputs: " +
+                    "   userId: The unique identifier of the user." +
+                    "   pattern: A text string representing the sensor type or category to match (e.g., temperature). " +
+                    "Returns: A JSON object where each key is a matched pattern, containing a list of data points with value and parsedDateTime.")
     public Map<String, List<GraphSensorEndpoint>> sensorEndpointsBy(@ToolParam(description = "The userId looked up when filtering") @NotEmpty String userId,
                                                                     @ToolParam(description = "The pattern looked up when filtering, ex: temperature,humidity") @NotEmpty String pattern,
                                                                     @ToolParam(description = "JWT token") @NotEmpty String token) {
@@ -39,20 +44,30 @@ public class SensorTools {
         Map<String, List<GraphSensorEndpoint>> sensorEndpoints = new HashMap<>();
         Set<String> sensorIdsProcessed = new HashSet<>();
 
+        log.info("Getting sensor endpoints for userId {} and pattern {}", userId, pattern);
+
         Arrays.stream(pattern.split(",")).forEach(sensorType -> {
 
             try {
 
                 SensorType sensorTypeEnum = SensorType.valueOf(sensorType.toUpperCase());
 
+                log.info("sensorType: {}", sensorTypeEnum);
+
                 List<SensorEndpointDTO> sensorEndpointDTOS  = sensorService.sensorsByUser(token, userId);
+
+                log.info("sensorEndpointDTOs: {}", sensorEndpointDTOS);
 
                 sensorEndpointDTOS.forEach(sensorEndpointDTO -> {
 
                     SensorSpecDTO sensorSpec = sensorService.getSensorSpec(sensorEndpointDTO.getSensorId(), token);
 
+                    log.info("sensorSpec: {}", sensorSpec);
+
                     if(sensorSpec != null && !sensorIdsProcessed.contains(sensorSpec.id()) && sensorSpec.sensorCategory() == sensorTypeEnum) {
-                        sensorEndpoints.put(sensorType, sensorService.getSensorEndpointsList(token, userId, sensorSpec.id(), pageSize));
+
+                        log.info("userId : {}, SensorId {}", userId, sensorEndpointDTO.getSensorId());
+                        sensorEndpoints.put(sensorType, sensorService.getSensorEndpointsList(token, userId, sensorEndpointDTO.getSensorId(), pageSize));
                         sensorIdsProcessed.add(sensorSpec.id());
                     }
                 });
@@ -71,11 +86,20 @@ public class SensorTools {
     }
 
     @Tool(name = "get-stats-by-userId-sensorId",
-            description = "Filters sensor endpoints by the provided userId and sensorId")
+            description = "Calculates math metrics (average, maximum, minimum) for one specific sensor ID belonging to a user. " +
+                    "Use this tool ONLY when the user asks for math calculations, highest/lowest values, averages, or provides a specific sensorId and a history limit (pageSize). " +
+                    "Do not use this tool for general weather queries." +
+                    "Inputs:" +
+                    "   userId: The unique identifier of the user." +
+                    "   sensorId: The explicit, unique identifier of a single sensor hardware endpoint." +
+                    "   numberOfRecords: The max number of historical database rows to return." +
+                    "Returns: A flat JSON list of data points with value and parsedDateTime for the requested sensor.")
     public List<GraphSensorEndpoint> sensorStatsEndpointsBy(@ToolParam(description = "The userId looked up when filtering") String userId,
             @ToolParam(description = "The sensorId looked up when filtering") String sensorId,
             @ToolParam(description = "Number of record to analyze") Integer pageSize,
             @ToolParam(description = "JWT token") String token) {
+
+        log.info("sensorStatsEndpointsBy userId {} sensorId {} pageSize {}", userId,  sensorId,  pageSize);
 
         return  sensorService.getSensorEndpointsList(token, userId, sensorId, pageSize);
 
@@ -88,6 +112,8 @@ public class SensorTools {
     public HumidexResultDTO computeHumidex(
             @ToolParam(description = "The userId whose sensors are queried") @NotEmpty String userId,
             @ToolParam(description = "JWT token") @NotEmpty String token) {
+
+        log.info("computeHumidex userId {} ", userId);
 
         List<SensorEndpointDTO> allSensors = sensorService.sensorsByUser(token, userId);
 
@@ -113,12 +139,12 @@ public class SensorTools {
         }
 
         // Fetch the latest reading for the first temperature and humidity sensor found
-        List<GraphSensorEndpoint> temperatureGraphSensors = sensorService.getSensorEndpointsList(token, userId, temperatureSensors.get(0).getSensorId(), 1);
-        List<GraphSensorEndpoint> humidityGraphSensors = sensorService.getSensorEndpointsList(token, userId, humiditySensors.get(0).getSensorId(), 1);
+        List<GraphSensorEndpoint> temperatureGraphSensors = sensorService.getSensorEndpointsList(token, userId, temperatureSensors.getFirst().getSensorId(), 1);
+        List<GraphSensorEndpoint> humidityGraphSensors = sensorService.getSensorEndpointsList(token, userId, humiditySensors.getFirst().getSensorId(), 1);
 
         log.info("Computing Humidex for userId={} temperature={} humidity={}", userId,
-                temperatureGraphSensors.get(0).value(), humidityGraphSensors.get(0).value());
+                temperatureGraphSensors.getFirst().value(), humidityGraphSensors.getFirst().value());
 
-        return HumidexCalculator.calculate(temperatureGraphSensors.get(0).value(), humidityGraphSensors.get(0).value());
+        return HumidexCalculator.calculate(temperatureGraphSensors.getFirst().value(), humidityGraphSensors.getFirst().value());
     }
 }

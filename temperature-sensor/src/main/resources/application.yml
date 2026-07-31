@@ -67,11 +67,11 @@ sensor-manager:
 
 logging:
     level:
-        root: info
+        root: warn
         com:
             sensor:
                 temperaturesensor:
-                    service: debug
+                    service: warn
     pattern:
         level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
 

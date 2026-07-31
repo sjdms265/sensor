@@ -15,7 +15,7 @@ spring:
     mcp:
       client:
         type: SYNC
-        request-timeout: 10s
+        request-timeout: 120s
         streamable-http:
           connections:
             sensor-mcp-server:
