@@ -2,7 +2,8 @@ package com.sensor.sensorai.config;
 
 import org.springframework.ai.anthropic.AnthropicChatModel;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
+import org.springframework.ai.deepseek.DeepSeekChatModel;
+import org.springframework.ai.mcp.AsyncMcpToolCallbackProvider;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,10 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class SensorAiConfig {
 
+    private static final String DEFAULT_SYSTEM = """
+                You are an Backend AI powered assistant that analyze JSON information that contains IOT sensor data with temperature, humidity.
+                """;
+
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
@@ -19,36 +24,24 @@ public class SensorAiConfig {
 
     @Bean(name = "chatClient")
     @ConditionalOnProperty(name = "spring.ai.active-model", havingValue = "ollama")
-    public ChatClient ollamaChatClient(OllamaChatModel ollamaChatModel, SyncMcpToolCallbackProvider toolCallbackProvider) {
+    public ChatClient ollamaChatClient(OllamaChatModel ollamaChatModel, AsyncMcpToolCallbackProvider toolCallbackProvider) {
 
-        var defaultSystem = """
-                You are an Backend AI powered assistant that analyze JSON information that contains IOT sensor data with temperature, humidity.
-                """;
-
-        return ChatClient.builder(ollamaChatModel).defaultSystem(defaultSystem).defaultTools(toolCallbackProvider).build();
+        return ChatClient.builder(ollamaChatModel).defaultSystem(DEFAULT_SYSTEM).defaultTools(toolCallbackProvider).build();
     }
 
     @Bean(name = "chatClient")
     @ConditionalOnProperty(name = "spring.ai.active-model", havingValue = "anthropic")
-    public ChatClient anthropicChatClient(AnthropicChatModel anthropicChatModel, SyncMcpToolCallbackProvider toolCallbackProvider) {
+    public ChatClient anthropicChatClient(AnthropicChatModel anthropicChatModel, AsyncMcpToolCallbackProvider toolCallbackProvider) {
 
-        var defaultSystem = """
-                You are an Backend AI powered assistant that analyze JSON information that contains IOT sensor data with temperature, humidity.
-                """;
-
-        return ChatClient.builder(anthropicChatModel).defaultSystem(defaultSystem).defaultTools(toolCallbackProvider).build();
+        return ChatClient.builder(anthropicChatModel).defaultSystem(DEFAULT_SYSTEM).defaultTools(toolCallbackProvider).build();
     }
 
     
     @Bean(name = "deepseek")
     @ConditionalOnProperty(name = "spring.ai.active-model", havingValue = "deepseek")
-    public ChatClient deepseekChatClient(DeepseekChatModel deepseekChatModel, SyncMcpToolCallbackProvider toolCallbackProvider) {
+    public ChatClient deepseekChatClient(DeepSeekChatModel deepSeekChatModel, AsyncMcpToolCallbackProvider toolCallbackProvider) {
 
-        var defaultSystem = """
-                You are an Backend AI powered assistant that analyze JSON information that contains IOT sensor data with temperature, humidity.
-                """;
-
-        return ChatClient.builder(deepseekChatModel).defaultSystem(defaultSystem).defaultTools(toolCallbackProvider).build();
+        return ChatClient.builder(deepSeekChatModel).defaultSystem(DEFAULT_SYSTEM).defaultTools(toolCallbackProvider).build();
     }
 
 }
