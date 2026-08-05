@@ -39,4 +39,16 @@ public class SensorAiConfig {
         return ChatClient.builder(anthropicChatModel).defaultSystem(defaultSystem).defaultTools(toolCallbackProvider).build();
     }
 
+    
+    @Bean(name = "deepseek")
+    @ConditionalOnProperty(name = "spring.ai.active-model", havingValue = "deepseek")
+    public ChatClient deepseekChatClient(DeepseekChatModel deepseekChatModel, SyncMcpToolCallbackProvider toolCallbackProvider) {
+
+        var defaultSystem = """
+                You are an Backend AI powered assistant that analyze JSON information that contains IOT sensor data with temperature, humidity.
+                """;
+
+        return ChatClient.builder(deepseekChatModel).defaultSystem(defaultSystem).defaultTools(toolCallbackProvider).build();
+    }
+
 }

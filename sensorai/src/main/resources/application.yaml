@@ -9,21 +9,24 @@ spring:
         model: llama3.2
     anthropic:
       api-key: ${ANTHROPIC_API_KEY}
+    deepseek:
+      api-key: ${DEEPSEEK_API_KEY}
+      chat.model: deepseek-v4-flash
     chat:
       client:
         enabled: false
     mcp:
       client:
-        type: SYNC
+        type: async
         request-timeout: 120s
         streamable-http:
           connections:
             sensor-mcp-server:
               url: http://localhost:8084
               endpoint: /mcp/sensor
-    active-model: ollama
+#    active-model: ollama
 #    active-model: anthropic
-
+    active-model: deepseek
 server:
   port: 8083
 #  servlet:
