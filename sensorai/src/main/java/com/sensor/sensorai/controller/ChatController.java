@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,81 +21,45 @@ public class ChatController {
     private final ChatClient chatClient;
 
     @GetMapping("/stats/{userId}/{sensorId}")
-    public ResponseEntity<String> getBasicStats(HttpServletRequest request, @PathVariable final String userId,
+    public ResponseEntity<SensorStatsResults> getBasicStats(HttpServletRequest request, @PathVariable final String userId,
                                                 final @PathVariable String sensorId) {
 
-        try{
+        String contents = "Calculate average value, highest value and lowest value for the user {userId} and sensor {sensorId}. " +
+                "Use a list size of {pageSize} SensorEndpoints and use {token}";
+        log.info("getBasicStats request to ai: {}", contents);
 
-            BeanOutputConverter<SensorStatsResults> beanOutputConverter = new BeanOutputConverter<>(SensorStatsResults.class);
-            String jsonRepresentation = escapeStBraces(beanOutputConverter.getFormat());
+        SensorStatsResults answer =  chatClient.prompt().
+                user(contents).user(userSpec -> userSpec.text(contents).param("userId", userId).
+                        param("sensorId", sensorId).param("pageSize", 50).param("token", request.getHeader("Authorization"))).
+                call().entity(SensorStatsResults.class, ChatClient.EntityParamSpec::validateSchema);
 
-            String contents = "Calculate average value, highest value and lowest value for the user {userId} and sensor {sensorId}. Use a list size of {pageSize} SensorEndpoints and use {token} "
-                    + responseFormat(jsonRepresentation);
-            log.info("request to ai: {}", contents);
+        log.info("getBasicStats answer: {}", answer);
 
-            String answer =  chatClient.prompt().user(contents).user(userSpec -> userSpec.text(contents).param("userId", userId).
-                    param("sensorId", sensorId).param("pageSize", 50).param("token", request.getHeader("Authorization"))).call().content();
-
-            log.info("answer: {}", answer);
-
-            return ResponseEntity.ok(answer);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new RuntimeException(e);
-        }
+        return ResponseEntity.ok(answer);
 
     }
 
     @GetMapping("/rain/{userId}")
-    public ResponseEntity<String> rainProbability(HttpServletRequest request, @PathVariable final String userId) {
+    public ResponseEntity<Rain> rainProbability(HttpServletRequest request, @PathVariable final String userId) {
 
-        try{
+        String contents = "What is the probability of rain today for the user {userId}?. " +
+                "To get the last values of temperature and humidity use the get-sensor-info-by-userId-and-pattern tool " +
+                "with userId={userId}, pattern={pattern} and token={token}.";
 
-            BeanOutputConverter<Rain> beanOutputConverter = new BeanOutputConverter<>(Rain.class);
-            String jsonRepresentation = escapeStBraces(beanOutputConverter.getFormat());
+        log.info("rainProbability request to ai: {}", contents);
 
-            String contents = "What is the probability of rain today for the user {userId}?. " +
-                    "To get the last values of temperature and humidity use the get-sensor-info-by-userId-and-pattern tool with userId={userId}, pattern={pattern} and token={token}."
-                    +  jsonRepresentation;
-            log.info("request to ai: {}", contents);
+        Rain answer =  chatClient.prompt().user(userSpec -> userSpec.text(contents).param("userId", userId).
+                param("pattern", "temperature,humidity").param("token", request.getHeader("Authorization"))).
+                call().entity(Rain.class, ChatClient.EntityParamSpec::validateSchema);
 
-            String answer =  chatClient.prompt().user(userSpec -> userSpec.text(contents).param("userId", userId).
-                    param("pattern", "temperature,humidity").param("token", request.getHeader("Authorization"))).call().content();
+        log.info("rainProbability answer: {}", answer);
 
-            log.info("answer: {}", answer);
-
-            return ResponseEntity.ok(answer);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    //https://www.baeldung.com/spring-artificial-intelligence-structure-output
-    public static String responseFormat(String jsonRepresentation) {
-
-        String template = """
-                %s.
-                the json property parsedDateTime is the timestamp when the temperature was recorded and it is UTC formated.
-                """;
-        return String.format(template, jsonRepresentation);
+        return ResponseEntity.ok(answer);
     }
 
     @GetMapping("/stats/hello")
-    public ResponseEntity<String> getChatModel(HttpServletRequest request) {
+    public ResponseEntity<SensorStatsResults> getChatModel(HttpServletRequest request) {
         return getBasicStats(request, "sjdms265", "sensor.10000db11e_t");
     }
 
-    /**
-            * Spring AI's ST (StringTemplate) renderer treats { ... } as template syntax.
-            * JSON/JSON-Schema contains lots of braces, so we must escape them when passing as parameters.
-     */
-    public static String escapeStBraces(String input) {
-        if (input == null) return null;
-        return input
-                .replace("\\", "\\\\")
-                .replace("{", "\\{")
-                .replace("}", "\\}");
-    }
 }

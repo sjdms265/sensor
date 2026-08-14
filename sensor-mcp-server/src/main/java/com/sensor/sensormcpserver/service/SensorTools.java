@@ -72,7 +72,7 @@ public class SensorTools {
                     }
                 });
 
-            } catch (IllegalArgumentException iae) {
+            } catch (IllegalArgumentException _) {
                 log.error("Invalid sensor type: {}", sensorType);
             } catch (Exception e) {
                 log.error("Error getting sensor endpoints {}", e.getMessage());
@@ -96,8 +96,10 @@ public class SensorTools {
                     "Returns: A flat JSON list of data points with value and parsedDateTime for the requested sensor.")
     public List<GraphSensorEndpoint> sensorStatsEndpointsBy(@ToolParam(description = "The userId looked up when filtering") String userId,
             @ToolParam(description = "The sensorId looked up when filtering") String sensorId,
-            @ToolParam(description = "Number of record to analyze") Integer pageSize,
+            @ToolParam(description = "Number of record to analyze", required = false) Integer pageSize,
             @ToolParam(description = "JWT token") String token) {
+
+        if (pageSize == null) { pageSize = this.pageSize; }
 
         log.info("sensorStatsEndpointsBy userId {} sensorId {} pageSize {}", userId,  sensorId,  pageSize);
 

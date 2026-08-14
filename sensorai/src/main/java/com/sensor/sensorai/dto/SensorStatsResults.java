@@ -1,4 +1,4 @@
 package com.sensor.sensorai.dto;
 
-public record SensorStatsResults(float highestValue, float lowestValue , float averageValue) {
+public record SensorStatsResults(Float highestValue, Float lowestValue , Float averageValue) {
 }

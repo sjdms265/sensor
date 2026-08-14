@@ -5,6 +5,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.deepseek.DeepSeekChatModel;
 import org.springframework.ai.mcp.AsyncMcpToolCallbackProvider;
 import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.ai.ollama.api.OllamaChatOptions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +27,11 @@ public class SensorAiConfig {
     @ConditionalOnProperty(name = "spring.ai.active-model", havingValue = "ollama")
     public ChatClient ollamaChatClient(OllamaChatModel ollamaChatModel, AsyncMcpToolCallbackProvider toolCallbackProvider) {
 
-        return ChatClient.builder(ollamaChatModel).defaultSystem(DEFAULT_SYSTEM).defaultTools(toolCallbackProvider).build();
+        return ChatClient.builder(ollamaChatModel).defaultSystem(DEFAULT_SYSTEM).defaultTools(toolCallbackProvider).
+                defaultOptions(OllamaChatOptions.builder()
+                .format("json") // Force Ollama's underlying engine into rigid JSON mode
+                .temperature(0.0) // Keep output deterministic to prevent rambling
+                ).build();
     }
 
     @Bean(name = "chatClient")

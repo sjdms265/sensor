@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,32 +38,23 @@ public class HumidexController {
      * @return a JSON response containing the Humidex index and comfort level
      */
     @GetMapping("/humidex/{userId}")
-    public ResponseEntity<String> getHumidex(HttpServletRequest request,
+    public ResponseEntity<HumidexResultDTO> getHumidex(HttpServletRequest request,
                                              @PathVariable final String userId) {
-        try {
-            BeanOutputConverter<HumidexResultDTO> converter = new BeanOutputConverter<>(HumidexResultDTO.class);
-            String jsonRepresentation = ChatController.escapeStBraces(converter.getFormat());
 
-            String contents = "Calculate the Humidex comfort index for user {userId}. "
-                    + "Use the get-humidex-by-userId-sensorId tool with userId={userId} and token={token}. "
-                    + "Return the result as structured JSON. "
-                    + ChatController.responseFormat(jsonRepresentation);
+        String contents = "Calculate the Humidex comfort index for user {userId}. "
+                + "Use the get-humidex-by-userId-sensorId tool with userId={userId} and token={token}. ";
 
-            log.info("Humidex request to AI for userId={}", userId);
+        log.info("Humidex request to AI for userId={}", userId);
 
-            String answer = chatClient.prompt()
-                    .user(userSpec -> userSpec.text(contents)
-                            .param("userId", userId)
-                            .param("token", request.getHeader("Authorization")))
-                    .call()
-                    .content();
+        HumidexResultDTO answer = chatClient.prompt()
+                .user(userSpec -> userSpec.text(contents)
+                        .param("userId", userId)
+                        .param("token", request.getHeader("Authorization")))
+                .call()
+                .entity(HumidexResultDTO.class, ChatClient.EntityParamSpec::validateSchema);
 
-            log.info("Humidex answer: {}", answer);
-            return ResponseEntity.ok(answer);
+        log.info("Humidex answer: {}", answer);
+        return ResponseEntity.ok(answer);
 
-        } catch (Exception e) {
-            log.error("Error computing Humidex for userId={}: {}", userId, e.getMessage());
-            throw new RuntimeException(e);
-        }
     }
 }
