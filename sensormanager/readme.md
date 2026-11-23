@@ -161,3 +161,7 @@ Authorization: Bearer yJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzamRtczI2NS
 
 ### Payload
 {% set temp = {'value': float(states('sensor.10000db11e_t')), 'sensorId':'sensor.10000db11e_t', 'userId': 'sjdms265', 'date' : utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z") } %}  {{ temp|to_json(ensure_ascii=False) }}
+
+Allow http://192.168.50.158:8081/sensormanager/api/echoSensorEndpoint
+
+sudo ufw allow from 192.168.50.0/24
